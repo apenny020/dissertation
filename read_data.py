@@ -9,8 +9,8 @@
 import re
 
 #read in data and put it into a list with lines being seperated by commas
-data_list = []
-dataFile = open("data_input_file_2018.txt", "r")
+data_list = [] # the list of all the lines
+dataFile = open("data_input_file_2018.txt", "r", encoding='utf-8-sig')
 for line in dataFile:
   whole_line = line
   data_list.append(whole_line)
@@ -18,18 +18,17 @@ dataFile.close()
 print (data_list[0])
 
 
-patient_list = []
+patient_list = [] #??????
 c = 0 # counter
-test_item = []
+test_item = [] #for testing - just using the first line - replace to loop through each line later
 test_item.append(data_list[0])
 
-for i in test_item: #CHANGE TO ACTUAL LIST
-  
+for i in test_item: #CHANGE TO ACTUAL LIST, this is where it will loop through each line
   item = i
   item = item.split("\t") # now a list in list
   print("PRINT C")
   print(c)
-  c = 1
+  c = 1 #change to incremental, if its event needed anymore?
 
   #adding the names of keys
   dictionary_names_list = ["unique_identifier", "date_time", "state_enter_ignore", "action"]
