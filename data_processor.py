@@ -20,24 +20,65 @@
 #for each patient
 #work out waiting times
 
+def collecting_days_data (data_list, current_day):
+    #needs to do a loop, while date_time == current_day
+    #store the dictionaries into a new temp list - not sure if needed 
+    todays_data = ()
+    i = 0
+        todays_data.append(data_list(i))
+        i =+ 1
+    #store patient in patient dict
+    todays_patients = []
+        #this occurs when appointed
+        todays_patients.append(unique_identifier)
+
+    return(todays_data, todays_patients)
+
+
 def calculating_wait_times (data_list):
     #List of waiting times in minutes
     wait_for_Height_and_weight = ()
     wait_for_Bloods = ()
     wait_for_consultation_1 = ()
     wait_for_consultation_2 = () #combine with above?
+    waiting_dictionary = [] # CREATE A DICT 
 
 
     temp_val = []
     temp_val.append(data_list(0))
     current_day = temp_val.get("date_time")      
     current_day = current_day[:10] #should cut it to just be date
-    
-    #needs to do a loop, while date_time == current_day
-    #store patient in patient dict
-    todays_patients = []
-        #this occurs when appointed
-        todays_patients.append(unique_identifier)
+
+    #get the days data
+    current_days_data , current_days_patients = collecting_days_data(data_list, current_day)
+
+    #re-sort by unique identifier
+    sorted_current_days_data = sorted(current_days_data, key=lambda d: d['unique_identifier'])
+    sorted_current_days_patients = current_days_patients.sort()
+
+    for i in current_days_patients:
+        for j in sorted_current_days_data:
+            while i == j['unique identifier']: # fix this
+                if j['action'].str.lower() == "cancelled" or "late arrival" or "appointed" or "cancelled":
+                    #ignore
+                elif j['action'].str.lower() == patient identified by kiosk:
+                    start_time = j['date_time'][10:]
+                elif  j['action'].str.lower() == Waiting height weight:
+                    start_time = j['date_time'][10:]
+                    #change above to work with a dictionary
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     #then grab timestamp
 
