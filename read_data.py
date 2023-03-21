@@ -17,7 +17,7 @@ def read_in_data(): # could change parameter to take in x text file
     whole_line = line
     input_data_list.append(whole_line)
   dataFile.close()
-  print (input_data_list[0])
+  #print (input_data_list[0])
 
 
   data_list = []
@@ -53,7 +53,7 @@ def sort_data_by_date(unsorted_list):
 data_lsit = []
 data_list = read_in_data() #get list of data
 date_sorted_data_list = sort_data_by_date(data_list) #sort data by date
-print(date_sorted_data_list)
+#print(date_sorted_data_list)
   
 
 #IMPORTANT NOTE   
