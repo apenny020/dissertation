@@ -39,25 +39,22 @@ def collecting_days_data (sorted_data_list, current_day):
     return(todays_data, todays_patients)
 
 
-def calculating_wait_times (sorted_data_list):
+def calculating_wait_times (sorted_data_list, current_days_data , current_days_patients):
+    #Instantiating 
     #List of waiting times in minutes
     wait_for_Height_and_weight = []
     wait_for_Bloods = []
-    wait_for_consultation = [] #for consultation 1 and 2
+    wait_for_consultation_1 = []
+    wait_for_consultation_1_of_2 = []
+    wait_for_consultation_2 = []
 
     number_of_did_not_attends = []
 
-    consultation_duration = []
+    consultation_duration_1 = []
+    consultation_duration_1_of_2 = []
+    consultaiton_duration_2 = []
     bloods_duration = []
     waiting_dictionary = {} # CREATE A DICT 
-
-    temp_val = []
-    temp_val.append(sorted_data_list[0])
-    current_day = temp_val[0].get("date_time")      
-    current_day = current_day[:10] #should cut it to just be date
-
-    #get the days data by using the day function
-    current_days_data , current_days_patients = collecting_days_data(sorted_data_list, current_day)
 
     #re-sort by unique identifier
     sorted_current_days_data = sorted(current_days_data, key=lambda d: d['unique_identifier'])
@@ -65,8 +62,10 @@ def calculating_wait_times (sorted_data_list):
 
     print("HELLO")
 
+    
     #go through each item in the new sorted list
     for i in sorted_current_days_data:
+        c = 0
         while i == current_days_patients[c].get("unique_identifier"): #while the patient is the same
             current_action = i.[c].get("action").str().lower()
             previous_action = i.[c-1].get("action").str().lower()
@@ -80,11 +79,21 @@ def calculating_wait_times (sorted_data_list):
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
                 wait_for_Height_and_weight.append(duration)
-            elif current_action == "in consultation 1 of 1" or "in consultation 1 of 2" or "in consultation 2 of 2" and previous_action == "waiting consultation 1 of 1" or "waiting consultation 1 of 2" or "waiting consultation 2 of 2":
+            elif current_action == "in consultation 1 of 1"  and previous_action == "waiting consultation 1 of 1":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
-                wait_for_consultation.append(duration)
+                wait_for_consultation_1.append(duration)
+            elif current_action == "in consultation 1 of 2" and previous_action == "waiting consultation 1 of 2":
+                time_start = i[c-1].get("date_time")[10:].time()
+                time_end = i[c].get("date_time")[10:].time()
+                duration = time_end - time_start
+                wait_for_consultation_1_of_2.append(duration) 
+            elif current_action == "in consultation 2 of 2" and previous_action == "waiting consultation 2 of 2":
+                time_start = i[c-1].get("date_time")[10:].time()
+                time_end = i[c].get("date_time")[10:].time()
+                duration = time_end - time_start
+                wait_for_consultation_2.append(duration)  
             elif current_action == "in blood room" and previous_action == "waiting blood room":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
@@ -98,11 +107,21 @@ def calculating_wait_times (sorted_data_list):
                 #ignore
             elif current_action == "did not attend":
                 number_of_did_not_attends =+ 1
-            elif previous_action == "in consultation 1 of 1" or "in consultation 1 of 2" or "in consultation 2 of 2":
+            elif previous_action == "in consultation 1 of 1":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
-                consultation_duration.append(duration)
+                consultation_duration_1.append(duration)
+            elif previous_action == "in consultation 1 of 2":
+                time_start = i[c-1].get("date_time")[10:].time()
+                time_end = i[c].get("date_time")[10:].time()
+                duration = time_end - time_start
+                consultation_duration_1_of_2.append(duration)
+            elif previous_action == "in consultation 2 of 2":
+                time_start = i[c-1].get("date_time")[10:].time()
+                time_end = i[c].get("date_time")[10:].time()
+                duration = time_end - time_start
+                consultation_duration_2.append(duration)
             elif previous_action == "in blood room":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
@@ -111,56 +130,41 @@ def calculating_wait_times (sorted_data_list):
             else:
                 #x
 
-
             #can probably make above code more efficient
-            #check over above that it covers everything!!!!!!!!!! TO DO 
 
             c =+ 1
+    give_date(date_sorted_data_list, )
+
+    return (wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, wait_for_Height_and_weight, number_of_did_not_attends, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultaiton_duration_2)
 
 
-    return (wait_for_Bloods, wait_for_consultation, wait_for_Height_and_weight, number_of_did_not_attends, bloods_duration, consultation_duration)
+    def give_date(date_sorted_data_list, counter):
+        temp_val = []
+        temp_val.append(sorted_data_list[0])
+        current_day = temp_val[0].get("date_time")      
+        current_day = current_day[:10] #should cut it to just be date
 
-#this bit doesnt work
-#    for i in current_days_patients:
- #       for j in sorted_current_days_data:
-  #          while i == j['unique identifier']: # fix this
-   #             if j['action'].str.lower() == "cancelled" or "late arrival" or "appointed" or "cancelled":
-    #                #ignore
-     #           elif j['action'].str.lower() == patient identified by kiosk:
-      #              start_time = j['date_time'][10:]
-       #         elif  j['action'].str.lower() == Waiting height weight:
-        #            start_time = j['date_time'][10:]
-                    #change above to work with a dictionary
-
-
-
-# waiting consultant is always followed by in consult
-#waiting for bloods is always followed by in bloods
-#Height and weight is not always followed by the same thing
+        #get the days data by using the day function
+        current_days_data , current_days_patients = collecting_days_data(sorted_data_list, current_day)
+        calculating_wait_times (date_sorted_data_list, current_days_data , current_days_patients)
+    return ()
 
 
 
-    #then grab timestamp
-
-    #eventually has to loop round and find the next day somehow
-    
-
-
-
-
-a = calculating_wait_times(date_sorted_data_list)
+a = give_date(date_sorted_data_list, 0)
 print("hi")
 
 
 
-#loop through day function for each day (which calls the wait time functino)
 
-#do i need to work out probability of a patient not showing up
+#!!!do i need to work out probability of a patient not showing up
 
 
-#further work - different days could have different waiting times because of different number of staff - so adjust to this
+#!!!!further work - different days could have different waiting times because of different number of staff - so adjust to this
 # ^ would play into changing number of staff
-
+#there is 1 blood room and up to 3 blood stations at one time (but rare that all 3 would be up)
+#!!!! remember that a patient is connected to a consultant
+#if consultation is longer than 2 hours, throw away
 
 #need to access the sorted list from data processor
 #then seperate the information into dates (each day is 1 list of dictionary<-- double think this data structure)
