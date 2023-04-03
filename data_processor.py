@@ -41,12 +41,15 @@ def collecting_days_data (sorted_data_list, current_day):
 
 def calculating_wait_times (sorted_data_list, current_days_data , current_days_patients):
     #Instantiating 
+    arrival_time = []
+
     #List of waiting times in minutes
     wait_for_Height_and_weight = []
     wait_for_Bloods = []
     wait_for_consultation_1 = []
     wait_for_consultation_1_of_2 = []
     wait_for_consultation_2 = []
+    
 
     number_of_did_not_attends = []
 
@@ -69,8 +72,10 @@ def calculating_wait_times (sorted_data_list, current_days_data , current_days_p
         while i == current_days_patients[c].get("unique_identifier"): #while the patient is the same
             current_action = i.[c].get("action").str().lower()
             previous_action = i.[c-1].get("action").str().lower()
+            if current_action = "patient identified by kiosk":
+                arrival_time = i[c].get("date_time")[10:].time()
             #looking for wait times
-            if current_action == "appointed" or "late arrival" or "patient identified by kiosk":
+            elif current_action == "appointed" or "late arrival" or "patient identified by kiosk":
                 #ignore
             elif current_action == "did not attend":
                 number_of_did_not_attends =+ 1
