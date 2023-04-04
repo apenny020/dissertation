@@ -1,7 +1,55 @@
 #Patient agent
 #attributes of: unique identifier, current state, patient satisfaction score
+class Agent:
+    def __init__(self, id, character, current_day, patient_satisfaction, next_action, current_action, duration)
+        """
+        id: unique id of patient
+        current_day: current day count that is being modelled
+        patient_satisfaction: score of patient satisfaction (similar to mood)
+        next_action: the action that the patient will be doing next
+        current_action: the action that the patient is currently doing
+        duration: duration (in ticks) until the next action takes place (told by omnisystem)
+        """
+        self.id = id
+        self.character = character
+        self.current_day = current_day
+        self.patient_satisfaction = patient_satisfaction
+        self.next_action = next_action
+        self.current_action = current_action
+        self.duration = duration
+
+#somehow need to initialise multiple patients
+
+class patient_agent(Agent):
+
+    character = "patient"
+    #anything else same to all patients
+
+    def __init__(self, ...):
+        #initialise here
+
+    def (leave):
+        #function about patient satisfaction
+
+    def (change_action):
+        #function about changing action
+
+    def (move_on):
+        #moving to next task and update the things, only if space is free, and when tick time met
 
 
+
+
+
+
+
+
+
+
+
+
+
+"""
 def patient_set_up(todays_date, todays_patients):
     
     dict_patients = {}
@@ -30,6 +78,7 @@ def patient_set_up(todays_date, todays_patients):
 patient_agent.current_action
 
 
+"""
 #Nurse agent (do i make this just a general nurse or specific to each)
 #attributes of: type of nurse, unique identifier?, action doing/state
 
