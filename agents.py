@@ -1,6 +1,6 @@
 #Patient agent
 #attributes of: unique identifier, current state, patient satisfaction score
-class Agent:
+class Patient_agent:
     def __init__(self, id, character, current_day, patient_satisfaction, next_action, current_action, duration)
         """
         id: unique id of patient
@@ -18,10 +18,11 @@ class Agent:
         self.current_action = current_action
         self.duration = duration
 
-#somehow need to initialise multiple patients
+    def create(self):
+        #creates a new agent
 
-class patient_agent(Agent):
-
+    #somehow need to initialise multiple patients
+    
     character = "patient"
     #anything else same to all patients
 
@@ -35,8 +36,20 @@ class patient_agent(Agent):
         #function about changing action
 
     def (move_on):
-        #moving to next task and update the things, only if space is free, and when tick time met
+        #moving to next task and update the things, 
+        #only if space is free, and when tick time met
+        #but need to make sure not two patients advance at once
 
+
+#might need to go in main
+#initialise environemtal stuff
+pop_size = #GET THIS FROM PROBABILITIES - patient population size for the day
+clinic_pop_size = #GET THIS FROM PROBABILITIES - patient population inside the clinic at any one time - will this change for a day or is this a max????
+max_blood_room = 3 #this is a constant of the max patients a blood room can ever have
+#PUT ANY OTHER ENVIRONMENT INSTATNTIATES HERE
+
+patient_list = [Patient_agent() for i in range(pop_size)]
+#INSTANTIATE THE PATIENTS HERE WITH THERE INFORMATION
 
 
 
