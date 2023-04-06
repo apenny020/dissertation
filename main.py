@@ -1,7 +1,16 @@
+from omni_system.py import ticks
+
 #run the model here
 
+patients_in_clinic = 0
+def running_model(patient_list):
+    for i in ticks:
+        for patient in patient_lsit:
+            if patient.arrived = TRUE and patient != i in patients_in_clinic:
+                patients_in_clinic.append(patient)
+        
+                
 
-#something
 
 
 #end of day we want stats

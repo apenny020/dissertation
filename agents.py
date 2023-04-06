@@ -39,7 +39,4 @@ patient_agent.current_action
 #Pathfinder
 #Gets updated with informatin, tells nurses and consultatn who is next 
 
-#environment
-#universal 'time' measure
-ticks = 1440 #minutes in a day
 
