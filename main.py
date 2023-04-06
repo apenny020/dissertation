@@ -15,6 +15,8 @@
 #AVERAGE TOTAL WAIT TIMES
 #DURATIONS TOO?
 
-
+def count_day_data(XXXXXXX)
+    #maths here?
+    return(XXXXXXX)
 
 
