@@ -159,7 +159,7 @@ def calculating_wait_times (sorted_data_list, current_days_data , current_days_p
 a = give_date(date_sorted_data_list, 0)
 print("hi")
 
-
+#NEEDS something that analyses the flow of events
 
 
 #!!!do i need to work out probability of a patient not showing up

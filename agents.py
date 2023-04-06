@@ -11,12 +11,16 @@ class Patient_agent:
         duration: duration (in ticks) until the next action takes place (told by omnisystem)
         """
         self.id = id
-        self.character = character
-        self.current_day = current_day
+        #self.character = character
+        #self.current_day = current_day
         self.patient_satisfaction = patient_satisfaction
         self.next_action = next_action
         self.current_action = current_action
-        self.duration = duration
+        self.arrived = arrived
+        #self.duration = duration
+        self.position_in_list = position_in_list
+        #something to store all the actions it will do?
+        self.assigned_consultant = assigned_consultant
 
     def create(self):
         #creates a new agent
@@ -30,7 +34,11 @@ class Patient_agent:
         #initialise here
 
     def (leave):
-        #function about patient satisfaction
+        if patient.patient_satisfaction <= 0:
+            patient.current_action = "left_clinic"
+            #update the patient in clinic to 0
+            #update omni system
+
 
     def (change_action):
         #function about changing action
@@ -39,6 +47,9 @@ class Patient_agent:
         #moving to next task and update the things, 
         #only if space is free, and when tick time met
         #but need to make sure not two patients advance at once
+
+
+
 
 
 #might need to go in main
@@ -51,12 +62,37 @@ max_blood_room = 3 #this is a constant of the max patients a blood room can ever
 patient_list = [Patient_agent() for i in range(pop_size)]
 #INSTANTIATE THE PATIENTS HERE WITH THERE INFORMATION
 
+def initialise():
+    global patients
+    patient_list = []
+    counter = 0
+    for i in range(pop_size):
+        patient = Patient_agent()
+        patient.id = counter
+        patient.patient_satisfaction = #randint() from range 30 - 100 (scale is 0 - 100)
+        patient.current_action = "Appointed"
+        paitent.future_action = #gotten from omni system - a function
+        #patient.duration = #gotten from omni system - need it?
+        #(above) this way they can arrive whenever and get called accordingly
+        patient.position_in_list = #omnisystem
+        patient.arrived = #randint? or based on data, 
+        patient.assigned_consultant = #choice between consultants on shift (omni), or none
+
+        patient_list.append(paitent)
+        counter += 1
 
 
+def update_patient(patient_list, id): # runs when called by omni system
+    patient = patient_list[id-1]
+    patient.current_action = 
+    patient.future_action = 
+    patient.duration =
 
-
-
-
+def update_satisfaction(patient_list):
+    #needs to run every tick for every patient
+    for patient in patient_list():
+        #if current action remains unchanged reduce patient_satisfaction by 0.25
+        #if current action changes then patient_satisfaction increases by 10?
 
 
 
