@@ -23,11 +23,29 @@ from read_data import *
 #for each patient
 #work out waiting times
 
+"""
+There is data collection for:
+Waiting times; Height/Weight, Bloods, Consultation 1/1 of 2/2
+Durations of; Bloods, Consultation 1/2, 
+Number of DNA's
+Number of Patients in a day
+Number of Consults in a day
+Consult start times
+Blood start times
+Late durations
+
+Number of patients at clinic at any one time
+How many patients in bloods at one time
+How many patients in consulatation at same time
+
+"""
+
 def collecting_days_data (sorted_data_list, current_day):
     #needs to do a loop, while date_time == current_day
     #store the dictionaries into a new temp list - not sure if needed 
     todays_data = []
     todays_patients = []
+    num_patients_in_day = len(todays_patients)
     for i in sorted_data_list:
         while i.get("date_time") == current_day:
             todays_data.append(i)
@@ -36,6 +54,10 @@ def collecting_days_data (sorted_data_list, current_day):
                 print("exists")
             else: 
                 todays_patients.append(i.get("unique_identifier"))
+
+    calculating_patient_numbers()
+
+
     return(todays_data, todays_patients)
 
 
@@ -49,14 +71,19 @@ def calculating_wait_times (sorted_data_list, current_days_data , current_days_p
     wait_for_consultation_1 = []
     wait_for_consultation_1_of_2 = []
     wait_for_consultation_2 = []
-    
 
-    number_of_did_not_attends = []
+    number_of_did_not_attends = 0
+    number_of_lates = 0 #not including DNA's
+    number_of_consultations = 0#
+
+    consultation_starts = []
+    bloods_starts = []
 
     consultation_duration_1 = []
     consultation_duration_1_of_2 = []
     consultaiton_duration_2 = []
     bloods_duration = []
+    late_duration = []
     waiting_dictionary = {} # CREATE A DICT 
 
     #re-sort by unique identifier
@@ -72,66 +99,89 @@ def calculating_wait_times (sorted_data_list, current_days_data , current_days_p
         while i == current_days_patients[c].get("unique_identifier"): #while the patient is the same
             current_action = i.[c].get("action").str().lower()
             previous_action = i.[c-1].get("action").str().lower()
+            future_action = i.[c+1].get("action").str().lower() # need a fail safe here and above just incase at first or last action
+            
             if current_action = "patient identified by kiosk":
                 arrival_time = i[c].get("date_time")[10:].time()
-            #looking for wait times
+            
             elif current_action == "appointed" or "late arrival" or "patient identified by kiosk":
                 #ignore
-            elif current_action == "did not attend":
-                number_of_did_not_attends =+ 1
+            
             elif previous_action == "waiting height and weight": # you cant tell what is wait and and what is duration so duration will be fixed
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
                 wait_for_Height_and_weight.append(duration)
+
             elif current_action == "in consultation 1 of 1"  and previous_action == "waiting consultation 1 of 1":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
                 wait_for_consultation_1.append(duration)
+                consultation_starts.append(time_start)
+
             elif current_action == "in consultation 1 of 2" and previous_action == "waiting consultation 1 of 2":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
-                wait_for_consultation_1_of_2.append(duration) 
+                wait_for_consultation_1_of_2.append(duration)
+                consultation_starts.append(time_start)
+
             elif current_action == "in consultation 2 of 2" and previous_action == "waiting consultation 2 of 2":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
                 wait_for_consultation_2.append(duration)  
+                consultation_starts.append(time_start)
+
             elif current_action == "in blood room" and previous_action == "waiting blood room":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
                 wait_for_Bloods.append(duration)
+                bloods_starts.append(time_start)
+
+            elif current_action == "late arrival" and future_action != "did not attend":
+                number_of_lates += 1
+                time_start = i[c].get("date_time")[10:].time()
+                time_end = i[c+1].get("date_time")[10:].time()
+                duration = time_end - time_start
+                late_duration.append(duration)
+
             else:
                 #x
             
             #looking for durations
             if current_action == "appointed" or "late arrival" or "patient identified by kiosk":
                 #ignore
+            
             elif current_action == "did not attend":
                 number_of_did_not_attends =+ 1
+
             elif previous_action == "in consultation 1 of 1":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
                 consultation_duration_1.append(duration)
+
             elif previous_action == "in consultation 1 of 2":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
                 consultation_duration_1_of_2.append(duration)
+
             elif previous_action == "in consultation 2 of 2":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
                 consultation_duration_2.append(duration)
+
             elif previous_action == "in blood room":
                 time_start = i[c-1].get("date_time")[10:].time()
                 time_end = i[c].get("date_time")[10:].time()
                 duration = time_end - time_start
                 bloods_duration.append(duration)
+
             else:
                 #x
 
@@ -153,6 +203,73 @@ def calculating_wait_times (sorted_data_list, current_days_data , current_days_p
         current_days_data , current_days_patients = collecting_days_data(sorted_data_list, current_day)
         calculating_wait_times (date_sorted_data_list, current_days_data , current_days_patients)
     return ()
+
+    def calculating_patient_numbers (todays_data, todays_patients):
+        length = len(todays_data)
+        start_time = todays_data.[0].get("date_time")
+        end_time = todays_data.[length-1].get("date_time")
+
+        counter = 0
+
+        patients_in_clinic = []
+        patients_in_bloods = []
+        patients_in_consultation = []
+
+        clinic_counter = 0
+        bloods_counter = 0
+        consult_counter = 0
+        #number of patients in clinic at any time
+        #number of patients in bloods at one time
+        #number of patients in consultation at one time
+    
+            while (start_time <= end_time):
+                for i in todays_data:
+                    current_action = i.[counter].get("action").str().lower()
+                    previous_action = i.[counter-1].get("action").str().lower()
+                    current_patient = i.[counter].get("unique_identifier").str().lower()
+
+                    #checking for patients arriving and adding to list
+                    if current_action == "patient identified by kiosk":
+                        patients_in_clinic = current_patient
+
+                    elif current_action == "in blood room":
+                        patients_in_bloods = current_patient
+
+                    elif current_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
+                        patients_in_consultation = current_patient
+
+                    #checking for patients leaving and taking a count
+                    elif previous_action == "in blood room":
+                        if current_patient in patients_in_bloods:
+                            patients_in_bloods.remove(current_patient)
+                        
+                        temp = len(patients_in_bloods)
+                        if bloods_counter < temp:
+                            bloods_counter = temp
+
+                    elif previous_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
+                        if current_patient in patients_in_consultation:
+                            patients_in_consultation.remove(current_patient)
+                        
+                        temp = len(patients_in_clinic)
+                        if consult_counter < temp:
+                            consult_counter = temp
+
+                    elif current_action[8:] == "complete":
+                        if current_patient in patients_in_clinic:
+                            patients_in_clinic.remove(current_patient)
+                        
+                        temp = len(patients_in_clinic)
+                        if clinic_counter < temp:
+                            clinic_counter = temp
+                   
+                    counter += 1
+
+                
+
+
+
+
 
 
 
