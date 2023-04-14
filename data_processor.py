@@ -193,79 +193,80 @@ def calculating_wait_times (sorted_data_list, current_days_data , current_days_p
     return (wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, wait_for_Height_and_weight, number_of_did_not_attends, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultaiton_duration_2)
 
 
-    def give_date(date_sorted_data_list, counter):
-        temp_val = []
-        temp_val.append(sorted_data_list[0])
-        current_day = temp_val[0].get("date_time")      
-        current_day = current_day[:10] #should cut it to just be date
+def give_date(date_sorted_data_list, counter):
+    temp_val = []
+    temp_val.append(sorted_data_list[0])
+    current_day = temp_val[0].get("date_time")      
+    current_day = current_day[:10] #should cut it to just be date
 
-        #get the days data by using the day function
-        current_days_data , current_days_patients = collecting_days_data(sorted_data_list, current_day)
-        calculating_wait_times (date_sorted_data_list, current_days_data , current_days_patients)
-    return ()
+    #get the days data by using the day function
+    current_days_data , current_days_patients = collecting_days_data(sorted_data_list, current_day)
+    calculating_wait_times (date_sorted_data_list, current_days_data , current_days_patients)
+return ()
 
-    def calculating_patient_numbers (todays_data, todays_patients):
-        length = len(todays_data)
-        start_time = todays_data.[0].get("date_time")
-        end_time = todays_data.[length-1].get("date_time")
+def calculating_patient_numbers (todays_data, todays_patients):
+    length = len(todays_data)
+    start_time = todays_data.[0].get("date_time")
+    end_time = todays_data.[length-1].get("date_time")
 
-        counter = 0
+    counter = 0
 
-        patients_in_clinic = []
-        patients_in_bloods = []
-        patients_in_consultation = []
+    patients_in_clinic = []
+    patients_in_bloods = []
+    patients_in_consultation = []
 
-        clinic_counter = 0
-        bloods_counter = 0
-        consult_counter = 0
-        #number of patients in clinic at any time
-        #number of patients in bloods at one time
-        #number of patients in consultation at one time
-    
-            while (start_time <= end_time):
-                for i in todays_data:
-                    current_action = i.[counter].get("action").str().lower()
-                    previous_action = i.[counter-1].get("action").str().lower()
-                    current_patient = i.[counter].get("unique_identifier").str().lower()
+    clinic_counter = 0
+    bloods_counter = 0
+    consult_counter = 0
+    #number of patients in clinic at any time
+    #number of patients in bloods at one time
+    #number of patients in consultation at one time
 
-                    #checking for patients arriving and adding to list
-                    if current_action == "patient identified by kiosk":
-                        patients_in_clinic = current_patient
+        while (start_time <= end_time):
+            for i in todays_data:
+                current_action = i.[counter].get("action").str().lower()
+                previous_action = i.[counter-1].get("action").str().lower()
+                current_patient = i.[counter].get("unique_identifier").str().lower()
 
-                    elif current_action == "in blood room":
-                        patients_in_bloods = current_patient
+                #checking for patients arriving and adding to list
+                if current_action == "patient identified by kiosk":
+                    patients_in_clinic = current_patient
 
-                    elif current_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
-                        patients_in_consultation = current_patient
+                elif current_action == "in blood room":
+                    patients_in_bloods = current_patient
 
-                    #checking for patients leaving and taking a count
-                    elif previous_action == "in blood room":
-                        if current_patient in patients_in_bloods:
-                            patients_in_bloods.remove(current_patient)
-                        
-                        temp = len(patients_in_bloods)
-                        if bloods_counter < temp:
-                            bloods_counter = temp
+                elif current_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
+                    patients_in_consultation = current_patient
 
-                    elif previous_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
-                        if current_patient in patients_in_consultation:
-                            patients_in_consultation.remove(current_patient)
-                        
-                        temp = len(patients_in_clinic)
-                        if consult_counter < temp:
-                            consult_counter = temp
+                #checking for patients leaving and taking a count
+                elif previous_action == "in blood room":
+                    if current_patient in patients_in_bloods:
+                        patients_in_bloods.remove(current_patient)
+                    
+                    temp = len(patients_in_bloods)
+                    if bloods_counter < temp:
+                        bloods_counter = temp
 
-                    elif current_action[8:] == "complete":
-                        if current_patient in patients_in_clinic:
-                            patients_in_clinic.remove(current_patient)
-                        
-                        temp = len(patients_in_clinic)
-                        if clinic_counter < temp:
-                            clinic_counter = temp
-                   
-                    counter += 1
+                elif previous_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
+                    if current_patient in patients_in_consultation:
+                        patients_in_consultation.remove(current_patient)
+                    
+                    temp = len(patients_in_clinic)
+                    if consult_counter < temp:
+                        consult_counter = temp
 
+                elif current_action[8:] == "complete":
+                    if current_patient in patients_in_clinic:
+                        patients_in_clinic.remove(current_patient)
+                    
+                    temp = len(patients_in_clinic)
+                    if clinic_counter < temp:
+                        clinic_counter = temp
                 
+                counter += 1
+
+    pass
+
 
 
 
@@ -276,6 +277,7 @@ def calculating_wait_times (sorted_data_list, current_days_data , current_days_p
 a = give_date(date_sorted_data_list, 0)
 print("hi")
 
+#NEED SOMETHING THAT WORKS OUT THE ORDER OF WHAT PATIENTS DO< AND THE LIKELIHOOD
 
 
 
