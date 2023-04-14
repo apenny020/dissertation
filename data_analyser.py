@@ -41,4 +41,4 @@ def order_list(to_order_list, file_name):
 #plot the data so that it can be visualised
 
 
-
+#NEED SOMETHING THAT WORKS OUT THE ORDER OF WHAT PATIENTS DO< AND THE LIKELIHOOD
