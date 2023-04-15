@@ -64,9 +64,6 @@ def get_probabilities_time(data_list):
 
 
 
-#workout appointment times?
-
-
 #plot the data so that it can be visualised
 
 
