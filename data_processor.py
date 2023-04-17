@@ -90,43 +90,43 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
                 #ignore
             
             elif previous_action == "waiting height and weight": # you cant tell what is wait and and what is duration so duration will be fixed
-                time_start = i[c-1].get("date_time")[10:].time()
-                time_end = i[c].get("date_time")[10:].time()
+                time_start = i[c-1].get("date_time")[8:].time()
+                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_Height_and_weight.append(duration)
 
             elif current_action == "in consultation 1 of 1"  and previous_action == "waiting consultation 1 of 1":
-                time_start = i[c-1].get("date_time")[10:].time()
-                time_end = i[c].get("date_time")[10:].time()
+                time_start = i[c-1].get("date_time")[8:].time()
+                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_consultation_1.append(duration)
                 consultation_starts.append(time_start)
 
             elif current_action == "in consultation 1 of 2" and previous_action == "waiting consultation 1 of 2":
-                time_start = i[c-1].get("date_time")[10:].time()
-                time_end = i[c].get("date_time")[10:].time()
+                time_start = i[c-1].get("date_time")[8:].time()
+                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_consultation_1_of_2.append(duration)
                 consultation_starts.append(time_start)
 
             elif current_action == "in consultation 2 of 2" and previous_action == "waiting consultation 2 of 2":
-                time_start = i[c-1].get("date_time")[10:].time()
-                time_end = i[c].get("date_time")[10:].time()
+                time_start = i[c-1].get("date_time")[8:].time()
+                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_consultation_2.append(duration)  
                 consultation_starts.append(time_start)
 
             elif current_action == "in blood room" and previous_action == "waiting blood room":
-                time_start = i[c-1].get("date_time")[10:].time()
-                time_end = i[c].get("date_time")[10:].time()
+                time_start = i[c-1].get("date_time")[8:].time()
+                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_Bloods.append(duration)
                 bloods_starts.append(time_start)
 
             elif current_action == "late arrival" and future_action != "did not attend":
                 number_of_lates += 1
-                time_start = i[c].get("date_time")[10:].time()
-                time_end = i[c+1].get("date_time")[10:].time()
+                time_start = i[c].get("date_time")[8:].time()
+                time_end = i[c+1].get("date_time")[8:].time()
                 duration = time_end - time_start
                 late_duration.append(duration)
 
@@ -141,26 +141,26 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
                 number_of_did_not_attends =+ 1
 
             elif previous_action == "in consultation 1 of 1":
-                time_start = i[c-1].get("date_time")[10:].time()
-                time_end = i[c].get("date_time")[10:].time()
+                time_start = i[c-1].get("date_time")[8:].time()
+                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 consultation_duration_1.append(duration)
 
             elif previous_action == "in consultation 1 of 2":
-                time_start = i[c-1].get("date_time")[10:].time()
-                time_end = i[c].get("date_time")[10:].time()
+                time_start = i[c-1].get("date_time")[8:].time()
+                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 consultation_duration_1_of_2.append(duration)
 
             elif previous_action == "in consultation 2 of 2":
-                time_start = i[c-1].get("date_time")[10:].time()
-                time_end = i[c].get("date_time")[10:].time()
+                time_start = i[c-1].get("date_time")[8:].time()
+                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 consultation_duration_2.append(duration)
 
             elif previous_action == "in blood room":
-                time_start = i[c-1].get("date_time")[10:].time()
-                time_end = i[c].get("date_time")[10:].time()
+                time_start = i[c-1].get("date_time")[8:].time()
+                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 bloods_duration.append(duration)
 
