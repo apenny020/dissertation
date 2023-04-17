@@ -64,11 +64,11 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
     bloods_duration = []
     late_duration = []
 
-    #To be an overall list of the above lists
-    waiting_list = [] 
-    number_list = []
-    duration_list = []
-    starts_list = []
+    #To be an overall dictionary of the above lists
+    waiting_list = {}
+    number_list = {}
+    duration_list = {}
+    starts_list = {}
 
 
     #re-sort the list by unique identifier (patient)
@@ -174,13 +174,31 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
     #calls function - repeats for every day
     give_date(date_sorted_data_list) #need to put in a loop to only call until end of list !!!!!!!!!!1111
 
-    #adding lists to an overall list
-    waiting_list.extend(wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2)
-    number_list.extend(number_of_consultations, number_of_did_not_attends, number_of_lates)
-    duration_list.extend(bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration)
-    starts_list.extend(bloods_starts, consultation_starts, arrival_time)
+    #adding lists to an overall list - could turn more efficient !!!!!!!!!!!!!
+    waiting_dict["wait_h&w"] = wait_for_Height_and_weight
+    waiting_dict["wait_bloods"] = wait_for_Bloods
+    waiting_dict["wait_consult_1"] = wait_for_consultation_1
+    waiting_dict["wait_consult_1/2"] = wait_for_consultation_1_of_2
+    waiting_dict["wait_consult_2"] = wait_for_consultation_2
 
-    return (waiting_list, number_list, duration_list, starts_list)
+    number_dict["num_consult"] = number_of_consultations
+    number_dict["num_dna"] = number_of_did_not_attends
+    number_dict["num_lates"] = number_of_lates
+
+    duration_dict["duration_bloods"] = bloods_duration
+    duration_dict["duration_consult_1"] = consultation_duration_1
+    duration_dict["duration_consult_1/2"] = consultation_duration_1_of_2
+    duration_dict["duration_consult_2"] = consultation_duration_2
+    duration_dict["duration_lates"] = late_duration
+
+    starts_dict["starts_bloods"] = bloods_starts
+    starts_dict["starts_consult"] = consultation_starts
+    starts_dict["starts_arrival"] = arrival_time
+
+    return (waiting_dict, number_dict, duration_dict, starts_dict)
+
+
+        
 
 #Calculates the number of patients in certain situations
 def calculating_patient_numbers (todays_data, todays_patients):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
