@@ -12,8 +12,11 @@ global ticks
 #Pre model stuff 
 
 #Function
-#Unpacks dictionary of lists of data from data processing 
+#Unpacks lists of lists of data from data processing 
 #and sends it to data analysis for percentage calculation and charts
+def unpackage(list_of_lists):
+    list 
+    for i in list_of_lists:
 
 
 
