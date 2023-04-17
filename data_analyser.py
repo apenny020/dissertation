@@ -68,3 +68,7 @@ def get_probabilities_time(data_list):
 
 
 #NEED SOMETHING THAT WORKS OUT THE ORDER OF WHAT PATIENTS DO< AND THE LIKELIHOOD
+
+#but need to check between each section - collect the data and use numpy - workout how long the like quickest 10% were on average
+#then 20%, 30% etc, find the longest and if reaches this time then called basically.
+#for distribution - record all times and then order them, then you can take length divided by x to get a certain proportion of the distribution
