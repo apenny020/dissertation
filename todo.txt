@@ -1,0 +1,27 @@
+for data_processor.py:
+- Workout how many patients go on each pathway?
+- Maybe add total time from check in to check out?
+- collecting_days_data --> needs commenting
+- calculating_times --> can be made more efficient - not crucial
+                    - for future and previous action, need to make sure its still the same patient reference
+                    - need to add a loop so that it calls give_date until dates run out
+                    - make dict creation more efficient
+- calculating_patient_numbers -->
+                    - needs finishing in the elifs
+- give_date -->
+                    - needs to be changed so that its give which day refeerncing (either an actual day or a counter)
+                    - add returns
+                    - take calling the functions out? or rename the function to better reflect itself
+- write the running code
+- need to add in looking for number of Cancelled
+- if the patient does not have complete as final action it needs to be disregarded
+- if any waiting time is longer than 8hours it needs to be ignored
+- if consultant waiting time is longer than 2hours it neesds to be ignored
+- further work -->
+                    - Different days could have different waiting times based on number of nurses etc --> update to reflect the correlation
+                    - Work out number of staff
+
+
+for data_analyser.py:
+- add the plotting
+- need to add something for getting the likelihood?
