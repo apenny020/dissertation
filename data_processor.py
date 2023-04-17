@@ -65,10 +65,10 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
     late_duration = []
 
     #To be an overall dictionary of the above lists
-    waiting_list = {}
-    number_list = {}
-    duration_list = {}
-    starts_list = {}
+    waiting_dict = {}
+    number_dict = {}
+    duration_dict = {}
+    starts_dict = {}
 
 
     #re-sort the list by unique identifier (patient)
