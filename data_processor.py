@@ -3,26 +3,6 @@ from read_data import *
 
 #this will take the data and work out the probabilities for each section
 #so need to work out times between check in and either H/W, bloods, consultant, Research
-#maybe workout from check in to check out
-#but need to check between each section - collect the data and use numpy - workout how long the like quickest 10% were on average
-#then 20%, 30% etc, find the longest and if reaches this time then called basically.
-
-#also be good to know how many people go on each pathway
-
-
-#for each day
-#multiple patients to keep track of
-
-#could do average of times, but i think a distribution would be more accurate
-#for distribution - record all times and then order them, then you can take length divided by x to get a certain proportion of the distribution
-
-
-
-#need a temp collector
-#for each day
-#for each patient
-#work out waiting times
-
 """
 There is data collection for:
 Waiting times; Height/Weight, Bloods, Consultation 1/1 of 2/2
@@ -41,8 +21,6 @@ How many patients in consulatation at same time
 """
 
 def collecting_days_data (sorted_data_list, current_day):
-    #needs to do a loop, while date_time == current_day
-    #store the dictionaries into a new temp list - not sure if needed 
     todays_data = []
     todays_patients = []
     num_patients_in_day = len(todays_patients)
@@ -55,51 +33,55 @@ def collecting_days_data (sorted_data_list, current_day):
             else: 
                 todays_patients.append(i.get("unique_identifier"))
 
-    calculating_patient_numbers()
-
-
     return(todays_data, todays_patients)
 
 
-def calculating_wait_times (sorted_data_list, current_days_data , current_days_patients):
+#Calculates the durations, waiting times and other data needed to be found
+def calculating_times (sorted_data_list, current_days_data , current_days_patients):
     #Instantiating 
     arrival_time = []
 
-    #List of waiting times in minutes
+    #To collect a list of waiting times in minutes
     wait_for_Height_and_weight = []
     wait_for_Bloods = []
     wait_for_consultation_1 = []
     wait_for_consultation_1_of_2 = []
     wait_for_consultation_2 = []
 
+    #To collect a list of number of patients to the particular event
     number_of_did_not_attends = 0
     number_of_lates = 0 #not including DNA's
-    number_of_consultations = 0#
+    number_of_consultations = 0
 
+    #To collect appointment times approximation
     consultation_starts = []
     bloods_starts = []
 
+    #To collect a list of duration times in minutes
     consultation_duration_1 = []
     consultation_duration_1_of_2 = []
-    consultaiton_duration_2 = []
+    consultation_duration_2 = []
     bloods_duration = []
     late_duration = []
-    waiting_dictionary = {} # CREATE A DICT 
 
-    #re-sort by unique identifier
+    #To be an overall list of the above lists
+    waiting_list = [] 
+    number_list = []
+    duration_list = []
+    starts_list = []
+
+
+    #re-sort the list by unique identifier (patient)
     sorted_current_days_data = sorted(current_days_data, key=lambda d: d['unique_identifier'])
     sorted_current_days_patients = current_days_patients.sort()
 
-    print("HELLO")
-
-    
-    #go through each item in the new sorted list
+    #go through each item in the new sorted list and match it to particular situations and add the value to the above waiting time lists
     for i in sorted_current_days_data:
-        c = 0
+        c = 0 #counter to keep track of patient
         while i == current_days_patients[c].get("unique_identifier"): #while the patient is the same
             current_action = i.[c].get("action").str().lower()
             previous_action = i.[c-1].get("action").str().lower()
-            future_action = i.[c+1].get("action").str().lower() # need a fail safe here and above just incase at first or last action
+            future_action = i.[c+1].get("action").str().lower() # need a fail safe here and above just incase at first or last action !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             
             if current_action = "patient identified by kiosk":
                 arrival_time = i[c].get("date_time")[10:].time()
@@ -151,7 +133,7 @@ def calculating_wait_times (sorted_data_list, current_days_data , current_days_p
             else:
                 #x
             
-            #looking for durations
+            #Same as above but looking for durations now and numbers of patients to add to the lists
             if current_action == "appointed" or "late arrival" or "patient identified by kiosk":
                 #ignore
             
@@ -185,26 +167,23 @@ def calculating_wait_times (sorted_data_list, current_days_data , current_days_p
             else:
                 #x
 
-            #can probably make above code more efficient
+            #can make above more efficient by having a function that takes in what its looking for and produces the value/time
 
-            c =+ 1
-    give_date(date_sorted_data_list, )
+            c =+ 1 #counter
 
-    return (wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, wait_for_Height_and_weight, number_of_did_not_attends, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultaiton_duration_2)
+    #calls function - repeats for every day
+    give_date(date_sorted_data_list) #need to put in a loop to only call until end of list !!!!!!!!!!1111
 
+    #adding lists to an overall list
+    waiting_list.extend(wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2)
+    number_list.extend(number_of_consultations, number_of_did_not_attends, number_of_lates)
+    duration_list.extend(bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration)
+    starts_list.extend(bloods_starts, consultation_starts, arrival_time)
 
-def give_date(date_sorted_data_list, counter):
-    temp_val = []
-    temp_val.append(sorted_data_list[0])
-    current_day = temp_val[0].get("date_time")      
-    current_day = current_day[:10] #should cut it to just be date
+    return (waiting_list, number_list, duration_list, starts_list)
 
-    #get the days data by using the day function
-    current_days_data , current_days_patients = collecting_days_data(sorted_data_list, current_day)
-    calculating_wait_times (date_sorted_data_list, current_days_data , current_days_patients)
-return ()
-
-def calculating_patient_numbers (todays_data, todays_patients):
+#Calculates the number of patients in certain situations
+def calculating_patient_numbers (todays_data, todays_patients):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
     length = len(todays_data)
     start_time = todays_data.[0].get("date_time")
     end_time = todays_data.[length-1].get("date_time")
@@ -215,12 +194,14 @@ def calculating_patient_numbers (todays_data, todays_patients):
     patients_in_bloods = []
     patients_in_consultation = []
 
-    clinic_counter = 0
-    bloods_counter = 0
-    consult_counter = 0
-    #number of patients in clinic at any time
-    #number of patients in bloods at one time
-    #number of patients in consultation at one time
+    clinic_counter = 0#number of patients in clinic at any time
+    bloods_counter = 0#number of patients in bloods at one time
+    consult_counter = 0#number of patients in consultation at one time
+
+    #lists to contain the above
+    number_list = []
+    counter_list = []
+
 
         while (start_time <= end_time):
             for i in todays_data:
@@ -265,23 +246,40 @@ def calculating_patient_numbers (todays_data, todays_patients):
                 
                 counter += 1
 
-    pass
+    return(number_list, counter_list)
 
 
 
 
+#finds the current date and calls a function with that information -
+#^recieves back the data and patients for only that day - 
+#^calls the function to work out data and gets it back
+def give_date(date_sorted_data_list): #need to edit the function to take in the date when requested !!!!!!!!!1
+    temp_val = []
+    temp_val.append(sorted_data_list[0])
+    current_day = temp_val[0].get("date_time")      
+    current_day = current_day[:10] #should cut it to just be date
+
+    #get the days data by using the day function
+    current_days_data , current_days_patients = collecting_days_data(sorted_data_list, current_day)
+    waiting_list, number_list, duration_list, starts_list = calculating_times (date_sorted_data_list, current_days_data , current_days_patients)
+    number_list, counter_list = calculating_patient_numbers(current_days_data, current_days_data) 
+return () # add here!!!!!!!!!!! also could maybe have the function calling taken out !!!!!!!!!!!
 
 
 
+#running here !!!!!!!!!!!!!
 
 a = give_date(date_sorted_data_list, 0)
 print("hi")
 
-#NEED SOMETHING THAT WORKS OUT THE ORDER OF WHAT PATIENTS DO< AND THE LIKELIHOOD
 
 
+#Cancelled <-- need to add in !!!!!!!!!!!!!!!!!
 
-#!!!do i need to work out probability of a patient not showing up
+#Exclusions !!!!!!!!!!!!!!!!!!!!!
+#If does not complete - ignore data, 
+#if more than 10 hours, ignore
 
 
 #!!!!further work - different days could have different waiting times because of different number of staff - so adjust to this
@@ -290,54 +288,5 @@ print("hi")
 #!!!! remember that a patient is connected to a consultant
 #if consultation is longer than 2 hours, throw away
 
-#need to access the sorted list from data processor
-#then seperate the information into dates (each day is 1 list of dictionary<-- double think this data structure)
-#then 2 tasks
-
-#1 reorder data by patient number
-#work out how long they waited for each thing
-#store this in the main data structure
 
 #2 - extension see if you can work out how many staff working by how many patients in which area at the same time
-
-#also need a main data structure in here that is maybe a dictionary...
-#how likely to use kiosk or reception
-#how likely to DNA
-#how likely to be late - and by how much
-#time from check in to weight and height 
-#time from check in to other if identified?
-#time from 
-
-#Possible states are
-#Appointed
-#Patient Identified by Kiosk
-#Waiting Height and Weight
-#Waiting Consultation 1 of 1
-#In Consultation 1 of 1
-#Waiting Consultation 1 of 2
-#In Consultation 2 of 2
-#Waiting Blood Room
-#In Blood Room
-#Complete
-#Complete, Bloods Done
-#Cancelled
-#Late Arrival
-#DNA
-
-#Patients can come in for
-#Height weight, consultation (1or2)
-#Height weight, consultation (1or2), Bloods
-#Bloods
-#Cancelled
-#Late arrival, DNA
-
-
-#Exclusions
-#If does not complete - ignore data, 
-#if more than 10 hours, ignore
-
-#make sure you change to all upper or all lower case
-
-#need to reread the data and look at how its set for this ^
-#need to read about how to make probablilities - are they going to be purely from the data, how work out - write it more
-
