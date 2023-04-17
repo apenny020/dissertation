@@ -23,3 +23,10 @@ for data_processor.py:
 for data_analyser.py:
 - add the plotting
 - need to add something for getting the likelihood?
+
+for agents.py #PERRY THE PLATYPUS?!
+- Patient_agent, __init__ -->
+                        - update the attributes and therefore the ()
+                -->
+                - do the create()
+- Integrate with omni
