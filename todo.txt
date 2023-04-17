@@ -5,6 +5,7 @@ for data_processor.py:
 - calculating_times --> can be made more efficient - not crucial
                     - for future and previous action, need to make sure its still the same patient reference
                     - need to add a loop so that it calls give_date until dates run out
+                    - make dict creation more efficient
 - calculating_patient_numbers -->
                     - needs finishing in the elifs
 - give_date -->
@@ -19,6 +20,7 @@ for data_processor.py:
 - further work -->
                     - Different days could have different waiting times based on number of nurses etc --> update to reflect the correlation
                     - Work out number of staff
+
 
 for data_analyser.py:
 - add the plotting
