@@ -177,25 +177,25 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
     starts_dict = pd.DataFrame{}
 
     #adding lists to an overall list - could turn more efficient !!!!!!!!!!!!!
-    waiting_df (loc=0, column="wait_h&w", value=wait_for_Height_and_weight)
-    waiting_df (loc=1, column="wait_bloods", value=wait_for_Bloods)
-    waiting_df (loc=2, column="wait_consult_1", value=wait_for_consultation_1)
-    waiting_df (loc=3, column="wait_consult_1/2", value=wait_for_consultation_1_of_2)
-    waiting_df (loc=4, column="wait_consult_2", value=wait_for_consultation_2)
+    waiting_df ["wait_h&w"] = wait_for_Height_and_weight
+    waiting_df ["wait_bloods"] = wait_for_Bloods
+    waiting_df ["wait_consult_1"] = wait_for_consultation_1
+    waiting_df ["wait_consult_1/2"] = wait_for_consultation_1_of_2
+    waiting_df ["wait_consult_2"] = wait_for_consultation_2
 
-    number_df (loc=0, column="num_consult", value=number_of_consultations)
-    number_df (loc=1, column="num_dna", value=number_of_did_not_attends)
-    number_df (loc=2, column="num_lates", value=number_of_lates)
+    number_df ["num_consult"] = number_of_consultations
+    number_df ["num_dna"] = number_of_did_not_attends
+    number_df ["num_lates"] = number_of_lates
 
-    duration_df (loc=0, column="duration_bloods", value=bloods_duration)
-    duration_df (loc=1, column="duration_consult_1", value=consultation_duration_1)
-    duration_df (loc=2, column="duration_consult_1/2", value=consultation_duration_1_of_2)
-    duration_df (loc=3, column="duration_consult_2", value=consultation_duration_2)
-    duration_df (loc=4, column="duration_lates", value=late_duration)
+    duration_df ["duration_bloods"] = bloods_duration
+    duration_df ["duration_consult_1"] = consultation_duration_1
+    duration_df ["duration_consult_1/2"] = consultation_duration_1_of_2
+    duration_df ["duration_consult_2"] = consultation_duration_2
+    duration_df ["duration_lates"] = late_duration
 
-    starts_df (loc=0, column="starts_bloods", value=bloods_starts)
-    starts_df (loc=1, column="starts_consult", value=consultation_starts)
-    starts_df (loc=2, column="starts_arrival", value=arrival_time)
+    starts_df ["starts_bloods"] = bloods_starts
+    starts_df ["starts_consult"] = consultation_starts
+    starts_df ["starts_arrival"] = arrival_time
 
     #could be created more efficiently ^
 
