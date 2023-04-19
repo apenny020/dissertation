@@ -1,4 +1,5 @@
 from read_data import *
+import pandas as pd
 
 
 #this will take the data and work out the probabilities for each section
@@ -63,12 +64,6 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
     consultation_duration_2 = []
     bloods_duration = []
     late_duration = []
-
-    #To be an overall dictionary of the above lists
-    waiting_dict = {}
-    number_dict = {}
-    duration_dict = {}
-    starts_dict = {}
 
 
     #re-sort the list by unique identifier (patient)
@@ -174,28 +169,37 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
     #calls function - repeats for every day
     give_date(date_sorted_data_list) #need to put in a loop to only call until end of list !!!!!!!!!!1111
 
+
+    #To be an overall dataframes of the above lists
+    waiting_df = pd.DataFrame{}
+    number_dict = pd.DataFrame{}
+    duration_dict = pd.DataFrame{}
+    starts_dict = pd.DataFrame{}
+
     #adding lists to an overall list - could turn more efficient !!!!!!!!!!!!!
-    waiting_dict["wait_h&w"] = wait_for_Height_and_weight
-    waiting_dict["wait_bloods"] = wait_for_Bloods
-    waiting_dict["wait_consult_1"] = wait_for_consultation_1
-    waiting_dict["wait_consult_1/2"] = wait_for_consultation_1_of_2
-    waiting_dict["wait_consult_2"] = wait_for_consultation_2
+    waiting_df (loc=0, column="wait_h&w", value=wait_for_Height_and_weight)
+    waiting_df (loc=1, column="wait_bloods", value=wait_for_Bloods)
+    waiting_df (loc=2, column="wait_consult_1", value=wait_for_consultation_1)
+    waiting_df (loc=3, column="wait_consult_1/2", value=wait_for_consultation_1_of_2)
+    waiting_df (loc=4, column="wait_consult_2", value=wait_for_consultation_2)
 
-    number_dict["num_consult"] = number_of_consultations
-    number_dict["num_dna"] = number_of_did_not_attends
-    number_dict["num_lates"] = number_of_lates
+    number_df (loc=0, column="num_consult", value=number_of_consultations)
+    number_df (loc=1, column="num_dna", value=number_of_did_not_attends)
+    number_df (loc=2, column="num_lates", value=number_of_lates)
 
-    duration_dict["duration_bloods"] = bloods_duration
-    duration_dict["duration_consult_1"] = consultation_duration_1
-    duration_dict["duration_consult_1/2"] = consultation_duration_1_of_2
-    duration_dict["duration_consult_2"] = consultation_duration_2
-    duration_dict["duration_lates"] = late_duration
+    duration_df (loc=0, column="duration_bloods", value=bloods_duration)
+    duration_df (loc=1, column="duration_consult_1", value=consultation_duration_1)
+    duration_df (loc=2, column="duration_consult_1/2", value=consultation_duration_1_of_2)
+    duration_df (loc=3, column="duration_consult_2", value=consultation_duration_2)
+    duration_df (loc=4, column="duration_lates", value=late_duration)
 
-    starts_dict["starts_bloods"] = bloods_starts
-    starts_dict["starts_consult"] = consultation_starts
-    starts_dict["starts_arrival"] = arrival_time
+    starts_df (loc=0, column="starts_bloods", value=bloods_starts)
+    starts_df (loc=1, column="starts_consult", value=consultation_starts)
+    starts_df (loc=2, column="starts_arrival", value=arrival_time)
 
-    return (waiting_dict, number_dict, duration_dict, starts_dict)
+    #could be created more efficiently ^
+
+    return (waiting_df, number_df, duration_df, starts_df)
 
 
         
