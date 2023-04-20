@@ -14,13 +14,8 @@ global ticks
 #Function
 #Unpacks lists of lists of data from data processing 
 #and sends it to data analysis for percentage calculation and charts
-def unpackage(dict_of_lists):
-    c = 0
-    for i in dict_of_lists:
-        list_of_names.append(i[c])
-        c += 1
-
-    for i in list_of_names:
+#def unpackage(dict_of_lists):
+#instead of unpackage we will just reference into the dataframe
         
 
 

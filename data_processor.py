@@ -176,7 +176,7 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
     duration_dict = pd.DataFrame{}
     starts_dict = pd.DataFrame{}
 
-    #adding lists to an overall list - could turn more efficient !!!!!!!!!!!!!
+    #adding lists to dataframes above - could turn more efficient !!!!!!!!!!!!!
     waiting_df ["wait_h&w"] = wait_for_Height_and_weight
     waiting_df ["wait_bloods"] = wait_for_Bloods
     waiting_df ["wait_consult_1"] = wait_for_consultation_1
