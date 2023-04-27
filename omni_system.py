@@ -1,3 +1,5 @@
+import time
+
 #Holds the state of the patients and other agents and updates their states
 
 #has a time step that checks and executes at every timestep - main?
@@ -52,6 +54,51 @@ global ticks
 # ^^eg if you have a 16:00 patient waiting and 16:30 patient waiting and its 16:35 - make sure still pick the 16:00 patient
 #Update patients patient satisfaction
 
+#################################
+#Fake Model
+
+
+
+
+
+
+def appointment_times(start_hour, interval, end_hour){
+    times = []
+    for hour in range(start_hour, end_hour):
+        for minute in range(0, 60, interval):
+            times.append('{:02d}:{:02d}'.format(hour, minute))
+    return (times) 
+}
+
+def initialise():
+    patient_number = 50
+    dr_number = 3
+    nurse_number = 3
+    clinic_start = 9 #hour of day
+    clinic_end = 17 #hour of day
+    #initialise patient dictionary
+
+    
+    appointment_times_bloods = appointment_times(9, 15, 17)
+    clinic_1_times = appointment_times(9, 30, 12)
+    clinic_2_times = appointment_times(13, 30, 17)
+    clinic_3_times = appointment_times(9, 30, 12)
+
+    
+def starts_everything():
+
+    #every tick
+        #update tick
+        #update nurses
+        #update drs
+        #update patients inc patient satisfaction
+        #check if nurse free
+        #check if dr free
+        #check for patients that could be called in
+        #update patients
+        #update patient dictionary
+    pass
+    
 
 ###########################
 #Recording data

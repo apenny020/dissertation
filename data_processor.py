@@ -74,15 +74,16 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
     for i in sorted_current_days_data:
         c = 0 #counter to keep track of patient
         while i == current_days_patients[c].get("unique_identifier"): #while the patient is the same
-            current_action = i.[c].get("action").str().lower()
-            previous_action = i.[c-1].get("action").str().lower()
-            future_action = i.[c+1].get("action").str().lower() # need a fail safe here and above just incase at first or last action !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            current_action = i.self[c].get("action").str().lower()
+            previous_action = i.self[c-1].get("action").str().lower()
+            future_action = i.self[c+1].get("action").str().lower() # need a fail safe here and above just incase at first or last action !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             
-            if current_action = "patient identified by kiosk":
+            if current_action == "patient identified by kiosk":
                 arrival_time = i[c].get("date_time")[10:].time()
             
             elif current_action == "appointed" or "late arrival" or "patient identified by kiosk":
                 #ignore
+                print("hi")
             
             elif previous_action == "waiting height and weight": # you cant tell what is wait and and what is duration so duration will be fixed
                 time_start = i[c-1].get("date_time")[8:].time()
@@ -127,10 +128,12 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
 
             else:
                 #x
+                print ("hi")
             
             #Same as above but looking for durations now and numbers of patients to add to the lists
             if current_action == "appointed" or "late arrival" or "patient identified by kiosk":
                 #ignore
+                print ("hi")
             
             elif current_action == "did not attend":
                 number_of_did_not_attends =+ 1
@@ -161,6 +164,7 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
 
             else:
                 #x
+                print("hi")
 
             #can make above more efficient by having a function that takes in what its looking for and produces the value/time
 
@@ -171,10 +175,10 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
 
 
     #To be an overall dataframes of the above lists
-    waiting_df = pd.DataFrame{}
-    number_dict = pd.DataFrame{}
-    duration_dict = pd.DataFrame{}
-    starts_dict = pd.DataFrame{}
+    waiting_df = pd.DataFrame()
+    number_df = pd.DataFrame()
+    duration_df = pd.DataFrame()
+    starts_df = pd.DataFrame()
 
     #adding lists to dataframes above - could turn more efficient !!!!!!!!!!!!!
     waiting_df ["wait_h&w"] = wait_for_Height_and_weight
@@ -207,8 +211,8 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
 #Calculates the number of patients in certain situations
 def calculating_patient_numbers (todays_data, todays_patients):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
     length = len(todays_data)
-    start_time = todays_data.[0].get("date_time")
-    end_time = todays_data.[length-1].get("date_time")
+    start_time = todays_data.self[0].get("date_time")
+    end_time = todays_data.self[length-1].get("date_time")
 
     counter = 0
 
@@ -225,48 +229,48 @@ def calculating_patient_numbers (todays_data, todays_patients):#!!!!!!!!!!!!unfi
     counter_list = []
 
 
-        while (start_time <= end_time):
-            for i in todays_data:
-                current_action = i.[counter].get("action").str().lower()
-                previous_action = i.[counter-1].get("action").str().lower()
-                current_patient = i.[counter].get("unique_identifier").str().lower()
+    while (start_time <= end_time):
+        for i in todays_data:
+            current_action = i.self[counter].get("action").str().lower()
+            previous_action = i.self[counter-1].get("action").str().lower()
+            current_patient = i.self[counter].get("unique_identifier").str().lower()
 
-                #checking for patients arriving and adding to list
-                if current_action == "patient identified by kiosk":
-                    patients_in_clinic = current_patient
+            #checking for patients arriving and adding to list
+            if current_action == "patient identified by kiosk":
+                patients_in_clinic = current_patient
 
-                elif current_action == "in blood room":
-                    patients_in_bloods = current_patient
+            elif current_action == "in blood room":
+                patients_in_bloods = current_patient
 
-                elif current_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
-                    patients_in_consultation = current_patient
+            elif current_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
+                patients_in_consultation = current_patient
 
-                #checking for patients leaving and taking a count
-                elif previous_action == "in blood room":
-                    if current_patient in patients_in_bloods:
-                        patients_in_bloods.remove(current_patient)
-                    
-                    temp = len(patients_in_bloods)
-                    if bloods_counter < temp:
-                        bloods_counter = temp
-
-                elif previous_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
-                    if current_patient in patients_in_consultation:
-                        patients_in_consultation.remove(current_patient)
-                    
-                    temp = len(patients_in_clinic)
-                    if consult_counter < temp:
-                        consult_counter = temp
-
-                elif current_action[8:] == "complete":
-                    if current_patient in patients_in_clinic:
-                        patients_in_clinic.remove(current_patient)
-                    
-                    temp = len(patients_in_clinic)
-                    if clinic_counter < temp:
-                        clinic_counter = temp
+            #checking for patients leaving and taking a count
+            elif previous_action == "in blood room":
+                if current_patient in patients_in_bloods:
+                    patients_in_bloods.remove(current_patient)
                 
-                counter += 1
+                temp = len(patients_in_bloods)
+                if bloods_counter < temp:
+                    bloods_counter = temp
+
+            elif previous_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
+                if current_patient in patients_in_consultation:
+                    patients_in_consultation.remove(current_patient)
+                
+                temp = len(patients_in_clinic)
+                if consult_counter < temp:
+                    consult_counter = temp
+
+            elif current_action[8:] == "complete":
+                if current_patient in patients_in_clinic:
+                    patients_in_clinic.remove(current_patient)
+                
+                temp = len(patients_in_clinic)
+                if clinic_counter < temp:
+                    clinic_counter = temp
+            
+            counter += 1
 
     return(number_list, counter_list)
 
@@ -278,7 +282,7 @@ def calculating_patient_numbers (todays_data, todays_patients):#!!!!!!!!!!!!unfi
 #^calls the function to work out data and gets it back
 def give_date(date_sorted_data_list): #need to edit the function to take in the date when requested !!!!!!!!!1
     temp_val = []
-    temp_val.append(sorted_data_list[0])
+    temp_val.append(date_sorted_data_list[0])
     current_day = temp_val[0].get("date_time")      
     current_day = current_day[:10] #should cut it to just be date
 
@@ -286,7 +290,7 @@ def give_date(date_sorted_data_list): #need to edit the function to take in the 
     current_days_data , current_days_patients = collecting_days_data(sorted_data_list, current_day)
     waiting_list, number_list, duration_list, starts_list = calculating_times (date_sorted_data_list, current_days_data , current_days_patients)
     number_list, counter_list = calculating_patient_numbers(current_days_data, current_days_data) 
-return () # add here!!!!!!!!!!! also could maybe have the function calling taken out !!!!!!!!!!!
+    return () # add here!!!!!!!!!!! also could maybe have the function calling taken out !!!!!!!!!!!
 
 
 
