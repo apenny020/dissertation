@@ -5,6 +5,7 @@ from omni_system.py import ticks
 patients_in_clinic = 0
 def running_model(patient_list):
     while <= ticks:
+        #call omni system functions
         for patient in patient_lsit:
             if patient.arrived = TRUE and patient != i in patients_in_clinic:
                 patients_in_clinic.append(patient)
