@@ -119,3 +119,8 @@ def starts_everything():
 
 ####################################
 
+
+
+#something that keeps track of all patients and 
+#future durations and 
+#future actions for patients in the day
