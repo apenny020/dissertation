@@ -1,4 +1,7 @@
 import time
+from agents import *
+import pandas as pd
+import random
 
 #Holds the state of the patients and other agents and updates their states
 
@@ -7,7 +10,7 @@ import time
 #environment
 #universal 'time' measure
 ticks = 1440 #minutes in a day
-global ticks
+
 
 
 ######################################################
@@ -62,13 +65,15 @@ global ticks
 
 
 
-def appointment_times(start_hour, interval, end_hour){
+def appointment_times(start_hour, interval, end_hour):
     times = []
+    num_appointments = 0
     for hour in range(start_hour, end_hour):
         for minute in range(0, 60, interval):
             times.append('{:02d}:{:02d}'.format(hour, minute))
-    return (times) 
-}
+            num_appointments += 1
+    return (times, num_appointments)
+
 
 def initialise():
     patient_number = 50
@@ -76,16 +81,60 @@ def initialise():
     nurse_number = 3
     clinic_start = 9 #hour of day
     clinic_end = 17 #hour of day
-    #initialise patient dictionary
+    nurse_list = []
+    consultant_list = []
 
+    appointment_times_bloods, num_bloods_appts = appointment_times(9, 15, 17) #28
+    clinic_1_times, num_clinic_1_appts = appointment_times(9, 30, 12) #(6) will give appts from 9 till 12 (non inclusive) in 30min intervals
+    clinic_2_times, num_clinic_2_appts = appointment_times(13, 30, 17) #8
+    clinic_3_times, num_clinic_3_appts = appointment_times(9, 30, 12) #6
     
-    appointment_times_bloods = appointment_times(9, 15, 17)
-    clinic_1_times = appointment_times(9, 30, 12)
-    clinic_2_times = appointment_times(13, 30, 17)
-    clinic_3_times = appointment_times(9, 30, 12)
+
+    for x in range(nurse_number):
+        nurse = initialise_nurse()
+        nurse_list.append(nurse)
+
+    for x in range(dr_number):
+        consultant = initialise_nurse()
+        consultant_list.append(consultant)
+    
+    #initialise patient df: Patient identifier, appointment time bloods, appointment time clinic 1, appointment time clinic 2, current action, waiting for
+    patient_df = pd.DataFrame()
+    patient_df.columns = ["ID", "Bloods_time", "Consultant_1_time", "Consultant_2_time", "current_action", "waiting_for"]
+    duplicate_bloods_times = appointment_times_bloods
+    duplicate_consultant_1_times = clinic_1_times
+    duplicate_consultant_2_times = clinic_2_times
+    duplicate_consultant_3_times = clinic_3_times
+
+    for x in range(patient_number):
+        patient = initialise_patient()
+        temp_list = [patient]
+        #add bloods time (and remove time from list)
+        bloods = bool(random.choice([True, False]))
+        if bloods:
+            #find random time
+            #remove from list
+            print("hi")
+        
+        #add consultant time
+        consultants = bool(random.choice([True, False]))
+        if consultants:
+            consult_number = random.randint(1,2)
+            if consult_number == 1:
+                #find random time
+                #remove from list
+
+            elif consult_number == 2:
+                #find random time
+                #remove from list
+
+
+        #add current action
+        #add what waiting for
 
     
 def starts_everything():
+
 
     #every tick
         #update tick

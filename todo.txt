@@ -32,3 +32,5 @@ for agents.py #PERRY THE PLATYPUS?!
                 -->
                 - do the create()
 - Integrate with omni
+
+-add an environment and how they can intereact with it?

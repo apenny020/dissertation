@@ -22,8 +22,9 @@ class Patient_agent:
         #something to store all the actions it will do?
         self.assigned_consultant = assigned_consultant
         self.appointment_time = appointment_time
+        pass
 
-    def create(self):
+    #def create(self):
         #creates a new agent
 
     #somehow need to initialise multiple patients
@@ -34,7 +35,7 @@ class Patient_agent:
     #check below will run automatically and when they run
 
 
-    def (leave):
+    def leave():
         if patient.current_action != "Appointed" or "Complete":
             if patient.patient_satisfaction <= 0:
                 patient.current_action = "left_clinic"
@@ -42,10 +43,10 @@ class Patient_agent:
                 #update omni system
 
 
-    def (change_action):
+    #def change_action():
         #function about changing action
 
-    def (move_on):
+    #def move_on():
         #moving to next task and update the things, 
         #only if space is free, and when tick time met
         #but need to make sure not two patients advance at once
@@ -87,15 +88,17 @@ def initialise_patient():
 
 def update_patient(patient_list, id): # runs when called by omni system
     patient = patient_list[id-1] #!!!!!!cant do this because some patients might have been remove
-    patient.current_action = 
-    patient.future_action = 
-    patient.duration =
+    patient.current_action = patient.current_action
+    patient.future_action = patient.future_action
+    patient.duration = #
 
 def update_satisfaction(patient_list):
     #needs to run every tick for every patient
     for patient in patient_list():
         #if current action remains unchanged reduce patient_satisfaction by 0.25
         #if current action changes then patient_satisfaction increases by 10?
+        print("hi")
+    pass
 
 
 
@@ -116,28 +119,29 @@ class Nurse_agent:
 
     def create(self):
         #creates an agent
+        pass
 
     def check_for_next_patient():
         #chooses which patient to call in next, if there is
+        pass
 
     #anymore functions?
 
-num_nurses = #randint between 1 and 3 (check number)
+#num_nurses = #randint between 1 and 3 (check number)
 
 def initialise_nurse():
     global nurses
     nurse_list = []
-    counter = 0
-        for i in range(num_nurses):
-            nurse = Nurse_agent()
-            nurse.id = counter
-            nurse.type = #rand choice from bloods, H&W, mixed
-            nurse.current_action = "waiting" #could be calling patients, H&w, waiting, bloods - make sure matches nurse type
-            nurse.task_duration = #omni system and based on current action
-            nurse.patient_treating = #omni system?
 
-            nurse_list.append(nurse)
-            counter += 1
+    nurse = Nurse_agent()
+    nurse.id = counter
+    nurse.type = #rand choice from bloods, H&W, mixed
+    nurse.current_action = "waiting" #could be calling patients, H&w, waiting, bloods - make sure matches nurse type
+    nurse.task_duration = #omni system and based on current action
+    nurse.patient_treating = #omni system?
+
+    nurse_list.append(nurse)
+    return (nurse_list)
 
 def update_nurse(nurse_list, patient_id, nurse_id): #runs when called by omni
     nurse = nurse_list[nurse_id-1]
@@ -164,20 +168,25 @@ class Consultant_agent:
     def check_for_next_patient_to_see():
         #check for which patient is here and closeset to appt time without skipping one
 
-num_consultants = #randint between 1 and 3 (check number)
+#num_consultants = #randint between 1 and 3 (check number)
 
 def initialise_consultant():
     global consultants
     consultant_list = []
-    counter = 0
-        for i in range(num_consultants):
-            consultant = Consultant_agent()
-            consultant.id = counter
-            consultant.current_action = "waiting"
-            consultant.patient_treating = #omnisystem
-            consultant.patients_seeing = #list from omni system - needs to tell or match the patients one too
-            consultant.duration = #omni 
-            consultant.sick = #random chance between TRUE and FALSE
+    
+        
+    consultant = Consultant_agent()
+    consultant.id = counter
+    consultant.current_action = "waiting"
+    consultant.patient_treating = #omnisystem
+    consultant.patients_seeing = #list from omni system - needs to tell or match the patients one too
+    consultant.duration = #omni 
+    consultant.sick = #random chance between TRUE and FALSE
+
+    consultant_list.append(consultant)
+    
+
+    return (consultant_list)
 
 def update_consultant(consultant_list, consultant_id, patient_id): # make sure not called if the consultant is sick
     consultant = consultant_list[consultant_id-1] #might not work if we remove a consutlant if theyre sick
