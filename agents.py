@@ -74,7 +74,7 @@ def initialise_patient():
         patient.id = counter
         patient.patient_satisfaction = #randint() from range 30 - 100 (scale is 0 - 100)
         patient.current_action = "Appointed"
-        paitent.future_action = #gotten from omni system - a function
+        #paitent.future_action = #gotten from omni system - a function
         #patient.duration = #gotten from omni system - need it?
         #(above) this way they can arrive whenever and get called accordingly
         patient.position_in_list = #omnisystem
@@ -82,8 +82,9 @@ def initialise_patient():
         patient.assigned_consultant = #choice between consultants on shift (omni), or none
         patient.appointment_time = #given a time (make sure doesn't clash) or none
 
-        patient_list.append(paitent)
+        patient_list.append(patient)
         counter += 1
+    return (patient)
 
 
 def update_patient(patient_list, id): # runs when called by omni system

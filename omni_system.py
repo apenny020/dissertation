@@ -100,7 +100,7 @@ def initialise():
     
     #initialise patient df: Patient identifier, appointment time bloods, appointment time clinic 1, appointment time clinic 2, current action, waiting for
     patient_df = pd.DataFrame()
-    patient_df.columns = ["ID", "Bloods_time", "Consultant_1_time", "Consultant_2_time", "current_action", "waiting_for"]
+    patient_df.columns = ["ID", "Bloods_time", "Consultant_1_time", "Consultant_2_time", "current_action", "patient_satisfaction"]
     duplicate_bloods_times = appointment_times_bloods
     duplicate_consultant_1_times = clinic_1_times
     duplicate_consultant_2_times = clinic_2_times
@@ -112,25 +112,71 @@ def initialise():
         #add bloods time (and remove time from list)
         bloods = bool(random.choice([True, False]))
         if bloods:
-            #find random time
-            #remove from list
-            print("hi")
+            bloods_appt_time = random.choice(duplicate_bloods_times)
+            temp_list.append(bloods_appt_time)
+        else:
+            temp_list.append("null")
+            
         
         #add consultant time
         consultants = bool(random.choice([True, False]))
         if consultants:
+            #choosing if 0, 1 or 2 consults
             consult_number = random.randint(1,2)
             if consult_number == 1:
-                #find random time
-                #remove from list
-
+                #check if any appts left in list
+                if duplicate_consultant_1_times: #if not empty
+                    appt_time = random.choice(duplicate_consultant_1_times)
+                    duplicate_consultant_1_times.remove(appt_time)
+                elif duplicate_consultant_2_times:
+                    appt_time = random.choice(duplicate_consultant_2_times)
+                    duplicate_consultant_2_times.remove(appt_time)
+                elif duplicate_consultant_3_times:
+                    appt_time = random.choice(duplicate_consultant_3_times)
+                    duplicate_consultant_3_times.remove(appt_time)
+                else:
+                    print("no more appts avaliable")
+                temp_list.append(appt_time)
+                temp_list.append("null")
+                
+            #2 consultations
             elif consult_number == 2:
-                #find random time
-                #remove from list
+                if duplicate_consultant_1_times: #if not empty
+                    appt_time = random.choice(duplicate_consultant_1_times)
+                    duplicate_consultant_1_times.remove(appt_time)
+                    temp_list.append(appt_time)
+                    #get 2nd appt
+                    if duplicate_consultant_2_times:
+                        appt_time = random.choice(duplicate_consultant_2_times)
+                        duplicate_consultant_2_times.remove(appt_time)
+                        temp_list.append(appt_time)
+                    elif duplicate_consultant_3_times:
+                        appt_time = random.choice(duplicate_consultant_3_times)
+                        duplicate_consultant_3_times.remove(appt_time)
+                        temp_list.append(appt_time)
+                    else:
+                        temp_list.append("null")
+                elif duplicate_consultant_2_times:
+                    appt_time = random.choice(duplicate_consultant_2_times)
+                    duplicate_consultant_2_times.remove(appt_time)
+                    temp_list.append(appt_time)
+                    #get 2nd appt
+                    if duplicate_consultant_3_times:
+                        appt_time = random.choice(duplicate_consultant_3_times)
+                        duplicate_consultant_3_times.remove(appt_time)
+                        temp_list.append(appt_time)
+                    else:
+                        temp_list.append("null")
+                else:
+                    temp_list.append("null")
+                    temp_list.append("null")
+        current_action = getattr(patient, "current_action")
+        temp_list.append(current_action)
 
+        patient_satisfaction = getattr(patient, "patient_satisfaction") 
+        temp_list.append(patient_satisfaction)
 
-        #add current action
-        #add what waiting for
+        
 
     
 def starts_everything():
