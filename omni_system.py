@@ -94,17 +94,11 @@ def initialise():
     consultant_2_patients = []
     consultant_3_patients = []
 
-    for x in range(nurse_number):
-        nurse = initialise_nurse(x)
-        nurse_list.append(nurse)
-
-    for x in range(dr_number):
-        consultant = initialise_nurse(x)
-        consultant_list.append(consultant)
+    bloods_patients = []
     
     #initialise patient df: Patient identifier, appointment time bloods, appointment time clinic 1, appointment time clinic 2, current action, waiting for
     patient_df = pd.DataFrame()
-    patient_df.columns = ["ID", "Bloods_time", "Consultant_1_time", "Consultant_2_time", "current_action", "patient_satisfaction"]
+    patient_df.columns = ["ID", "Bloods_time", "Consultant_1_time", "Consultant_2_time", "current_action"]#add satisfaction later
     duplicate_bloods_times = appointment_times_bloods
     duplicate_consultant_1_times = clinic_1_times
     duplicate_consultant_2_times = clinic_2_times
@@ -119,6 +113,7 @@ def initialise():
             bloods_appt_time = random.choice(duplicate_bloods_times)
             temp_list.append(bloods_appt_time)
             setattr(patient, "bloods_appointment_time", appt_time)
+            bloods_patients.append(getattr(patient, "id"))
         else:
             temp_list.append("null")
             
@@ -205,27 +200,47 @@ def initialise():
         current_action = getattr(patient, "current_action")
         temp_list.append(current_action)
 
-        patient_satisfaction = getattr(patient, "patient_satisfaction") 
-        temp_list.append(patient_satisfaction)
+        #patient_satisfaction = getattr(patient, "patient_satisfaction") 
+        #temp_list.append(patient_satisfaction)
+    
+    for x in range(nurse_number):
+        nurse = initialise_nurse(x)
+        nurse_list.append(nurse)
+        #need to update nurse attributes
 
-        
-        
+    for x in range(dr_number):
+        consultant = initialise_nurse(x)
+        consultant_list.append(consultant)
+        #need to update consultant attributes
+        if x == 0:
+            setattr(consultant, "patients_seeing", consultant_1_patients)
+        elif x == 1:
+            setattr(consultant, "patients_seeing", consultant_2_patients)
+        elif x == 2:
+            setattr(consultant, "patients_seeing", consultant_3_patients)
+
+    return(patient_df, nurse_list, consultant_list, bloods_patients)     
 
     
 def starts_everything():
+    tick = 0 # each minute
+    
+    #initialise the day
+    patient_df, nurse_list, consultant_list, bloods_patients = initialise()
+    patients_arrived = []
+
+    while tick <= 1440: #24 hours
+        if (tick > 540 and tick < 1020): #9am & 5pm
+            #check if patient has arrived (also have to develop function for when patient decides to arrive)
+            #Look for who has appts (currently 1 person could have 3 9ams, gotta change this)
+            #if dr is free, put through patient (if they have arrived)(need to develop function for choosign which patient to go through)
+            #if nurse is free put through patient (if they have arrived)(need to develop function for choosign which patient to go through)
+            #reduce durations tick left of appts
+            #later do satisfaction too
+            
 
 
-    #every tick
-        #update tick
-        #update nurses
-        #update drs
-        #update patients inc patient satisfaction
-        #check if nurse free
-        #check if dr free
-        #check for patients that could be called in
-        #update patients
-        #update patient dictionary
-    pass
+    
     
 
 ###########################

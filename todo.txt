@@ -34,3 +34,17 @@ for agents.py #PERRY THE PLATYPUS?!
 - Integrate with omni
 
 -add an environment and how they can intereact with it?
+
+
+
+#######################################
+Do main running function
+Do update patient function
+Do patient function for when they choose to arrive
+Do check for next patient function (nurses)
+Do update nurses
+Do check which next patient to see (drs)
+Do update consultant
+Change appt choosing to make sure doesn't duplicate times
+
+Check if an agent based model needs to allow for agents to be able to interact with environment

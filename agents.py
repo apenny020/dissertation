@@ -3,7 +3,8 @@ import random
 #Patient agent
 #attributes of: unique identifier, current state, patient satisfaction score
 class Patient_agent:
-    def __init__(self, id, patient_satisfaction, next_action, current_action, position_in_list, arrived, assigned_consultant, bloods_appointment_time, consultant_1_appointment_time, consultant_2_appointment_time):
+    def __init__(self, id,  next_action, current_action, position_in_list, arrived, assigned_consultant, bloods_appointment_time, consultant_1_appointment_time, consultant_2_appointment_time):
+        #add satisafaction
         """
         id: unique id of patient
         current_day: current day count that is being modelled
@@ -15,7 +16,7 @@ class Patient_agent:
         self.id = id
         #self.character = character
         #self.current_day = current_day
-        self.patient_satisfaction = patient_satisfaction
+        #self.patient_satisfaction = patient_satisfaction
         self.next_action = next_action
         self.current_action = current_action
         self.arrived = arrived
@@ -38,11 +39,11 @@ class Patient_agent:
 
     #check below will run automatically and when they run
 
-
-    def leave():
-        if patient.current_action != "Appointed" or "Complete":
-            if patient.patient_satisfaction <= 0:
-                patient.current_action = "left_clinic"
+    #add later
+    #def leave():
+     #   if patient.current_action != "Appointed" or "Complete":
+      #      if patient.patient_satisfaction <= 0:
+       #         patient.current_action = "left_clinic"
                 #update the patient in clinic to 0
                 #update omni system
 
@@ -61,24 +62,26 @@ class Patient_agent:
 
 #might need to go in main
 #initialise environemtal stuff
-pop_size = #GET THIS FROM PROBABILITIES - patient population size for the day
-clinic_pop_size = #GET THIS FROM PROBABILITIES - patient population inside the clinic at any one time - will this change for a day or is this a max????
-max_blood_room = 3 #this is a constant of the max patients a blood room can ever have
+#pop_size = #GET THIS FROM PROBABILITIES - patient population size for the day
+#clinic_pop_size = #GET THIS FROM PROBABILITIES - patient population inside the clinic at any one time - will this change for a day or is this a max????
+#max_blood_room = 3 #this is a constant of the max patients a blood room can ever have
 #PUT ANY OTHER ENVIRONMENT INSTATNTIATES HERE
 
-patient_list = [Patient_agent() for i in range(pop_size)]
+#patient_list = [Patient_agent() for i in range(pop_size)]
 #INSTANTIATE THE PATIENTS HERE WITH THERE INFORMATION
 
 def initialise_patient(counter):
     global patients
     #patient_list = [] #not needed
     
-    patient_satisfaction = random.randint(30, 100) #(scale is 0 - 100)
+    #patient_satisfaction = random.randint(30, 100) #(scale is 0 - 100)
     id = counter
     current_action = "Appointed"
 
     #need to give all the stuffs
-    patient = Patient_agent(id, patient_satisfaction, "unknown", current_action, 0, "unknown", "unknown", "unknown", "unknown", "unkown")
+    patient = Patient_agent(id, "unknown", current_action, 0, "unknown", "unknown", "unknown", "unknown", "unkown")
+
+    #add satisfaction
 
     #paitent.future_action = #gotten from omni system - a function
     #patient.duration = #gotten from omni system - need it?
@@ -90,7 +93,7 @@ def initialise_patient(counter):
     #patient.appointment_time = #given a time (make sure doesn't clash) or none
 
     #patient_list.append(patient)
-    counter += 1
+    #counter += 1
     return (patient)
 
 
@@ -100,13 +103,14 @@ def update_patient(patient_list, id): # runs when called by omni system
     patient.future_action = patient.future_action
     patient.duration = #
 
-def update_satisfaction(patient_list):
-    #needs to run every tick for every patient
-    for patient in patient_list():
-        #if current action remains unchanged reduce patient_satisfaction by 0.25
-        #if current action changes then patient_satisfaction increases by 10?
-        print("hi")
-    pass
+#add later
+#def update_satisfaction(patient_list):
+#    #needs to run every tick for every patient
+#    for patient in patient_list():
+#        #if current action remains unchanged reduce patient_satisfaction by 0.25
+#        #if current action changes then patient_satisfaction increases by 10?
+#        print("hi")
+#    pass
 
 
 
@@ -125,9 +129,9 @@ class Nurse_agent:
         self.task_duration = task_duration
         self.patient_treating = patient_treating
 
-    def create(self):
+    #def create(self):
         #creates an agent
-        pass
+    #    pass
 
     def check_for_next_patient():
         #chooses which patient to call in next, if there is
@@ -170,7 +174,7 @@ class Consultant_agent:
         self.duration = duration #how logn with current patient
         self.sick = sick #if the consultant calls in sick or not
 
-    def create(self):
+    #def create(self):
         #creates agent
 
     def check_for_next_patient_to_see():
@@ -207,5 +211,5 @@ def update_consultant(consultant_list, consultant_id, patient_id): # make sure n
 
 #environment
 #universal 'time' measure
-ticks = 1440 #minutes in a day
+#ticks = 1440 #minutes in a day
 
