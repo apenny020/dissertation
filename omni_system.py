@@ -84,18 +84,22 @@ def initialise():
     nurse_list = []
     consultant_list = []
 
+    #update below to be automated and also to generate based on dr number
     appointment_times_bloods, num_bloods_appts = appointment_times(9, 15, 17) #28
     clinic_1_times, num_clinic_1_appts = appointment_times(9, 30, 12) #(6) will give appts from 9 till 12 (non inclusive) in 30min intervals
     clinic_2_times, num_clinic_2_appts = appointment_times(13, 30, 17) #8
     clinic_3_times, num_clinic_3_appts = appointment_times(9, 30, 12) #6
-    
+
+    consultant_1_patients = []
+    consultant_2_patients = []
+    consultant_3_patients = []
 
     for x in range(nurse_number):
-        nurse = initialise_nurse()
+        nurse = initialise_nurse(x)
         nurse_list.append(nurse)
 
     for x in range(dr_number):
-        consultant = initialise_nurse()
+        consultant = initialise_nurse(x)
         consultant_list.append(consultant)
     
     #initialise patient df: Patient identifier, appointment time bloods, appointment time clinic 1, appointment time clinic 2, current action, waiting for
@@ -107,13 +111,14 @@ def initialise():
     duplicate_consultant_3_times = clinic_3_times
 
     for x in range(patient_number):
-        patient = initialise_patient()
+        patient = initialise_patient(x)
         temp_list = [patient]
         #add bloods time (and remove time from list)
         bloods = bool(random.choice([True, False]))
         if bloods:
             bloods_appt_time = random.choice(duplicate_bloods_times)
             temp_list.append(bloods_appt_time)
+            setattr(patient, "bloods_appointment_time", appt_time)
         else:
             temp_list.append("null")
             
@@ -128,16 +133,26 @@ def initialise():
                 if duplicate_consultant_1_times: #if not empty
                     appt_time = random.choice(duplicate_consultant_1_times)
                     duplicate_consultant_1_times.remove(appt_time)
+                    dr = "1"
+                    setattr(patient, "assigned_consultant", dr)
+                    consultant_1_patients.append(getattr(patient, "id"))
                 elif duplicate_consultant_2_times:
                     appt_time = random.choice(duplicate_consultant_2_times)
                     duplicate_consultant_2_times.remove(appt_time)
+                    dr = "2"
+                    setattr(patient, "assigned_consultant", dr)
+                    consultant_2_patients.append(getattr(patient, "id"))
                 elif duplicate_consultant_3_times:
                     appt_time = random.choice(duplicate_consultant_3_times)
                     duplicate_consultant_3_times.remove(appt_time)
+                    dr = "3"
+                    setattr(patient, "assigned_consultant", dr)
+                    consultant_3_patients.append(getattr(patient, "id"))
                 else:
                     print("no more appts avaliable")
                 temp_list.append(appt_time)
                 temp_list.append("null")
+                setattr(patient, "consultant_1_appointment_time", appt_time)
                 
             #2 consultations
             elif consult_number == 2:
@@ -145,37 +160,55 @@ def initialise():
                     appt_time = random.choice(duplicate_consultant_1_times)
                     duplicate_consultant_1_times.remove(appt_time)
                     temp_list.append(appt_time)
+                    setattr(patient, "consultant_1_appointment_time", appt_time)
+                    consultant_1_patients.append(getattr(patient, "id"))
                     #get 2nd appt
                     if duplicate_consultant_2_times:
                         appt_time = random.choice(duplicate_consultant_2_times)
                         duplicate_consultant_2_times.remove(appt_time)
                         temp_list.append(appt_time)
+                        setattr(patient, "consultant_2_appointment_time", appt_time)
+                        dr = "1,2"
+                        setattr(patient, "assigned_consultant", dr)
+                        consultant_2_patients.append(getattr(patient, "id"))
                     elif duplicate_consultant_3_times:
                         appt_time = random.choice(duplicate_consultant_3_times)
                         duplicate_consultant_3_times.remove(appt_time)
                         temp_list.append(appt_time)
+                        setattr(patient, "consultant_2_appointment_time", appt_time)
+                        dr = "1,3"
+                        setattr(patient, "assigned_consultant", dr)
+                        consultant_3_patients.append(getattr(patient, "id"))
                     else:
                         temp_list.append("null")
                 elif duplicate_consultant_2_times:
                     appt_time = random.choice(duplicate_consultant_2_times)
                     duplicate_consultant_2_times.remove(appt_time)
                     temp_list.append(appt_time)
+                    setattr(patient, "consultant_1_appointment_time", appt_time)
+                    consultant_2_patients.append(getattr(patient, "id"))
                     #get 2nd appt
                     if duplicate_consultant_3_times:
                         appt_time = random.choice(duplicate_consultant_3_times)
                         duplicate_consultant_3_times.remove(appt_time)
                         temp_list.append(appt_time)
+                        setattr(patient, "consultant_2_appointment_time", appt_time)
+                        dr = "2,3"
+                        setattr(patient, "assigned_consultant", dr)
+                        consultant_3_patients.append(getattr(patient, "id"))
                     else:
                         temp_list.append("null")
                 else:
                     temp_list.append("null")
                     temp_list.append("null")
+
         current_action = getattr(patient, "current_action")
         temp_list.append(current_action)
 
         patient_satisfaction = getattr(patient, "patient_satisfaction") 
         temp_list.append(patient_satisfaction)
 
+        
         
 
     
