@@ -38,14 +38,10 @@ for agents.py #PERRY THE PLATYPUS?!
 
 
 #######################################
-Do main running function
-Do update patient function
 Do patient function for when they choose to arrive
-Do check for next patient function (nurses)
-Do update nurses
-Do check which next patient to see (drs)
-Do update consultant
 Change appt choosing to make sure doesn't duplicate times
+Implement tests
+Implement some form of data capture
 
 Check if an agent based model needs to allow for agents to be able to interact with environment
 Compare ABM to modeeling code

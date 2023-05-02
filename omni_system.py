@@ -280,8 +280,17 @@ def starts_everything():
             
             #check which patients are here
             for p in total_patients:
-                if getattr(p, "arrived", True) and (p not in patients_arrived):
+                if getattr(p, "arrived") and (p not in patients_arrived):
                     patients_arrived.append(p)
+                elif getattr(p, "arrived") == False:
+                    appt_time = max(getattr(p, "bloods_appointment_time"),getattr(p, "consultant_1_appointment_time"))
+                    if tick+10 >= appt_time:
+                        setattr(p, "arrived", True)
+                        setattr(p, "current_action", "waiting")
+
+                        row_num = patient_df[patient_df["Patient"] == p].index
+                        patient_df[row_num]["current_action"] = "waiting" #row then column
+                        
             
             #check if nurses are free
             #add later
