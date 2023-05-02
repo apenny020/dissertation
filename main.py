@@ -1,14 +1,10 @@
-from omni_system.py import ticks
+from omni_system import *
 
 #run the model here
 
-patients_in_clinic = 0
-def running_model(patient_list):
-    while <= ticks:
-        #call omni system functions
-        for patient in patient_lsit:
-            if patient.arrived = TRUE and patient != i in patients_in_clinic:
-                patients_in_clinic.append(patient)
+print("going to start")
+starts_everything()
+print("completed")
         
                 
 
@@ -25,8 +21,5 @@ def running_model(patient_list):
 #AVERAGE TOTAL WAIT TIMES
 #DURATIONS TOO?
 
-def count_day_data(XXXXXXX)
-    #maths here?
-    return(XXXXXXX)
 
 

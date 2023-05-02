@@ -81,7 +81,7 @@ def initialise_patient(counter):
     current_action = "Appointed"
 
     #need to give all the stuffs
-    patient = Patient_agent(id, "unknown", current_action, 0, "unknown", "unknown", "unknown", "unknown", "unkown", 0)
+    patient = Patient_agent(id, "unknown", current_action, 0, False, "unknown", "unknown", "unknown", "unkown", 0)
 
     #add satisfaction
 
@@ -136,9 +136,9 @@ class Nurse_agent:
         #creates an agent
     #    pass
 
-    def check_for_next_patient():
+    #def check_for_next_patient():
         #chooses which patient to call in next, if there is
-        pass
+    #    pass
 
     #anymore functions?
 
@@ -154,7 +154,7 @@ def initialise_nurse(counter):
     current_action = "waiting" #could be calling patients, H&w, waiting, bloods - make sure matches nurse type
     #task_duration = #omni system and based on current action
     #patient_treating = #omni system?
-    nurse = Nurse_agent(id, type, current_action, "unknown", "uknown")
+    nurse = Nurse_agent(id, current_action, "unknown", "uknown")
 
     #nurse_list.append(nurse)
     return (nurse)
