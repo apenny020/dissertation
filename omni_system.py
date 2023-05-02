@@ -64,7 +64,8 @@ ticks = 1440 #minutes in a day
 
 
 
-
+"""
+use when developed
 def appointment_times(start_hour, interval, end_hour):
     times = []
     num_appointments = 0
@@ -73,20 +74,29 @@ def appointment_times(start_hour, interval, end_hour):
             times.append('{:02d}:{:02d}'.format(hour, minute))
             num_appointments += 1
     return (times, num_appointments)
+"""
 
+def appointment_times(start_hour, interval, end_hour): 
+    times = []
+    appt = start_hour
+    for minute in range(start_hour, end_hour, interval):
+        appt = appt + interval
+        times.append(appt)
+    return(times)
 
 def initialise():
     patient_number = 50
     dr_number = 1
     nurse_number = 3
-    clinic_start = 9 #hour of day
-    clinic_end = 17 #hour of day
+    clinic_start = 9 #hour of day (540 ticks)
+    clinic_end = 17 #hour of day (1020 ticks)
     nurse_list = []
     consultant_list = []
 
     #update below to be automated and also to generate based on dr number
-    appointment_times_bloods, num_bloods_appts = appointment_times(9, 15, 17) #28
-    clinic_1_times, num_clinic_1_appts = appointment_times(9, 30, 17) #(6) will give appts from 9 till 12 (non inclusive) in 30min intervals
+    appointment_times_bloods, num_bloods_appts = appointment_times(540, 15, 1020) #28
+    clinic_1_times, num_clinic_1_appts = appointment_times(540, 30, 1020) #(6) will give appts from 9 till 12 (non inclusive) in 30min intervals
+    
     #clinic_2_times, num_clinic_2_appts = appointment_times(13, 30, 17) #8
     #clinic_3_times, num_clinic_3_appts = appointment_times(9, 30, 12) #6
 
@@ -257,13 +267,22 @@ def starts_everything():
     patients_arrived = []
     #hw_nurses = []
     #blood_nurses = []
+    #create a list of all the patients in the dataframe (ie all patients today)
     total_patients = patient_df["Patient"]
 
+    #create a list from dataframe for consultants
+    consult_patients = zip(patient_df.Patients,patient_df.Consultant_1_time)
+    consult_patients = dict(consult_patients)
+    consult_patients = sorted(consult_patients)
 
     while tick <= 1440: #24 hours
         if (tick > 540 and tick < 1020): #9am & 5pm
-            #create a list of all the patients in the dataframe (ie all patients today)
-        
+            
+            #check which patients are here
+            for p in total_patients:
+                if getattr(p, "arrived", True) and (p not in patients_arrived):
+                    patients_arrived.append(p)
+            
             #check if nurses are free
             #add later
             for n in nurse_list:
@@ -309,47 +328,59 @@ def starts_everything():
 
 
             #check  if dr free
+            #need to change to choose one closest to appointment time
+            #needs to change when data used
             for c in consultant_list:
-                patient_dict = longest_waiting_patient(patient_dict)
-                if (getattr(c, "current_action") == "waiting"):
-                    for p in patient_dict:
-                        if getattr(p, "current_action") == "waiting":
-                            setattr(p, "current_action", "consulting")
-                            setattr(c, "current_action", "treating")
-                            setattr(c, "task_duration", 30)#minutes
-                            setattr(c, "patient_treating", getattr(p, "id"))
+                for p in consult_patients:
+                    if getattr(p, "arrived") == True:
+                        if (getattr(c, "current_action") == "waiting"):
+                            if getattr(p, "current_action") == "waiting":
+                                setattr(p, "current_action", "consulting")
+                                setattr(c, "current_action", "treating")
+                                setattr(c, "task_duration", 30)#minutes
+                                setattr(c, "patient_treating", getattr(p, "id"))
 
-                            #update dataframe to change consult time of patient to complete:
-                            row_num = patient_df[patient_df["Patient"] == p].index
-                            patient_df[row_num]["Consultant_1_time"] = "complete" #row then column
-                            patient_df[row_num]["current_action"] = "consult"
-                    break
-                elif (getattr(c, "current_action") == "treating") and (getattr(c, "task_duration") != 0):
-                    duration = getattr(n, "task_duration")
-                    duration -= 1
-                    setattr(c, "task_duration", duration)#minutes
-                
-                elif (getattr(c, "current_action") == "treating") and (getattr(c, "task_duration") == 0):
-                    #finished and update
-                    patient_id = getattr(n, "patient_treating")
-                    setattr(c, "current_action", "waiting")
-                    setattr(c, "patient_treating", "unknown")
-                    #update patient 
-                    #loop through total_patients and match the ID
-                    for p in total_patients:
-                        if getattr(p, "id") == patient_id:
-                            setattr(p, "current_action", "waiting")
-                            setattr(p, "bloods_appointment_time", "complete")
+                                #update dataframe to change consult time of patient to complete:
+                                row_num = patient_df[patient_df["Patient"] == p].index
+                                patient_df[row_num]["Consultant_1_time"] = "complete" #row then column
+                                patient_df[row_num]["current_action"] = "consult"
 
-
-
-
+                        elif (getattr(c, "current_action") == "treating") and (getattr(c, "task_duration") != 0):
+                            duration = getattr(n, "task_duration")
+                            duration -= 1
+                            setattr(c, "task_duration", duration)#minutes
+                        
+                        elif (getattr(c, "current_action") == "treating") and (getattr(c, "task_duration") == 0):
+                            #finished and update
+                            patient_id = getattr(n, "patient_treating")
+                            setattr(c, "current_action", "waiting")
+                            setattr(c, "patient_treating", "unknown")
+                            #update patient 
+                            #loop through total_patients and match the ID
+                            for p in total_patients:
+                                if getattr(p, "id") == patient_id:
+                                    setattr(p, "current_action", "waiting")
+                                    setattr(p, "bloods_appointment_time", "complete")
 
             #update patients
             for p in total_patients:
-                waiting = getattr(p, "time_waiting")
-                waiting += 1
-                setattr(p, "time_waiting", waiting)
+
+                if getattr(p, "current_action") == "waiting":
+                    #increase waiting
+                    waiting = getattr(p, "time_waiting")
+                    waiting += 1
+                    setattr(p, "time_waiting", waiting)
+                if (getattr(p, "bloods_appointment_time") == "complete") and (getattr(p, "consultant_1_appointment_time") == "complete"):
+                    #finished
+                    setattr(p, "current_action", "finished")
+                    setattr(p, "arrived", False)
+
+                    patients_arrived.remove(p)
+
+                    row_num = patient_df[patient_df["Patient"] == p].index
+                    patient_df[row_num]["current_action"] = "finished"
+
+
 
 
 
