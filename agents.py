@@ -3,7 +3,7 @@ import random
 #Patient agent
 #attributes of: unique identifier, current state, patient satisfaction score
 class Patient_agent:
-    def __init__(self, id,  next_action, current_action, position_in_list, arrived, assigned_consultant, bloods_appointment_time, consultant_1_appointment_time, consultant_2_appointment_time):
+    def __init__(self, id,  next_action, current_action, position_in_list, arrived, assigned_consultant, bloods_appointment_time, consultant_1_appointment_time, consultant_2_appointment_time, time_waiting):
         #add satisafaction
         """
         id: unique id of patient
@@ -27,6 +27,7 @@ class Patient_agent:
         self.bloods_appointment_time = bloods_appointment_time
         self.consultant_1_appointment_time = consultant_1_appointment_time
         self.consultant_2_appointment_time = consultant_2_appointment_time
+        self.time_waiting = time_waiting
         pass
 
     #def create(self):
@@ -79,7 +80,7 @@ def initialise_patient(counter):
     current_action = "Appointed"
 
     #need to give all the stuffs
-    patient = Patient_agent(id, "unknown", current_action, 0, "unknown", "unknown", "unknown", "unknown", "unkown")
+    patient = Patient_agent(id, "unknown", current_action, 0, "unknown", "unknown", "unknown", "unknown", "unkown", 0)
 
     #add satisfaction
 
@@ -96,13 +97,14 @@ def initialise_patient(counter):
     #counter += 1
     return (patient)
 
-
+"""
 def update_patient(patient_list, id): # runs when called by omni system
     patient = patient_list[id-1] #!!!!!!cant do this because some patients might have been remove
     patient.current_action = patient.current_action
     patient.future_action = patient.future_action
     patient.duration = #
-
+"""
+    
 #add later
 #def update_satisfaction(patient_list):
 #    #needs to run every tick for every patient
@@ -121,9 +123,9 @@ def update_patient(patient_list, id): # runs when called by omni system
 #attributes of: type of nurse, unique identifier?, action doing/state
 
 class Nurse_agent:
-    def __init__(self, id, type, current_action, task_duration, patient_treating):
+    def __init__(self, id, current_action, task_duration, patient_treating):
         self.id = id
-        self.type = type #bloods only, h&w only, mixed
+        #add later #self.type = type #bloods only, h&w only, mixed
         self.current_action = current_action
         #self.next_action = next_action
         self.task_duration = task_duration
@@ -146,7 +148,8 @@ def initialise_nurse(counter):
     #nurse_list = [] #not needed?
 
     id = counter
-    type = random.choice(["bloods", "H&W", "mixed"]) #rand choice from bloods, H&W, mixed
+    #change to make sure not all are h&w
+    #add later #type = random.choice(["bloods", "H&W"]) #rand choice from bloods, H&W (if bloods then can do both)
     current_action = "waiting" #could be calling patients, H&w, waiting, bloods - make sure matches nurse type
     #task_duration = #omni system and based on current action
     #patient_treating = #omni system?
@@ -154,13 +157,13 @@ def initialise_nurse(counter):
 
     #nurse_list.append(nurse)
     return (nurse)
-
+"""
 def update_nurse(nurse_list, patient_id, nurse_id): #runs when called by omni
     nurse = nurse_list[nurse_id-1]
     nurse.current_action = #omni
     nurse.task_duration = #omni
     nurse.patient_treating = patient_id
-
+"""
 
 #Consultant agent 
 #attributes of: unique identifier, action doing/state
@@ -177,7 +180,7 @@ class Consultant_agent:
     #def create(self):
         #creates agent
 
-    def check_for_next_patient_to_see():
+    #def check_for_next_patient_to_see():
         #check for which patient is here and closeset to appt time without skipping one
 
 #num_consultants = #randint between 1 and 3 (check number)
@@ -197,14 +200,14 @@ def initialise_consultant(counter):
 
     #consultant_list.append(consultant)
     return (consultant)
-
+"""
 def update_consultant(consultant_list, consultant_id, patient_id): # make sure not called if the consultant is sick
     consultant = consultant_list[consultant_id-1] #might not work if we remove a consutlant if theyre sick
     consultant.current_action = #omni
     consultant.patient_treating = patient_id #append to remove from list after seen
     consultant.duration = #omni
     consultant.patients_seeing = #updated to remove patient_id 
-
+"""
 
 #Pathfinder
 #Gets updated with informatin, tells nurses and consultatn who is next 
