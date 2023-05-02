@@ -84,7 +84,7 @@ def appointment_times(start_hour, interval, end_hour):
         times.append(appt)
     return(times)
 
-def initialise():
+def initialise(data_capture_df):
     patient_number = 50
     dr_number = 1
     nurse_number = 3
@@ -120,6 +120,11 @@ def initialise():
         patient = initialise_patient(x)
         temp_list = [patient]
         temp_list.append(getattr(patient, "id"))
+        
+
+        data_capture_df[x]["Patient"] = patient
+        data_capture_df[x]["ID"] = getattr(patient, "id")
+
         #add bloods time (and remove time from list)
         bloods = bool(random.choice([True, False]))
         if bloods:
@@ -127,8 +132,13 @@ def initialise():
             temp_list.append(bloods_appt_time)
             setattr(patient, "bloods_appointment_time", appt_time)
             bloods_patients.append(getattr(patient, "id"))
+
+            data_capture_df[x]["Bloods_scheduled"] = appt_time
+
         else:
             temp_list.append("null")
+            
+            data_capture_df[x]["Bloods_scheduled"] = "null"
             
         
         #add consultant time
@@ -140,10 +150,16 @@ def initialise():
                 dr = "1"
                 setattr(patient, "assigned_consultant", dr)
                 consultant_1_patients.append(getattr(patient, "id"))
+
+                data_capture_df[x]["Consultant_scheduled"] = appt_time
+
             else:
-                    temp_list.append("null")
+                temp_list.append("null")
+                data_capture_df[x]["Consultant_scheduled"] = "null"
         else: 
             temp_list.append("null")
+            data_capture_df[x]["Consultant_scheduled"] = "null"
+            
             """
             #choosing if 0, 1 or 2 consults
             consult_number = random.randint(1,2)
@@ -247,7 +263,7 @@ def initialise():
         elif x == 2:
             setattr(consultant, "patients_seeing", consultant_3_patients)
 
-    return(patient_df, nurse_list, consultant_list, bloods_patients)     
+    return(patient_df, nurse_list, consultant_list, bloods_patients, data_capture_df)     
 
 
 def longest_waiting_patient(total_patients):
@@ -262,8 +278,11 @@ def longest_waiting_patient(total_patients):
 def starts_everything():
     tick = 0 # each minute
     
+    data_capture_df = pd.DataFrame()
+    data_capture_df.columns = ["Patient", "ID", "Bloods_scheduled", "Bloods_seen", "Consultant_scheduled", "Consultant_seen", "arrival_time", "exit_time"]#add wait time
+    
     #initialise the day
-    patient_df, nurse_list, consultant_list, bloods_patients = initialise()
+    patient_df, nurse_list, consultant_list, bloods_patients, data_capture = initialise(data_capture_df)
     patients_arrived = []
     #hw_nurses = []
     #blood_nurses = []
@@ -290,6 +309,9 @@ def starts_everything():
 
                         row_num = patient_df[patient_df["Patient"] == p].index
                         patient_df[row_num]["current_action"] = "waiting" #row then column
+
+                        row_num = data_capture[patient_df["Patient"] == p].index
+                        data_capture[row_num]["exit_time"] = tick
                         
             
             #check if nurses are free
@@ -301,7 +323,7 @@ def starts_everything():
             #        blood_nurses.append(n)
 
                 #get list of patients who have been waiting the longest
-                patient_dict = longest_waiting_patient(patient_dict)
+                patient_dict = longest_waiting_patient(bloods_patients)
                 
                 if (getattr(n, "current_action") == "waiting"):
                     for p in patient_dict:
@@ -316,6 +338,9 @@ def starts_everything():
                             row_num = patient_df[patient_df["Patient"] == p].index
                             patient_df[row_num]["Bloods_time"] = "complete" #row then column
                             patient_df[row_num]["current_action"] = "bloods"
+
+                            row_num = data_capture[patient_df["Patient"] == p].index
+                            data_capture[row_num]["Bloods_seen"] = tick
 
                         break #breaks out of for loop because treating patient
                 elif (getattr(n, "current_action") == "treating") and (getattr(n, "task_duration") != 0):
@@ -354,6 +379,9 @@ def starts_everything():
                                 patient_df[row_num]["Consultant_1_time"] = "complete" #row then column
                                 patient_df[row_num]["current_action"] = "consult"
 
+                                row_num = data_capture[patient_df["Patient"] == p].index
+                                data_capture[row_num]["Consultant_seen"] = tick
+
                         elif (getattr(c, "current_action") == "treating") and (getattr(c, "task_duration") != 0):
                             duration = getattr(n, "task_duration")
                             duration -= 1
@@ -373,12 +401,12 @@ def starts_everything():
 
             #update patients
             for p in total_patients:
-
                 if getattr(p, "current_action") == "waiting":
                     #increase waiting
                     waiting = getattr(p, "time_waiting")
                     waiting += 1
                     setattr(p, "time_waiting", waiting)
+
                 if (getattr(p, "bloods_appointment_time") == "complete") and (getattr(p, "consultant_1_appointment_time") == "complete"):
                     #finished
                     setattr(p, "current_action", "finished")
@@ -389,21 +417,18 @@ def starts_everything():
                     row_num = patient_df[patient_df["Patient"] == p].index
                     patient_df[row_num]["current_action"] = "finished"
 
+                    row_num = data_capture[patient_df["Patient"] == p].index
+                    data_capture[row_num]["exit_time"] = tick
+
+    print ("data capture")
+    print(data_capture)
 
 
 
-
-                #go through and update each patients attributes
-                print("hi")
+    
 
 
                     
-
-
-
-                    
-
-
 
 
 

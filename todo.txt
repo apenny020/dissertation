@@ -38,10 +38,8 @@ for agents.py #PERRY THE PLATYPUS?!
 
 
 #######################################
-Do patient function for when they choose to arrive
 Change appt choosing to make sure doesn't duplicate times
 Implement tests
-Implement some form of data capture
 
 Check if an agent based model needs to allow for agents to be able to interact with environment
 Compare ABM to modeeling code
