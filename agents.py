@@ -3,8 +3,8 @@ import random
 #Patient agent
 #attributes of: unique identifier, current state, patient satisfaction score
 class Patient_agent:
-    def __init__(self, id,  next_action, current_action, position_in_list, arrived, assigned_consultant, bloods_appointment_time, consultant_1_appointment_time, consultant_2_appointment_time, time_waiting, hw):
-        #add satisafaction
+    def __init__(self, id,  next_action, current_action, position_in_list, arrived, assigned_consultant, bloods_appointment_time, consultant_1_appointment_time, consultant_2_appointment_time, time_waiting):
+        #add satisafaction, and hw
         """
         id: unique id of patient
         current_day: current day count that is being modelled
@@ -28,7 +28,7 @@ class Patient_agent:
         self.consultant_1_appointment_time = consultant_1_appointment_time
         self.consultant_2_appointment_time = consultant_2_appointment_time
         self.time_waiting = time_waiting
-        self.hw = hw #heigght and weight
+        #self.hw = hw #heigght and weight
         pass
 
     #def create(self):
@@ -81,7 +81,7 @@ def initialise_patient(counter):
     current_action = "Appointed"
 
     #need to give all the stuffs
-    patient = Patient_agent(id, "unknown", current_action, 0, "unknown", "unknown", "unknown", "unknown", "unkown", 0, "waiting")
+    patient = Patient_agent(id, "unknown", current_action, 0, "unknown", "unknown", "unknown", "unknown", "unkown", 0)
 
     #add satisfaction
 
