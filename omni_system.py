@@ -300,7 +300,12 @@ def starts_everything():
                     patient_id = getattr(n, "patient_treating")
                     setattr(n, "current_action", "waiting")
                     setattr(n, "patient_treating", "unknown")
-                    #update patient too!!!!
+                    #update patient 
+                    #loop through total_patients and match the ID
+                    for p in total_patients:
+                        if getattr(p, "id") == patient_id:
+                            setattr(p, "current_action", "waiting")
+                            setattr(p, "bloods_appointment_time", "complete")
 
 
             #check  if dr free
@@ -329,7 +334,12 @@ def starts_everything():
                     patient_id = getattr(n, "patient_treating")
                     setattr(c, "current_action", "waiting")
                     setattr(c, "patient_treating", "unknown")
-                    #update patient too!!!!
+                    #update patient 
+                    #loop through total_patients and match the ID
+                    for p in total_patients:
+                        if getattr(p, "id") == patient_id:
+                            setattr(p, "current_action", "waiting")
+                            setattr(p, "bloods_appointment_time", "complete")
 
 
 
