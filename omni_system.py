@@ -389,6 +389,7 @@ def starts_everything():
                             setattr(p, "bloods_appointment_time", "complete")
                             row_num = patient_df[patient_df["Patient"] == p].index.to_numpy()
                             row_num = int(row_num)
+                            patient_df.at[row_num,"current_action"] = "waiting" #row then column
                             patient_df.at[row_num,"Bloods_time"] = "complete" #row then column
 
 
@@ -435,6 +436,7 @@ def starts_everything():
                                     row_num = patient_df[patient_df["Patient"] == p].index.to_numpy()
                                     row_num = int(row_num)
                                     patient_df.at[row_num,"Consultant_1_time"] = "complete" #row then column
+                                    patient_df.at[row_num,"current_action"] = "waiting" #row then column
                                     #print(getattr(p, "current_action"))
                                     #print("hi")
 
