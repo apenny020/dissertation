@@ -3,7 +3,7 @@ import random
 #Patient agent
 #attributes of: unique identifier, current state, patient satisfaction score
 class Patient_agent:
-    def __init__(self, id,  next_action, current_action, position_in_list, arrived, assigned_consultant, bloods_appointment_time, consultant_1_appointment_time, consultant_2_appointment_time, time_waiting):
+    def __init__(self, id,  next_action, current_action, finished, arrived, assigned_consultant, bloods_appointment_time, consultant_1_appointment_time, consultant_2_appointment_time, time_waiting):
         #add satisafaction, and hw
         """
         id: unique id of patient
@@ -21,7 +21,7 @@ class Patient_agent:
         self.current_action = current_action
         self.arrived = arrived
         #self.duration = duration
-        self.position_in_list = position_in_list
+        self.finished = finished
         #something to store all the actions it will do?
         self.assigned_consultant = assigned_consultant
         self.bloods_appointment_time = bloods_appointment_time
@@ -81,7 +81,7 @@ def initialise_patient(counter):
     current_action = "Appointed"
 
     #need to give all the stuffs
-    patient = Patient_agent(id, "unknown", current_action, 0, False, "unknown", "unknown", "unknown", "unkown", 0)
+    patient = Patient_agent(id, "unknown", current_action, 0, False, False, "unknown", "unknown", "unkown", 0)
 
     #add satisfaction
 
