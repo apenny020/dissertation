@@ -76,51 +76,135 @@ def appointment_times(start_hour, interval, end_hour):
     return (times, num_appointments)
 """
 
-def appointment_times(start_hour, interval, end_hour): 
+def appointment_times(start_hour, interval, end_hour, appt_dict, key): 
     times = []
     appt = start_hour
     for minute in range(start_hour, end_hour, interval):
         appt = appt + interval
         times.append(appt)
-    return(times)
+    
+    appt_dict.update({key:times})
+    return(times, appt_dict)
+
+
+"""
+Possible workflows apparently:
+- Check in, Blood test
+- Check in, see consultant, Blood test
+- Check in, get H&W, see consultant, blood tests
+- Check in, get H&W, see consultant, see consultant, blood tests
+
+"""
+
+def appointment_choice(patient, id, appt_df, bloods_patients, num_consultants):
+    #!!!!get the column Bloods_appts and assign to list called bloods_appt
+    #Assign consultant appt first because bloods after
+    
+    bloods = bool(random.choice([True, False]))
+    if bloods:
+        bloods_appt_time = random.choice(bloods_appt)
+        bloods_appt.remove(bloods_appt_time)
+        setattr(patient, "bloods_appointment_time", bloods_appt_time)
+        bloods_patients.append(patient)
+
+    consultants = bool(random.choice([True, False]))
+    if (not bloods) or (consultants):
+        consultants = True
+
+        #choosing if 1 or 2 consults
+        consult_number = random.randint(1, 2)
+        
+        if consult_number == 1:
+            appt_time, dr =consult_appts()
+            setattr(patient, "assigned_consultant", dr)
+            setattr(patient, "first_consult_appointment_time", str(appt_time))
+            setattr(patient, "second_consult_appointment_time", "null")
+            #copying from line 207
+            #call consult_appts
+
+
+
+    return(bloods_appt_time, bloods_patients)
+
+def consult_appts(appts_dict):
+    #adjust to make sure you dont get the same dr twice
+    counter = 0
+    for i in appts_dict():
+        
+        appt_time = random.choice(i) #make sure not same as bloods
+        appts_dict.#remove from dict
+        dr = counter+1
+
+
+        counter += 1
+    return(appt_time, dr)
 
 def initialise(data_capture_df):
-    patient_number = 32
-    dr_number = 1
-    nurse_number = 3
-    clinic_start = 9 #hour of day (540 ticks)
-    clinic_end = 17 #hour of day (1020 ticks)
+    patient_number = #take from data
+    dr_number = #take from data
+    nurse_number = #take from data
+    clinic_start = 540 #hour of day (540 ticks)
+    clinic_end = 1020 #hour of day (1020 ticks)
     nurse_list = []
     consultant_list = []
 
     #update below to be automated and also to generate based on dr number
-    appointment_times_bloods = appointment_times(540, 15, 1020) #28
-    clinic_1_times = appointment_times(540, 30, 1020) #(6) will give appts from 9 till 12 (non inclusive) in 30min intervals
-    
-    #clinic_2_times, num_clinic_2_appts = appointment_times(13, 30, 17) #8
-    #clinic_3_times, num_clinic_3_appts = appointment_times(9, 30, 12) #6
+    appointment_df = pd.DataFrame()
+    appointment_df = appointment_df.assign(Bloods_appts=[])#assign column headers
 
-    consultant_1_patients = []
-    consultant_2_patients = []
-    consultant_3_patients = []
+    bloods_appt_length = 15
+    appointment_times_bloods, appointment_df = appointment_times(clinic_start, bloods_appt_length, clinic_end, appointment_df, 0) #28
+    #APPEND TO THE DATAFRAME AS A COLUMN
+
+
+    #clinic_1_times, appointment_dict = appointment_times(540, 30, 1020, appointment_dict, 1) #(6) will give appts from 9 till 12 (non inclusive) in 30min intervals
+    #clinic_2_times, appointment_dict = appointment_times(13, 30, 17, appointment_dict, 2) #8
+    #clinic_3_times, appointment_dict = appointment_times(9, 30, 12, appointment_dict, 3) #6
+    #consultant_1_patients = []
+    #consultant_2_patients = []
+    #consultant_3_patients = []
 
     bloods_patients = []
-    
     all_patients = []
     
     #initialise patient df: Patient identifier, appointment time bloods, appointment time clinic 1, appointment time clinic 2, current action, waiting for
     patient_df = pd.DataFrame()
     patient_df = patient_df.assign(Patient=[], ID=[], Bloods_time=[], Consultant_1_time=[], current_action=[])#add satisfaction later and consultant 2 time
-    duplicate_bloods_times = appointment_times_bloods
-    duplicate_consultant_1_times = clinic_1_times
+    
+    #duplicate_bloods_times = appointment_times_bloods
+    #duplicate_consultant_1_times = clinic_1_times
     #duplicate_consultant_2_times = clinic_2_times
     #duplicate_consultant_3_times = clinic_3_times
 
+    for x in range(nurse_number):
+        nurse = initialise_nurse(x)
+        nurse_list.append(nurse)
+        #need to update nurse attributes
+
+    counter = 0
+    for x in range(dr_number):
+        counter += 1
+        consultant = initialise_nurse(x)
+        consultant_list.append(consultant)
+        
+        #take from the processed data - make sure in minutes form
+        consultant_start =
+        consult_length = 
+        consultant_end = 
+
+        clinic_times, appointment_df = appointment_times(consultant_start, consult_length, consultant_end, appointment_df, counter) #6
+        #APPEND TO APPTS DF
+
+        
     for x in range(patient_number):
         patient = initialise_patient(x)
         temp_list = [patient]
         temp_list.append(getattr(patient, "id"))
+
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        appointment_choice(patient, getattr(patient, "id"), appointment_df, bloods_patients)
         
+        #add to temp list and data capture, if "null" then that 
 
         data_capture_df.at[x,"Patient"] = patient
         data_capture_df.at[x,"ID"] = getattr(patient, "id")
@@ -146,26 +230,6 @@ def initialise(data_capture_df):
         #add consultant time
         consultants = bool(random.choice([True, False]))
         if consultants:
-            if duplicate_consultant_1_times: #if not empty
-                appt_time = random.choice(duplicate_consultant_1_times)
-                duplicate_consultant_1_times.remove(appt_time)
-                dr = "1"
-                setattr(patient, "assigned_consultant", dr)
-                setattr(patient, "consultant_1_appointment_time", str(appt_time))
-                consultant_1_patients.append(getattr(patient, "id"))
-                temp_list.append(str(appt_time))
-                data_capture_df.at[x,"Consultant_scheduled"] = appt_time
-
-            else:
-                temp_list.append("null")
-                data_capture_df.at[x,"Consultant_scheduled"] = "null"
-                setattr(patient, "consultant_1_appointment_time", "null")
-        else: 
-            temp_list.append("null")
-            data_capture_df.at[x,"Consultant_scheduled"] = "null"
-            setattr(patient, "consultant_1_appointment_time", "null")
-            
-            """
             #choosing if 0, 1 or 2 consults
             consult_number = random.randint(1,2)
             if consult_number == 1:
@@ -175,19 +239,31 @@ def initialise(data_capture_df):
                     duplicate_consultant_1_times.remove(appt_time)
                     dr = "1"
                     setattr(patient, "assigned_consultant", dr)
+                    setattr(patient, "consultant_1_appointment_time", str(appt_time))
                     consultant_1_patients.append(getattr(patient, "id"))
+                    temp_list.append(str(appt_time))
+                    data_capture_df.at[x,"Consultant_scheduled"] = appt_time
+                
                 elif duplicate_consultant_2_times:
                     appt_time = random.choice(duplicate_consultant_2_times)
                     duplicate_consultant_2_times.remove(appt_time)
                     dr = "2"
                     setattr(patient, "assigned_consultant", dr)
+                    setattr(patient, "consultant_2_appointment_time", str(appt_time))
                     consultant_2_patients.append(getattr(patient, "id"))
+                    temp_list.append(str(appt_time))
+                    data_capture_df.at[x,"Consultant_scheduled"] = appt_time
+                
                 elif duplicate_consultant_3_times:
                     appt_time = random.choice(duplicate_consultant_3_times)
                     duplicate_consultant_3_times.remove(appt_time)
                     dr = "3"
                     setattr(patient, "assigned_consultant", dr)
+                    setattr(patient, "consultant_3_appointment_time", str(appt_time))
                     consultant_3_patients.append(getattr(patient, "id"))
+                    temp_list.append(str(appt_time))
+                    data_capture_df.at[x,"Consultant_scheduled"] = appt_time
+
                 else:
                     print("no more appts avaliable")
                 temp_list.append(appt_time)
@@ -200,48 +276,89 @@ def initialise(data_capture_df):
                     appt_time = random.choice(duplicate_consultant_1_times)
                     duplicate_consultant_1_times.remove(appt_time)
                     temp_list.append(appt_time)
-                    setattr(patient, "consultant_1_appointment_time", appt_time)
+                    setattr(patient, "consultant_1_appointment_time", str(appt_time))
                     consultant_1_patients.append(getattr(patient, "id"))
+                    temp_list.append(str(appt_time))
+                    data_capture_df.at[x,"Consultant_scheduled"] = appt_time
+                    
                     #get 2nd appt
                     if duplicate_consultant_2_times:
                         appt_time = random.choice(duplicate_consultant_2_times)
                         duplicate_consultant_2_times.remove(appt_time)
                         temp_list.append(appt_time)
-                        setattr(patient, "consultant_2_appointment_time", appt_time)
+                        setattr(patient, "consultant_2_appointment_time", str(appt_time))
+                        setattr(patient, "consultant_3_appointment_time", "null")
                         dr = "1,2"
                         setattr(patient, "assigned_consultant", dr)
                         consultant_2_patients.append(getattr(patient, "id"))
+                        temp_list.append(str(appt_time))
+                        data_capture_df.at[x,"Consultant_scheduled"] = appt_time
+                   
                     elif duplicate_consultant_3_times:
                         appt_time = random.choice(duplicate_consultant_3_times)
                         duplicate_consultant_3_times.remove(appt_time)
                         temp_list.append(appt_time)
-                        setattr(patient, "consultant_2_appointment_time", appt_time)
+                        setattr(patient, "consultant_3_appointment_time", str(appt_time))
+                        setattr(patient, "consultant_2_appointment_time", "null")
                         dr = "1,3"
                         setattr(patient, "assigned_consultant", dr)
                         consultant_3_patients.append(getattr(patient, "id"))
+                        temp_list.append(str(appt_time))
+                        data_capture_df.at[x,"Consultant_scheduled"] = appt_time
+                   
                     else:
                         temp_list.append("null")
+                        setattr(patient, "consultant_2_appointment_time", "null")
+                        setattr(patient, "consultant_3_appointment_time", "null")
+                
                 elif duplicate_consultant_2_times:
                     appt_time = random.choice(duplicate_consultant_2_times)
                     duplicate_consultant_2_times.remove(appt_time)
                     temp_list.append(appt_time)
-                    setattr(patient, "consultant_1_appointment_time", appt_time)
+                    setattr(patient, "consultant_2_appointment_time", str(appt_time))
                     consultant_2_patients.append(getattr(patient, "id"))
+                    temp_list.append(str(appt_time))
+                    data_capture_df.at[x,"Consultant_scheduled"] = appt_time
+                    
                     #get 2nd appt
                     if duplicate_consultant_3_times:
                         appt_time = random.choice(duplicate_consultant_3_times)
                         duplicate_consultant_3_times.remove(appt_time)
                         temp_list.append(appt_time)
-                        setattr(patient, "consultant_2_appointment_time", appt_time)
+                        setattr(patient, "consultant_3_appointment_time", str(appt_time))
+                        setattr(patient, "consultant_1_appointment_time", "null")
                         dr = "2,3"
                         setattr(patient, "assigned_consultant", dr)
                         consultant_3_patients.append(getattr(patient, "id"))
+                        temp_list.append(str(appt_time))
+                        data_capture_df.at[x,"Consultant_scheduled"] = appt_time
+                        
+                    
                     else:
                         temp_list.append("null")
+                        setattr(patient, "consultant_1_appointment_time", "null")
+                        setattr(patient, "consultant_3_appointment_time", "null")
+                
                 else:
                     temp_list.append("null")
-                    temp_list.append("null")
-            """
+                    data_capture_df.at[x,"Consultant_scheduled"] = "null"
+                    setattr(patient, "consultant_1_appointment_time", "null")
+                    setattr(patient, "consultant_2_appointment_time", "null")
+                    setattr(patient, "consultant_3_appointment_time", "null")
+
+            else:
+                print("shouldn't trigger")
+
+        else: 
+            temp_list.append("null")
+            data_capture_df.at[x,"Consultant_scheduled"] = "null"
+            setattr(patient, "consultant_1_appointment_time", "null")
+            setattr(patient, "consultant_2_appointment_time", "null")
+            setattr(patient, "consultant_3_appointment_time", "null")
+            
+            
+            
+            
         setattr(patient, "current_action", "appointed")
         current_action = getattr(patient, "current_action")
         temp_list.append(current_action)
@@ -252,22 +369,14 @@ def initialise(data_capture_df):
         #add temp_list to dataframe
         patient_df.loc[len(patient_df)] = temp_list
 
-
-    for x in range(nurse_number):
-        nurse = initialise_nurse(x)
-        nurse_list.append(nurse)
-        #need to update nurse attributes
-
-    for x in range(dr_number):
-        consultant = initialise_nurse(x)
-        consultant_list.append(consultant)
+        
+        
+        
         #need to update consultant attributes
-        if x == 0:
-            setattr(consultant, "patients_seeing", consultant_1_patients)
-        elif x == 1:
-            setattr(consultant, "patients_seeing", consultant_2_patients)
-        elif x == 2:
-            setattr(consultant, "patients_seeing", consultant_3_patients)
+        setattr(consultant, "patients_seeing", consultant_patients)
+        #new dataframe, take consultant patients from there
+
+
 
     print(patient_df)
     return(patient_df, nurse_list, consultant_list, bloods_patients, data_capture_df)     
@@ -290,7 +399,8 @@ def starts_everything():
     
     #initialise the day
     patient_df, nurse_list, consultant_list, bloods_patients, data_capture = initialise(data_capture_df)
-    
+    print(data_capture)
+
     patients_arrived = []
     #hw_nurses = []
     #blood_nurses = []
@@ -317,7 +427,7 @@ def starts_everything():
                         print("BALHHHHHHHHH")
                         print(getattr(p, "bloods_appointment_time"))
                         print(getattr(p, "consultant_1_appointment_time"))
-                        appt_time = str(max(int(getattr(p, "bloods_appointment_time")),int(getattr(p, "consultant_1_appointment_time"))))
+                        appt_time = str(min(int(getattr(p, "bloods_appointment_time")),int(getattr(p, "consultant_1_appointment_time"))))
                     elif (getattr(p, "consultant_1_appointment_time") not in other) and (getattr(p, "bloods_appointment_time") in other):
                         appt_time = getattr(p, "consultant_1_appointment_time")
                     elif (getattr(p, "consultant_1_appointment_time") in other) and (getattr(p, "bloods_appointment_time") not in other):
@@ -338,61 +448,47 @@ def starts_everything():
 
                         print("patient arrived")
                         print(patient_df)
-            
-                        
-            
-            #check if nurses are free
-            #add later
-            for n in nurse_list:
-            #    if getattr(n, "type") == "H&W":
-            #        hw_nurses.append(n)
-            #    elif getattr(n, "type") == "bloods":
-            #        blood_nurses.append(n)
 
-                #get list of patients who have been waiting the longest
-                patient_dict = longest_waiting_patient(bloods_patients)
+                #update patients
+            
+                if getattr(p, "current_action") == "waiting":
+                    #increase waiting
+                    waiting = getattr(p, "time_waiting")
+                    waiting += 1
+                    setattr(p, "time_waiting", waiting)
                 
-                if (getattr(n, "current_action") == "waiting"):
-                    for p in patient_dict:
-                        if getattr(p, "current_action") == "waiting":
-                            id = getattr(p, "id")
-                            setattr(p, "current_action", "bloods")
-                            setattr(n, "current_action", "treating")
-                            setattr(n, "task_duration", 15)#minutes
-                            setattr(n, "patient_treating", id)
+                other = ["complete", "null"]
 
-                            #update dataframe to change bloods time of patient to complete:
+                if (getattr(p, "current_action") is not "finished"):
+                    if (getattr(p, "bloods_appointment_time") in other):
+                        if (getattr(p, "consultant_1_appointment_time") in other):
+                            #finished
+                            #and (getattr(p, "bloods_appointment_time") in other) and (getattr(p, "consultant_1_appointment_time") in other
+                            print(getattr(p, "id"))
+                            print(tick)
+                            print(getattr(p, "current_action"))
+                            
+
+                            setattr(p, "current_action", "finished")
+                            setattr(p, "arrived", False)
+                            setattr(p, "finished", True)
+
+                            if p in patients_arrived:
+                                patients_arrived.remove(p)
+
                             row_num = patient_df[patient_df["Patient"] == p].index.to_numpy()
                             row_num = int(row_num)
-                            patient_df.at[row_num,"current_action"] = "bloods"
+                            patient_df.at[row_num,"current_action"] = "finished"
 
                             row_num = data_capture[data_capture["Patient"] == p].index.to_numpy()
                             row_num = int(row_num)
-                            data_capture.at[row_num,"Bloods_seen"] = tick
-
-                        break #breaks out of for loop because treating patient
-                elif (getattr(n, "current_action") == "treating") and (getattr(n, "task_duration") != 0):
-                    duration = getattr(n, "task_duration")
-                    duration -= 1
-                    setattr(n, "task_duration", duration)#minutes
-                
-                elif (getattr(n, "current_action") == "treating") and (getattr(n, "task_duration") == 0):
-                    #finished and update
-                    patient_id = getattr(n, "patient_treating")
-                    setattr(n, "current_action", "waiting")
-                    setattr(n, "patient_treating", "unknown")
-                    #update patient 
-                    #loop through total_patients and match the ID
-                    for p in total_patients:
-                        if getattr(p, "id") == patient_id:
-                            setattr(p, "current_action", "waiting")
-                            setattr(p, "bloods_appointment_time", "complete")
-                            row_num = patient_df[patient_df["Patient"] == p].index.to_numpy()
-                            row_num = int(row_num)
-                            patient_df.at[row_num,"current_action"] = "waiting" #row then column
-                            patient_df.at[row_num,"Bloods_time"] = "complete" #row then column
-
-
+                            print(getattr(p, "id"))
+                            print(tick)
+                            print(getattr(p, "current_action"))
+                            print(getattr(p, "bloods_appointment_time"))
+                            print(getattr(p, "consultant_1_appointment_time"))
+                            data_capture.at[row_num,"exit_time"] = tick
+            
             #check  if dr free
             #need to change to choose one closest to appointment time
             #needs to change when data used
@@ -438,33 +534,65 @@ def starts_everything():
                                     patient_df.at[row_num,"Consultant_1_time"] = "complete" #row then column
                                     patient_df.at[row_num,"current_action"] = "waiting" #row then column
                                     #print(getattr(p, "current_action"))
-                                    #print("hi")
+                                    #print("hi")           
+            
+            #check if nurses are free
+            #add later
+            for n in nurse_list:
+            #    if getattr(n, "type") == "H&W":
+            #        hw_nurses.append(n)
+            #    elif getattr(n, "type") == "bloods":
+            #        blood_nurses.append(n)
 
-            #update patients
-            for p in total_patients:
-                if getattr(p, "current_action") == "waiting":
-                    #increase waiting
-                    waiting = getattr(p, "time_waiting")
-                    waiting += 1
-                    setattr(p, "time_waiting", waiting)
+                #get list of patients who have been waiting the longest
+                patient_dict = longest_waiting_patient(bloods_patients)
+                
+                if (getattr(n, "current_action") == "waiting"):
+                    for p in patient_dict:
+                        if getattr(p, "current_action") == "waiting":
+                            id = getattr(p, "id")
+                            setattr(p, "current_action", "bloods")
+                            setattr(n, "current_action", "treating")
+                            setattr(n, "task_duration", 15)#minutes
+                            setattr(n, "patient_treating", id)
 
-                if (getattr(p, "bloods_appointment_time") == "complete") and (getattr(p, "consultant_1_appointment_time") == "complete"):
-                    #finished
-                    setattr(p, "current_action", "finished")
-                    setattr(p, "arrived", False)
-                    setattr(p, "finished", True)
+                            #update dataframe to change bloods time of patient to complete:
+                            row_num = patient_df[patient_df["Patient"] == p].index.to_numpy()
+                            row_num = int(row_num)
+                            patient_df.at[row_num,"current_action"] = "bloods"
 
-                    if p in patients_arrived:
-                        patients_arrived.remove(p)
+                            row_num = data_capture[data_capture["Patient"] == p].index.to_numpy()
+                            row_num = int(row_num)
+                            data_capture.at[row_num,"Bloods_seen"] = tick
 
-                    row_num = patient_df[patient_df["Patient"] == p].index.to_numpy()
-                    row_num = int(row_num)
-                    patient_df.at[row_num,"current_action"] = "finished"
+                        break #breaks out of for loop because treating patient
+                elif (getattr(n, "current_action") == "treating") and (getattr(n, "task_duration") != 0):
+                    duration = getattr(n, "task_duration")
+                    duration -= 1
+                    setattr(n, "task_duration", duration)#minutes
+                
+                elif (getattr(n, "current_action") == "treating") and (getattr(n, "task_duration") == 0):
+                    #finished and update
+                    patient_id = getattr(n, "patient_treating")
+                    setattr(n, "current_action", "waiting")
+                    setattr(n, "patient_treating", "unknown")
+                    #update patient 
+                    #loop through total_patients and match the ID
+                    for p in total_patients:
+                        if getattr(p, "id") == patient_id:
+                            bloods_patients.remove(p)
+                            setattr(p, "current_action", "waiting")
+                            setattr(p, "bloods_appointment_time", "complete")
+                            row_num = patient_df[patient_df["Patient"] == p].index.to_numpy()
+                            row_num = int(row_num)
+                            patient_df.at[row_num,"current_action"] = "waiting" #row then column
+                            patient_df.at[row_num,"Bloods_time"] = "complete" #row then column
 
-                    row_num = data_capture[data_capture["Patient"] == p].index.to_numpy()
-                    row_num = int(row_num)
-                    data_capture.at[row_num,"exit_time"] = tick
 
+            
+
+            
+    data_capture.to_csv("output_data")
     print ("data capture")
     print(data_capture)
 
