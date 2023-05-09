@@ -76,15 +76,15 @@ def appointment_times(start_hour, interval, end_hour):
     return (times, num_appointments)
 """
 
-def appointment_times(start_hour, interval, end_hour, appt_dict, key): 
+def appointment_times(start_hour, interval, end_hour): 
     times = []
     appt = start_hour
     for minute in range(start_hour, end_hour, interval):
         appt = appt + interval
         times.append(appt)
     
-    appt_dict.update({key:times})
-    return(times, appt_dict)
+    #appt_dict.update({key:times})
+    return(times)
 
 
 """
@@ -97,9 +97,16 @@ Possible workflows apparently:
 """
 
 #~~~~~does the apoointment choice (random), and calls consult_appts for appointments for patients ~~~~~~~~~~~#
-def appointment_choice(patient, id, appt_df, bloods_patients, num_consultants):
+def appointment_choice(patient, id, appt_df, num_consultants):
     #!!!!get the column Bloods_appts and assign to list called bloods_appt
     #Assign consultant appt first because bloods after
+    """
+    finds appointments for patients, 1 blood (if they have a blood one), and between 0 and 2 consult appointments
+    Makes sure the appointments dont clash 
+    Calls consult_appts to get the consult appointments
+    Makes sure that consultant is before bloods - to make sure it flollows the workflow above
+    """
+    
     consultants = bool(random.choice([True, False]))
     bloods = bool(random.choice([True, False]))
 
@@ -107,61 +114,118 @@ def appointment_choice(patient, id, appt_df, bloods_patients, num_consultants):
         consultants = True
         consult_number = random.randint(1, 2)
 
-        if consult_number == 1:
-            temp_list =consult_appts(appts_df, 1)
+        if consult_number == 1: 
+            temp_list =consult_appts(appt_df, 1, num_consultants)
             dr = temp_list[0]
             consult_appt_time = temp_list[1]
 
             setattr(patient, "assigned_consultant", dr)
-            setattr(patient, "first_consult_appointment_time", str(appt_time))
-            #copying from line 207
-            #call consult_appts
+            setattr(patient, "first_consult_appointment_time", str(consult_appt_time))
+            setattr(patient, "second_consult_appointment_time", "null")
+
         
         if consult_number == 2:
-            temp_list = consult_appts(appts_df, 2)
-            #do something to make sure that the dr is before bloods
+            temp_list = consult_appts(appt_df, 2, num_consultants)
             dr_1 = temp_list[0]
             consult_appt_time_1 = temp_list[1]
             dr_2 = temp_list[2]
             consult_appt_time_2 = temp_list[3]
+            dr = (str(dr_1) + str(dr_2))
+
+            #compare to find sooner consult
+            if int(consult_appt_time_2) < int(consult_appt_time_1):
+                consult_appt_time_1 = int(consult_appt_time_2)
+                consult_appt_time_2 = int(consult_appt_time_1)
 
             setattr(patient, "assigned_consultant", dr)
-            setattr(patient, "first_consult_appointment_time", str(appt_time))
-            setattr(patient, "second_consult_appointment_time", "null")
+            setattr(patient, "first_consult_appointment_time", str(consult_appt_time_1))
+            setattr(patient, "second_consult_appointment_time", str(consult_appt_time_2))
+            #update df to remove the appts!!!!!!!!!!!11
 
     if bloods:
-        #get list of appts from df
-        bloods_appt_time = random.choice(bloods_appt_list)#make sure not same as consultant
-        bloods_appt_list.remove(bloods_appt_time)
+        possible_times = appt_df.loc["bloods"]
+        for i in possible_times:
+            if i < (int(consult_appt_time_1)+30):
+                possible_times.remove(i)
+        
+        bloods_appt_time = random.choice(possible_times)
+        #update df to remove the appts!!!!!!!!!!!!!
 
-        setattr(patient, "bloods_appointment_time", bloods_appt_time)
-        bloods_patients.append(patient)
 
-    #update dataframe on patients consultants
-    return(bloods_appt_time, bloods_patients, consult_appt_time_1, consult_appt_time_2, consult_patients?)
+    #update dataframe on patients consultants !!!!!!!!!!!!!!!!!!!
+    return(bloods_appt_time, consult_appt_time_1, consult_appt_time_2)
 
 
 #~~~~Random process of picking appointments for consultations for patient~~~~~~~~~~~~~~~~#
-def consult_appts(appts_df, iterations):
-    #adjust to make sure you dont get the same dr twice
-    #get a dict (appts_dict from df) !!!!!!!
-    #consultant_x:appt1,appt2,appt3..., consultant_y:appt1,appt2,appt3... etc
+def consult_appts(appts_df, iterations, num_consultants):
+    """
+    for number of drs on shift - chooses random number from this
+    find the corresponding list of appointment times
+    if theres still times - randomly pick one
+    if there are none left, redo step 1
+    """
+    #NEED TO ADD SOMETHING TO MAKE SURE SECOND APPT NOT AT SAME TIME
     temp_list = []
     for i in iterations:
-        appt_times_list = random.choice(list(appts_dict.items))
-        appt_times_list = appts_dict[appt_times_list[0]]
-        dr = appt_times_list[0]
-        if i == 2:
-            while dr == temp_list[0] # same dr
-                appt_times_list = random.choice(list(appts_dict.items))
-                appt_times_list = appts_dict[appt_times_list[0]]
-                dr = appt_times_list[0]
-            #appts time list is now a list of possible appts with that dr
+        num_dr = []
+        dr = 0
+        dr2 = 0
+        finished = False
 
-        appt_time = random.choice(appt_times_list) #gets app times
-        appts_dict.update #remove the appt!!!!!!!!
+        for i in num_consultants:
+            num_dr.append(i+1)
+
+        if not num_dr:
+            #if empty
+            temp_list.append("null")
+            temp_list.append("null")
+            if i == 2:
+                return(temp_list)
+
+        while not finished: #in loop because there might not be any appt times and they'd have to pick again
+            if i == 2:
+                #checkign that not duplicate dr
+                if len(num_dr) == 1:
+                    #assign null and break
+                    temp_list.append("null")
+                    temp_list.append("null")
+                    finished = True
+                    return(temp_list)
+
+                while dr == dr2: #should never be equal
+                    dr2 = random.randint(1, num_dr)
+                    column_header = ("dr" + str(dr2))
+                    possible_times = appts_df.loc[column_header]
+
+            if i == 1:
+                #choosing a dr randomly, same with appointment
+                dr = random.randint(1, num_dr)
+                column_header = ("dr" + str(dr))
+                possible_times = appts_df.loc[column_header]
+
+            if possible_times:
+                appt_time = random.choice(possible_times)
+                possible_times.remove(appt_time)
+                #update df to remove the appt
+                if i == 1:
+                    temp_list.append(dr)
+                    num_dr.remove(dr)
+                elif i == 2:
+                    temp_list.append(dr2)
+                    num_dr.remove(dr2)
+
+                temp_list.append(appt_time)
+                
+                finished = True
+
+            else: #no appts left with that dr
+                num_dr.remove(dr)
+                num_dr.remove(dr2)
 
         temp_list.append(dr)
+        if dr2 != 0:
+            temp_list.append(dr2)
+
         temp_list.append(appt_time)
     return(temp_list)
 
@@ -182,35 +246,22 @@ def initialise(data_capture_df):
 
     #update below to be automated and also to generate based on dr number
     appointment_df = pd.DataFrame()
-    appointment_df = appointment_df.assign(Bloods_appts=[])#assign column headers
-
+    #appointment_df = appointment_df.assign()#assign column headers
     
-    appointment_times_bloods, appointment_df = appointment_times(clinic_start, bloods_appt_length, clinic_end, appointment_df, 0) #28
+    appointment_times_bloods = appointment_times(clinic_start, bloods_appt_length, clinic_end) #28
     #APPEND TO THE DATAFRAME AS A COLUMN
-
-
-
-
-    
+    appointment_df["bloods"]= appointment_times_bloods
     
     #initialise patient df: Patient identifier, appointment time bloods, appointment time clinic 1, appointment time clinic 2, current action, waiting for
     patient_df = pd.DataFrame()
     patient_df = patient_df.assign(Patient=[], ID=[], Bloods_time=[], Consultant_1_time=[], Consultant_2_time=[], current_action=[])#add satisfaction later and consultant 2 time
-    
-    #duplicate_bloods_times = appointment_times_bloods
-    #duplicate_consultant_1_times = clinic_1_times
-    #duplicate_consultant_2_times = clinic_2_times
-    #duplicate_consultant_3_times = clinic_3_times
 
     for x in range(nurse_number):
         nurse = initialise_nurse(x)
         nurse_list.append(nurse)
-        #need to update nurse attributes
 
-    counter = 0
     for x in range(dr_number):
-        counter += 1
-        consultant = initialise_nurse(x)
+        consultant = initialise_consultant(x)
         consultant_list.append(consultant)
         
         #take from the processed data - make sure in minutes form
@@ -218,8 +269,10 @@ def initialise(data_capture_df):
         consult_length = 
         consultant_end = 
 
-        clinic_times, appointment_df = appointment_times(consultant_start, consult_length, consultant_end, appointment_df, counter) #6
+        clinic_times = appointment_times(consultant_start, consult_length, consultant_end) 
         #APPEND TO APPTS DF
+        appointment_df["dr" + str(x)]= clinic_times
+
 
         
     for x in range(patient_number):
@@ -231,15 +284,19 @@ def initialise(data_capture_df):
         data_capture_df.at[x,"ID"] = getattr(patient, "id")
 
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        bloods_appt_time, bloods_patients, consult_app_time_1, consult_appt_time_2, consult_patients =appointment_choice(patient, getattr(patient, "id"), appointment_df, bloods_patients)
-        
+        bloods_appt_time,  consult_appt_time_1, consult_appt_time_2, appointment_df  =appointment_choice(patient, getattr(patient, "id"), appointment_df, dr_number)
+        #need a list of blood patietnts and consultant patients for each consultant
+
+
         data_capture_df.at[x,"Bloods_scheduled"] = bloods_appt_time
         data_capture_df.at[x,"Consultant_scheduled_1"] = consult_appt_time_1
         data_capture_df.at[x,"Consultant_scheduled_2"] = consult_appt_time_1
 
         temp_list.append(bloods_appt_time)
-        temp_list.append(Consult_appt_time_1)
-        temp_list.append(Consult_appt_time_2)
+        temp_list.append(consult_appt_time_1)
+        temp_list.append(consult_appt_time_2)
+
+        #append the current action of patient - or is this done elsewhere
 
 
 
