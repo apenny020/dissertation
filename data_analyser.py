@@ -23,14 +23,15 @@ Visualise data and output CSV
 
 #order list and output to CSV
 def order_list(to_order_list, file_name):
-        ordered_list = sorted(to_order_list)
+    ordered_list = sorted(to_order_list)
 
-        #write to new CSV
-        with open(file_name, "w") as f:
-            for i in ordered_list:
-                writer.writerow(i)
-        f.close()
-    return (ordered_list)
+    #write to new CSV
+    with open(file_name, "w") as f:
+        for i in ordered_list:
+            writer.writerow(i)
+    f.close()
+    
+    return(ordered_list)
 
 #create distributions to be used (for one day)
 #first for time based data - waiting times/durations/lates
@@ -42,7 +43,7 @@ def get_probabilities_time(data_list):
     ordered_list = sorted(data_list)
     for i in ordered_list:
         if i in tally_dict:
-            #increase by value 1
+            #increase by value 1 -creates a dictionary with each value and a tally for it 
             temp_val = tally_dict[i]
             temp_val += 1
             tally_dict.update({i:temp_val})
@@ -58,6 +59,7 @@ def get_probabilities_time(data_list):
         temp_val = temp_val/total
         tally_dict.update({i:temp_val})
     
+    #a dictionary that returns the collected data value and its probability chance of existing
     return (tally_dict)
     
 
