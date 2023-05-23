@@ -1,7 +1,10 @@
 from omni_system import *
+from data_processor import *
+from data_analyser import *
 
 #run the model here
-
+print("Process data")
+give_date() #work out if it just does one day or all, do i need to call in loop - need to add, currently there is an endless recursive call - fix this 
 print("going to start")
 starts_everything()
 print("completed")

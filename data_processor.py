@@ -38,6 +38,7 @@ def collecting_days_data (sorted_data_list, current_day):
 
 
 #Calculates the durations, waiting times and other data needed to be found
+#FIRST FUCNTION
 def calculating_times (sorted_data_list, current_days_data , current_days_patients):
     #Instantiating 
     arrival_time = []
@@ -280,6 +281,7 @@ def calculating_patient_numbers (todays_data, todays_patients):#!!!!!!!!!!!!unfi
 #finds the current date and calls a function with that information -
 #^recieves back the data and patients for only that day - 
 #^calls the function to work out data and gets it back
+#calls all above functions
 def give_date(date_sorted_data_list): #need to edit the function to take in the date when requested !!!!!!!!!1
     temp_val = []
     temp_val.append(date_sorted_data_list[0])
@@ -287,7 +289,7 @@ def give_date(date_sorted_data_list): #need to edit the function to take in the 
     current_day = current_day[:10] #should cut it to just be date
 
     #get the days data by using the day function
-    current_days_data , current_days_patients = collecting_days_data(sorted_data_list, current_day)
+    current_days_data , current_days_patients = collecting_days_data(date_sorted_data_list, current_day)
     waiting_list, number_list, duration_list, starts_list = calculating_times (date_sorted_data_list, current_days_data , current_days_patients)
     number_list, counter_list = calculating_patient_numbers(current_days_data, current_days_data) 
     return () # add here!!!!!!!!!!! also could maybe have the function calling taken out !!!!!!!!!!!
@@ -296,8 +298,8 @@ def give_date(date_sorted_data_list): #need to edit the function to take in the 
 
 #running here !!!!!!!!!!!!!
 
-a = give_date(date_sorted_data_list, 0)
-print("hi")
+#a = give_date(date_sorted_data_list, 0)
+#print("hi")
 
 #NEEDS something that analyses the flow of events
 
