@@ -45,3 +45,7 @@ Check if an agent based model needs to allow for agents to be able to interact w
 Compare ABM to modeeling code
 Compare ABM to Adaptive code
 Compare ABM to the how to guides and hte minimum reqs of an ABM
+
+#finish going through omni
+#stop the cyclical part of data analyser
+#add in data

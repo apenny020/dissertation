@@ -3,7 +3,7 @@ import random
 #Patient agent
 #attributes of: unique identifier, current state, patient satisfaction score
 class Patient_agent:
-    def __init__(self, id, patient_satisfaction, next_action, current_action, finished, arrived, assigned_consultant, bloods_appointment_time, first_consult_appointment_time, second_consult_appointment_time, time_waiting):
+    def __init__(self, id, patient_satisfaction, next_action, current_action, finished, arrived, assigned_consultant, bloods_appointment_time, consultant_1_appointment_time, consultant_2_appointment_time, time_waiting):
         #add satisafaction, and hw
         """
         id: unique id of patient
@@ -25,8 +25,8 @@ class Patient_agent:
         #something to store all the actions it will do?
         self.assigned_consultant = assigned_consultant
         self.bloods_appointment_time = bloods_appointment_time
-        self.first_consult_appointment_time = first_consult_appointment_time
-        self.second_consult_appointment_time = second_consult_appointment_time
+        self.consult_1_appointment_time = consultant_1_appointment_time
+        self.consult_2_appointment_time = consultant_2_appointment_time
         self.time_waiting = time_waiting
         #self.hw = hw #heigght and weight
         pass
@@ -123,9 +123,9 @@ def update_patient(patient_list, id): # runs when called by omni system
 #attributes of: type of nurse, unique identifier?, action doing/state
 
 class Nurse_agent:
-    def __init__(self, id, current_action, task_duration, patient_treating):
+    def __init__(self, id, type, current_action, task_duration, patient_treating):
         self.id = id
-        #add later #self.type = type #bloods only, h&w only, mixed
+        self.type = type #bloods only, h&w only, mixed
         self.current_action = current_action
         #self.next_action = next_action
         self.task_duration = task_duration
@@ -149,11 +149,11 @@ def initialise_nurse(counter):
 
     id = counter
     #change to make sure not all are h&w
-    #add later #type = random.choice(["bloods", "H&W"]) #rand choice from bloods, H&W (if bloods then can do both)
+    type = random.choice(["Bloods", "HW"]) #rand choice from bloods, H&W (if bloods then can do both)
     current_action = "waiting" #could be calling patients, H&w, waiting, bloods - make sure matches nurse type
     #task_duration = #omni system and based on current action
     #patient_treating = #omni system?
-    nurse = Nurse_agent(id, current_action, "unknown", "uknown")
+    nurse = Nurse_agent(id, type current_action, "unknown", "uknown")
 
     #nurse_list.append(nurse)
     return (nurse)

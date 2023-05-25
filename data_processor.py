@@ -292,6 +292,8 @@ def give_date(date_sorted_data_list): #need to edit the function to take in the 
     current_days_data , current_days_patients = collecting_days_data(date_sorted_data_list, current_day)
     waiting_list, number_list, duration_list, starts_list = calculating_times (date_sorted_data_list, current_days_data , current_days_patients)
     number_list, counter_list = calculating_patient_numbers(current_days_data, current_days_data) 
+
+    get_probabilities_time
     return () # add here!!!!!!!!!!! also could maybe have the function calling taken out !!!!!!!!!!!
 
 
