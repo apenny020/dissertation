@@ -49,3 +49,12 @@ Compare ABM to the how to guides and hte minimum reqs of an ABM
 #finish going through omni
 #stop the cyclical part of data analyser
 #add in data
+#add in a function to decide if they will arrive or not
+check the leave on each run (for patient satisfaction on patient)
+add 'environment' (space in room and time) to agents file?
+make sure that the patient doesnt arrive before the clinic opens
+do patient satisfaction update function
+put check for next patient in the agents functions?
+mvoe the start everything into main?
+make sure youre randomly generating the number of consultants (bonus, based on data captured)
+add check for sick consultant when initialising
