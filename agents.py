@@ -15,15 +15,12 @@ class Patient_agent:
         duration: duration (in ticks) until the next action takes place (told by omnisystem)
         """
         self.id = id
-        #self.character = character
-        #self.current_day = current_day
         self.patient_satisfaction = patient_satisfaction
         self.next_action = next_action
         self.current_action = current_action
         self.arrived = arrived
         self.will_arrive = will_arrive
         self.arrival_time = arrival_time
-        #self.duration = duration
         self.finished = finished
         #something to store all the actions it will do?
         self.assigned_consultant = assigned_consultant
@@ -35,7 +32,7 @@ class Patient_agent:
         pass
 
 
-    def arrival_time(Patient_agent):#max 2 hrs early
+    def arrival_times(Patient_agent):#max 2 hrs early
         #use a percentage - make data into a percentage chance of DNA, if falls in first x% then DNA
         if_arrive = random.randint(1,100)
         if if_arrive >15: #!!!!!!!!!!!!!!!change to actual percentage:
@@ -76,11 +73,11 @@ def initialise_patient(counter):
     patient_satisfaction = random.randint(30, 100) #(scale is 0 - 100)
     id = counter
     current_action = "Appointed"
-    
+        
 
     #need to give all the stuffs
     patient = Patient_agent(id, patient_satisfaction, "unknown", current_action, 0, False, False, "unknown", "unknown", "unkown", 0)
-    Patient_agent.arrival_time(patient)
+    Patient_agent.arrival_times(patient)
 
     return (patient)
 
@@ -113,7 +110,7 @@ class Nurse_agent:
 
     #def check_for_next_patient():
         #chooses which patient to call in next, if there is
-    #    pass
+        pass
 
 
 def initialise_nurse(counter):
