@@ -1,4 +1,5 @@
 from read_data import *
+from data_analyser import *
 import pandas as pd
 
 
@@ -20,26 +21,33 @@ How many patients in bloods at one time
 How many patients in consulatation at same time
 
 """
-
-def collecting_days_data (sorted_data_list, current_day):
+#This function finds the data for the paritcular given day
+def collecting_days_data (all_data_df, current_day, num_rows):
     todays_data = []
     todays_patients = []
-    num_patients_in_day = len(todays_patients)
-    for i in sorted_data_list:
-        while i.get("date_time") == current_day:
-            todays_data.append(i)
-            patient = i.get("unique_identifier")
-            if todays_patients.count(i.get("unique_identifier")):
-                print("exists")
-            else: 
-                todays_patients.append(i.get("unique_identifier"))
+    #num_patients_in_day = len(todays_patients)
+    for i in range(num_rows):
+        date = all_data_df.iloc[i]["DateTime"]
+        while date == current_day:
+            temp_list = []
+            id = all_data_df.iloc[i]["Patient_id"]
+            state_enter = all_data_df.iloc[i]["State_Enter"]
+            state =  all_data_df.iloc[i]["State"]
+            temp_list.append(id)
+            temp_list.append(date)
+            temp_list.append(state_enter)
+            temp_list.append(state)
+
+            #add to lists
+            todays_data.append(temp_list)
+            if id not in todays_patients:
+                todays_patients.append(id)
 
     return(todays_data, todays_patients)
 
 
 #Calculates the durations, waiting times and other data needed to be found
-#FIRST FUCNTION
-def calculating_times (sorted_data_list, current_days_data , current_days_patients):
+def calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df):
     #Instantiating 
     arrival_time = []
 
@@ -171,15 +179,9 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
 
             c =+ 1 #counter
 
-    #calls function - repeats for every day
-    give_date(date_sorted_data_list) #need to put in a loop to only call until end of list !!!!!!!!!!1111
-
 
     #To be an overall dataframes of the above lists
-    waiting_df = pd.DataFrame()
-    number_df = pd.DataFrame()
-    duration_df = pd.DataFrame()
-    starts_df = pd.DataFrame()
+    
 
     #adding lists to dataframes above - could turn more efficient !!!!!!!!!!!!!
     waiting_df ["wait_h&w"] = wait_for_Height_and_weight
@@ -210,7 +212,7 @@ def calculating_times (sorted_data_list, current_days_data , current_days_patien
         
 
 #Calculates the number of patients in certain situations
-def calculating_patient_numbers (todays_data, todays_patients):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
+def calculating_patient_numbers (todays_data, todays_patients, number_list, counter_list):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
     length = len(todays_data)
     start_time = todays_data.self[0].get("date_time")
     end_time = todays_data.self[length-1].get("date_time")
@@ -224,10 +226,6 @@ def calculating_patient_numbers (todays_data, todays_patients):#!!!!!!!!!!!!unfi
     clinic_counter = 0#number of patients in clinic at any time
     bloods_counter = 0#number of patients in bloods at one time
     consult_counter = 0#number of patients in consultation at one time
-
-    #lists to contain the above
-    number_list = []
-    counter_list = []
 
 
     while (start_time <= end_time):
@@ -282,20 +280,76 @@ def calculating_patient_numbers (todays_data, todays_patients):#!!!!!!!!!!!!unfi
 #^recieves back the data and patients for only that day - 
 #^calls the function to work out data and gets it back
 #calls all above functions
-def give_date(date_sorted_data_list): #need to edit the function to take in the date when requested !!!!!!!!!1
-    temp_val = []
-    temp_val.append(date_sorted_data_list[0])
-    current_day = temp_val[0].get("date_time")      
-    current_day = current_day[:10] #should cut it to just be date
 
-    #get the days data by using the day function
-    current_days_data , current_days_patients = collecting_days_data(date_sorted_data_list, current_day)
-    waiting_list, number_list, duration_list, starts_list = calculating_times (date_sorted_data_list, current_days_data , current_days_patients)
-    number_list, counter_list = calculating_patient_numbers(current_days_data, current_days_data) 
+# def give_date(data_list): #need to edit the function to take in the date when requested !!!!!!!!!1
+#     temp_val = []
+#     temp_val.append(data_list[0])
+#     current_day = temp_val[0].get("date_time")      
+#     current_day = current_day[:10] #should cut it to just be date
+#     return (data_list) # add here!!!!!!!!!!! also could maybe have the function calling taken out !!!!!!!!!!!
 
-    get_probabilities_time
-    return () # add here!!!!!!!!!!! also could maybe have the function calling taken out !!!!!!!!!!!
 
+
+def get_data():
+    with open("data_input_file_2018", "r") as data_file:
+        Lines = data_file.readlines()
+        data_file.close()
+
+    #get all the data
+    for line in range(Lines):
+        temp_list = line
+        all_data_df = pd.DataFrame()
+        all_data_df = all_data_df.assign(Patient_id=[], DateTime=[], State_Enter=[], State=[])
+        all_data_df.loc[len(all_data_df)] = temp_list
+
+    #work out number of dates
+    list_days = []
+    num_rows = len(all_data_df.index)
+    for i in range(num_rows):
+        temp = all_data_df.iloc[i]["DateTime"]
+        if temp not in list_days:
+            temp = temp[:10]
+            list_days.append(i)
+    
+    num_days = len(list_days)
+    return(all_data_df, num_days, list_days, num_rows)
+
+
+def unpack_df(df):
+    return(list)
+
+#calls all the functions
+def process_all_data():
+
+    all_data_df, num_days, list_days, num_rows = get_data()
+
+    waiting_df = pd.DataFrame()
+    number_df = pd.DataFrame()
+    duration_df = pd.DataFrame()
+    starts_df = pd.DataFrame()
+
+    number_list = []
+    counter_list = []
+
+    for day in list_days:
+        current_days_data, current_days_patients = collecting_days_data(all_data_df, day, num_rows)
+        waiting_df, number_df, duration_df, starts_df = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df)
+        number_list, counter_list = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list) 
+
+    list_of_df = [waiting_df, number_df, duration_df, starts_df]
+    list_of_lists = [number_list, counter_list]
+
+    list_of_tally_list = []
+
+    for i in list_of_df:
+        temp = get_probabilities_time(i, True)#want to put through lists!!!!!!
+        list_of_tally_list.append(temp)
+
+    for i in list_of_lists:
+        temp = get_probabilities_time(i, False)#want to put through lists!!!!!!
+        list_of_tally_list.append(temp)
+
+    return()
 
 
 #running here !!!!!!!!!!!!!

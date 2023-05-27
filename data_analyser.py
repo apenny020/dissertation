@@ -38,7 +38,13 @@ def order_list(to_order_list, file_name):
 #also
 #second for number of patients 
 #the list should be a number over multiple dates
-def get_probabilities_time(data_list):
+def get_probabilities_time(data_list, if_df):
+    if if_df == True: #is a df
+
+    else:#FFINISH THIS< REDO THE FUCNTION AND ALSO THE NAME PROBLEM !!!!!!!!!!!!
+
+
+
     tally_dict = {}
     ordered_list = sorted(data_list)
     for i in ordered_list:
