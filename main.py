@@ -279,10 +279,12 @@ def starts_everything():
     print ("data capture")
     print(data_capture)
 
+    return()
+
 
 #run the model here
 print("Process data")
-give_date() #work out if it just does one day or all, do i need to call in loop - need to add, currently there is an endless recursive call - fix this 
+tally_dict, untallied_dict = process_all_data()
 print("going to start")
 starts_everything()
 print("completed")
@@ -291,7 +293,6 @@ print("completed")
 
 
 
-#end of day we want stats
 #NUMBER OF PATIENTS WHO LEFT BECAUSE SATISFACTION TOO LOW
 #NUMBER OF PATIENTS IN CLINIC THAT DAY
 #AVERAGE WAIT TIME FOR HEIGHT AND WEIGHT

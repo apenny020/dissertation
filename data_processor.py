@@ -180,15 +180,13 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
             c =+ 1 #counter
 
 
-    #To be an overall dataframes of the above lists
-    
-
     #adding lists to dataframes above - could turn more efficient !!!!!!!!!!!!!
     waiting_df ["wait_h&w"] = wait_for_Height_and_weight
     waiting_df ["wait_bloods"] = wait_for_Bloods
     waiting_df ["wait_consult_1"] = wait_for_consultation_1
     waiting_df ["wait_consult_1/2"] = wait_for_consultation_1_of_2
     waiting_df ["wait_consult_2"] = wait_for_consultation_2
+    #waiting_df_headers = ["wait_h&w","wait_bloods","wait_consult_1","wait_consult_1/2"]
 
     number_df ["num_consult"] = number_of_consultations
     number_df ["num_dna"] = number_of_did_not_attends
@@ -271,7 +269,8 @@ def calculating_patient_numbers (todays_data, todays_patients, number_list, coun
             
             counter += 1
 
-    return(number_list, counter_list)
+    return_dict = {"number_list":number_list, "counter_list":counter_list}
+    return(return_dict)
 
 
 
@@ -315,8 +314,6 @@ def get_data():
     return(all_data_df, num_days, list_days, num_rows)
 
 
-def unpack_df(df):
-    return(list)
 
 #calls all the functions
 def process_all_data():
@@ -334,22 +331,64 @@ def process_all_data():
     for day in list_days:
         current_days_data, current_days_patients = collecting_days_data(all_data_df, day, num_rows)
         waiting_df, number_df, duration_df, starts_df = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df)
-        number_list, counter_list = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list) 
+        return_dict = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list) 
 
     list_of_df = [waiting_df, number_df, duration_df, starts_df]
-    list_of_lists = [number_list, counter_list]
 
-    list_of_tally_list = []
+    tally_dict = {}
+    list_names = []
+    list_tallys = []
 
+
+    #get the lists out of the df
+    df_dict = {}
+    column_headers = []
+    temp_col = []
+
+    c = 0 # counter
     for i in list_of_df:
-        temp = get_probabilities_time(i, True)#want to put through lists!!!!!!
-        list_of_tally_list.append(temp)
+        column_headers.append(list(i.columns.values))
+        temp_col.append(i[column_headers[c]].tolist())
+        c =+ 1
 
-    for i in list_of_lists:
-        temp = get_probabilities_time(i, False)#want to put through lists!!!!!!
-        list_of_tally_list.append(temp)
+    for header, col in zip(column_headers, temp_col):
+        df_dict[header] = col
 
-    return()
+    #getting the tallys
+    for i in df_dict:
+        name, tally = (get_probabilities_time(df_dict[i]))
+        list_names.append(str(name))
+        list_tallys.append(tally)
+
+    for i in return_dict:
+        name, tally = (get_probabilities_time(return_dict[i])) #gives the values as a list
+        list_names.append(str(name))
+        list_tallys.append(tally)
+
+    tally_df = pd.DataFrame()
+    for i in list_names:
+        for j in list_tallys:
+            tally_df[i] = j
+
+    for name, tally in zip(list_names, list_tallys):
+        tally_dict[name] = tally
+
+    
+    #raw, untallied dict of lists
+    untallied_dict = {}
+
+    for i in df_dict:
+        temp_list = df_dict[i]
+        temp_list = sorted(temp_list)
+        untallied_dict[i]=temp_list
+    
+    for i in return_dict:
+        temp_list = df_dict[i]
+        temp_list = sorted(temp_list)
+        untallied_dict[i]=temp_list
+
+
+    return(tally_dict, untallied_dict)
 
 
 #running here !!!!!!!!!!!!!

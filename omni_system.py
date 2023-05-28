@@ -190,7 +190,7 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
             setattr(patient, "second_consult_appointment_time", "null")
 
             #add patients to drs patient list
-            for dr in dr_list:
+            for dr in num_consultants:
                 if dr == dr_1:
                     temp = dr_dict['consultant_%s' % dr]
                     temp.append(getattr(patient,"id"))
@@ -216,7 +216,7 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
             setattr(patient, "second_consult_appointment_time", str(consult_appt_time_2))
 
             #add patients to drs patient list
-            for dr in dr_list:#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            for dr in num_consultants:#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 if dr == dr_2:
                     temp = dr_dict['consultant_%s' % dr]
                     temp.append(getattr(patient,"id"))
