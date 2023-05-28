@@ -278,8 +278,8 @@ def initialise(data_capture_df):
     clinic_start = 540 #minutes of day (540 ticks) could get from data?
     clinic_end = 1020 #minutes of day (1020 ticks) could get from data?
     nurse_list = []
-    consultant_list = #data
-    waiting_room_capacity = [] #,ax patients
+    consultant_list = []
+    waiting_room_capacity = #30? #,ax patients
     
     bloods_patients = []
     all_patients = []

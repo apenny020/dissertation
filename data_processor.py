@@ -62,6 +62,7 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
     number_of_did_not_attends = 0
     number_of_lates = 0 #not including DNA's
     number_of_consultations = 0
+    number_of_patients = len(current_days_patients)
 
     #To collect appointment times approximation
     consultation_starts = []
@@ -188,10 +189,6 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
     waiting_df ["wait_consult_2"] = wait_for_consultation_2
     #waiting_df_headers = ["wait_h&w","wait_bloods","wait_consult_1","wait_consult_1/2"]
 
-    number_df ["num_consult"] = number_of_consultations
-    number_df ["num_dna"] = number_of_did_not_attends
-    number_df ["num_lates"] = number_of_lates
-
     duration_df ["duration_bloods"] = bloods_duration
     duration_df ["duration_consult_1"] = consultation_duration_1
     duration_df ["duration_consult_1/2"] = consultation_duration_1_of_2
@@ -202,7 +199,11 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
     starts_df ["starts_consult"] = consultation_starts
     starts_df ["starts_arrival"] = arrival_time
 
-    #could be created more efficiently ^
+    number_df ["num_consult"] = ((number_of_consultations/number_of_patients)*100)
+    number_df ["num_dna"] = ((number_of_did_not_attends/number_of_patients)*100)
+    number_df ["num_lates"] = ((number_of_lates/number_of_patients)*100)
+    number_df ["num_patients"] = number_of_patients
+
 
     return (waiting_df, number_df, duration_df, starts_df)
 
@@ -333,7 +334,8 @@ def process_all_data():
         waiting_df, number_df, duration_df, starts_df = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df)
         return_dict = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list) 
 
-    list_of_df = [waiting_df, number_df, duration_df, starts_df]
+    list_of_df = [waiting_df, duration_df, starts_df]
+    num_df = [number_df]
 
     tally_dict = {}
     list_names = []
@@ -342,6 +344,7 @@ def process_all_data():
 
     #get the lists out of the df
     df_dict = {}
+    num_dict = {}
     column_headers = []
     temp_col = []
 
@@ -354,6 +357,17 @@ def process_all_data():
     for header, col in zip(column_headers, temp_col):
         df_dict[header] = col
 
+
+    #for number_df
+    for i in num_df:
+        column_headers.append(list(i.columns.values))
+        temp_col.append(i[column_headers[c]].tolist())
+        c =+ 1
+
+    for header, col in zip(column_headers, temp_col):
+        num_dict[header] = col
+
+
     #getting the tallys
     for i in df_dict:
         name, tally = (get_probabilities_time(df_dict[i]))
@@ -364,11 +378,6 @@ def process_all_data():
         name, tally = (get_probabilities_time(return_dict[i])) #gives the values as a list
         list_names.append(str(name))
         list_tallys.append(tally)
-
-    tally_df = pd.DataFrame()
-    for i in list_names:
-        for j in list_tallys:
-            tally_df[i] = j
 
     for name, tally in zip(list_names, list_tallys):
         tally_dict[name] = tally
@@ -386,7 +395,11 @@ def process_all_data():
         temp_list = df_dict[i]
         temp_list = sorted(temp_list)
         untallied_dict[i]=temp_list
-
+    
+    for i in num_dict:
+        temp_list = df_dict[i]
+        temp_list = sorted(temp_list)
+        untallied_dict[i]=temp_list
 
     return(tally_dict, untallied_dict)
 
