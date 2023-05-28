@@ -47,34 +47,40 @@ def collecting_days_data (all_data_df, current_day, num_rows):
 
 
 #Calculates the durations, waiting times and other data needed to be found
-def calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df):
-    #Instantiating 
-    arrival_time = []
+def calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first):
+    
+    if first == True:
+        #Instantiating 
+        arrival_time = []
 
-    #To collect a list of waiting times in minutes
-    wait_for_Height_and_weight = []
-    wait_for_Bloods = []
-    wait_for_consultation_1 = []
-    wait_for_consultation_1_of_2 = []
-    wait_for_consultation_2 = []
+        #To collect a list of waiting times in minutes
+        wait_for_Height_and_weight = []
+        wait_for_Bloods = []
+        wait_for_consultation_1 = []
+        wait_for_consultation_1_of_2 = []
+        wait_for_consultation_2 = []
+
+        #To collect appointment times approximation
+        consultation_starts = []
+        bloods_starts = []
+
+        #To collect a list of duration times in minutes
+        consultation_duration_1 = []
+        consultation_duration_1_of_2 = []
+        consultation_duration_2 = []
+        bloods_duration = []
+        late_duration = []
+
+        num_of_consultations = [] 
+        num_of_did_not_attends = []
+        num_of_lates = []
+        num_patients = []
 
     #To collect a list of number of patients to the particular event
     number_of_did_not_attends = 0
     number_of_lates = 0 #not including DNA's
     number_of_consultations = 0
     number_of_patients = len(current_days_patients)
-
-    #To collect appointment times approximation
-    consultation_starts = []
-    bloods_starts = []
-
-    #To collect a list of duration times in minutes
-    consultation_duration_1 = []
-    consultation_duration_1_of_2 = []
-    consultation_duration_2 = []
-    bloods_duration = []
-    late_duration = []
-
 
     #re-sort the list by unique identifier (patient)
     sorted_current_days_data = sorted(current_days_data, key=lambda d: d['unique_identifier'])
@@ -181,31 +187,38 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
             c =+ 1 #counter
 
 
-    #adding lists to dataframes above - could turn more efficient !!!!!!!!!!!!!
-    waiting_df ["wait_h&w"] = wait_for_Height_and_weight
-    waiting_df ["wait_bloods"] = wait_for_Bloods
-    waiting_df ["wait_consult_1"] = wait_for_consultation_1
-    waiting_df ["wait_consult_1/2"] = wait_for_consultation_1_of_2
-    waiting_df ["wait_consult_2"] = wait_for_consultation_2
-    #waiting_df_headers = ["wait_h&w","wait_bloods","wait_consult_1","wait_consult_1/2"]
+    num_of_consultations.append((number_of_consultations/number_of_patients)*100)
+    num_of_did_not_attends.append((number_of_did_not_attends/number_of_patients)*100)
+    num_of_lates.append((number_of_lates/number_of_patients)*100)
+    num_patients.append(number_of_patients)
 
-    duration_df ["duration_bloods"] = bloods_duration
-    duration_df ["duration_consult_1"] = consultation_duration_1
-    duration_df ["duration_consult_1/2"] = consultation_duration_1_of_2
-    duration_df ["duration_consult_2"] = consultation_duration_2
-    duration_df ["duration_lates"] = late_duration
+    if final == True:
+        #adding lists to dataframes above - could turn more efficient !!!!!!!!!!!!!
+        waiting_df ["wait_h&w"] = wait_for_Height_and_weight
+        waiting_df ["wait_bloods"] = wait_for_Bloods
+        waiting_df ["wait_consult_1"] = wait_for_consultation_1
+        waiting_df ["wait_consult_1/2"] = wait_for_consultation_1_of_2
+        waiting_df ["wait_consult_2"] = wait_for_consultation_2
+        #waiting_df_headers = ["wait_h&w","wait_bloods","wait_consult_1","wait_consult_1/2"]
 
-    starts_df ["starts_bloods"] = bloods_starts
-    starts_df ["starts_consult"] = consultation_starts
-    starts_df ["starts_arrival"] = arrival_time
+        duration_df ["duration_bloods"] = bloods_duration
+        duration_df ["duration_consult_1"] = consultation_duration_1
+        duration_df ["duration_consult_1/2"] = consultation_duration_1_of_2
+        duration_df ["duration_consult_2"] = consultation_duration_2
+        duration_df ["duration_lates"] = late_duration
 
-    number_df ["num_consult"] = ((number_of_consultations/number_of_patients)*100)
-    number_df ["num_dna"] = ((number_of_did_not_attends/number_of_patients)*100)
-    number_df ["num_lates"] = ((number_of_lates/number_of_patients)*100)
-    number_df ["num_patients"] = number_of_patients
+        starts_df ["starts_bloods"] = bloods_starts
+        starts_df ["starts_consult"] = consultation_starts
+        starts_df ["starts_arrival"] = arrival_time
 
+        number_df ["num_consult"] = num_of_consultations
+        number_df ["num_dna"] = num_of_did_not_attends
+        number_df ["num_lates"] = num_of_lates
+        number_df ["num_patients"] = num_patients
 
-    return (waiting_df, number_df, duration_df, starts_df)
+        return (waiting_df, number_df, duration_df, starts_df)
+    
+    return(wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients)
 
 
         
@@ -329,10 +342,27 @@ def process_all_data():
     number_list = []
     counter_list = []
 
+    final = False
+    first = False
+    counter = 0
     for day in list_days:
         current_days_data, current_days_patients = collecting_days_data(all_data_df, day, num_rows)
-        waiting_df, number_df, duration_df, starts_df = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df)
-        return_dict = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list) 
+
+        counter =+ 1
+        if counter == num_days:
+            final = True
+            waiting_df, number_df, duration_df, starts_df = calculating_times (current_days_data, current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first)
+
+        elif counter == 1:
+            first = True
+            wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first)
+
+        else:
+            first = False
+            wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first)
+
+        return_dict = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list, final, first) 
+        #FIX THIS TOOO!!!!!!!!1
 
     list_of_df = [waiting_df, duration_df, starts_df]
     num_df = [number_df]

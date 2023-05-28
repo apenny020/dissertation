@@ -33,7 +33,6 @@ class Patient_agent:
 
 
     def arrival_times(Patient_agent):#max 2 hrs early
-        #use a percentage - make data into a percentage chance of DNA, if falls in first x% then DNA
         if_arrive = random.randint(1,100)
         if if_arrive >15: #!!!!!!!!!!!!!!!change to actual percentage:
             Patient_agent.will_arrive = True
