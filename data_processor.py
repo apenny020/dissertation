@@ -224,20 +224,21 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
         
 
 #Calculates the number of patients in certain situations
-def calculating_patient_numbers (todays_data, todays_patients, number_list, counter_list):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
+def calculating_patient_numbers (todays_data, todays_patients, number_list, counter_list, first, final):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
     length = len(todays_data)
     start_time = todays_data.self[0].get("date_time")
     end_time = todays_data.self[length-1].get("date_time")
 
     counter = 0
 
-    patients_in_clinic = []
-    patients_in_bloods = []
-    patients_in_consultation = []
+    if first == True:
+        patients_in_clinic = []
+        patients_in_bloods = []
+        patients_in_consultation = []
 
-    clinic_counter = 0#number of patients in clinic at any time
-    bloods_counter = 0#number of patients in bloods at one time
-    consult_counter = 0#number of patients in consultation at one time
+        clinic_counter = 0#number of patients in clinic at any time
+        bloods_counter = 0#number of patients in bloods at one time
+        consult_counter = 0#number of patients in consultation at one time
 
 
     while (start_time <= end_time):
@@ -283,8 +284,11 @@ def calculating_patient_numbers (todays_data, todays_patients, number_list, coun
             
             counter += 1
 
-    return_dict = {"number_list":number_list, "counter_list":counter_list}
-    return(return_dict)
+    if final == True:
+        return_dict = {"number_list":number_list, "counter_list":counter_list}
+        return(return_dict)
+    
+    return(number_list, counter_list)
 
 
 
@@ -352,17 +356,19 @@ def process_all_data():
         if counter == num_days:
             final = True
             waiting_df, number_df, duration_df, starts_df = calculating_times (current_days_data, current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first)
+            return_dict = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list, final, first) 
 
         elif counter == 1:
             first = True
             wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first)
+            number_list, counter_list = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list, final, first) 
 
         else:
             first = False
             wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first)
+            number_list, counter_list = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list, final, first) 
 
-        return_dict = calculating_patient_numbers(current_days_data, current_days_patients, number_list, counter_list, final, first) 
-        #FIX THIS TOOO!!!!!!!!1
+
 
     list_of_df = [waiting_df, duration_df, starts_df]
     num_df = [number_df]
