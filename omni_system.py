@@ -270,16 +270,16 @@ def longest_waiting_patient(total_patients):
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#~Initialise~#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def initialise(data_capture_df):
-    patient_number = #take from data
-    dr_number = #take from data
-    nurse_number = #take from data
-    bloods_appt_length = 15 #assumption of 15mins - could get from data?
-    clinic_start = 540 #minutes of day (540 ticks) could get from data?
-    clinic_end = 1020 #minutes of day (1020 ticks) could get from data?
+def initialise(data_capture_df, untallied_dict):
+    patient_number = random.randint(untallied_dict["num_patients"])
+    dr_number = random.randint(untallied_dict["num_consult"])
+    nurse_number = random.randint(1,3)#up to 3 blood stations
+    bloods_appt_length = 15 #assumption of 15mins 
+    clinic_start = 480 #minutes of day (540 ticks) assumption from what told - 8am
+    clinic_end = 1050 #minutes of day (1020 ticks) assumption from what told - 5:30pm
     nurse_list = []
     consultant_list = []
-    waiting_room_capacity = #30? #,ax patients
+    waiting_room_capacity = max(untallied_dict["num_patients"])
     
     bloods_patients = []
     all_patients = []
@@ -300,7 +300,7 @@ def initialise(data_capture_df):
     #appointment_df = appointment_df.assign()#assign column headers
     
     #seeting the appts times of bloods appt and adding to df
-    appointment_times_bloods = appointment_times(clinic_start, bloods_appt_length, clinic_end) #28
+    appointment_times_bloods = appointment_times(clinic_start, bloods_appt_length, clinic_end-30) #28
     appointment_df["bloods"]= appointment_times_bloods
     
     #initialise patient df: Patient identifier, appointment time bloods, appointment time clinic 1, appointment time clinic 2, current action, waiting for
@@ -335,12 +335,16 @@ def initialise(data_capture_df):
         consultant = initialise_consultant(x)
         consultant_list.append(consultant)
         
-        #take from the processed data - make sure in minutes form
-        consultant_start = #take from data
-        consult_length = 30 # assumption - can take from data
-        consultant_end = #take from data
+        if getattr(x, "sick") == True:
+            clinic_times = []
+        else:
+            #take from the processed data - make sure in minutes form
+            consultant_start = 540 #assumption
+            consult_length = 20 #20-30mins in life
+            consultant_end = 1020 #assumption
 
-        clinic_times = appointment_times(consultant_start, consult_length, consultant_end) 
+            clinic_times = appointment_times(consultant_start, consult_length, consultant_end) 
+        
         #Appends to apopintment df
         appointment_df["dr" + str(x)]= clinic_times
 
@@ -393,7 +397,7 @@ def initialise(data_capture_df):
         
 
     print(patient_df)
-    return(patient_df, nurse_list, consultant_list, bloods_patients, data_capture_df, dr_dict)     
+    return(patient_df, nurse_list, consultant_list, bloods_patients, data_capture_df, dr_dict, clinic_start, clinic_end)     
 
 
 #------------------continue from here -----------------

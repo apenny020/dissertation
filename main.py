@@ -7,14 +7,14 @@ import pandas as pd
 import random
 
 
-def starts_everything():
+def starts_everything(untallied_dict):
     tick = 510 # each minute, 8:30am
     
     data_capture_df = pd.DataFrame()
     data_capture_df = data_capture_df.assign(Patient=[], ID=[], Bloods_scheduled=[], Bloods_seen=[], Consultant_scheduled=[], Consultant_seen=[], arrival_time=[], exit_time=[], patient_satisfaction=[]) #add wait time
     
     #initialise the day
-    patient_df, nurse_list, consultant_list, bloods_patients, data_capture, consultant_appts_dict = initialise(data_capture_df)
+    patient_df, nurse_list, consultant_list, bloods_patients, data_capture, consultant_appts_dict, clinic_start, clinic_end = initialise(data_capture_df, untallied_dict)
     print(data_capture)
 
     patients_arrived = []
@@ -30,7 +30,8 @@ def starts_everything():
     while tick <= 1050: #5:30pm
         tick += 1
         print(tick)
-        if (tick > 540 and tick < 1020): #9am & 5pm
+        other = ["null", "uknown", "complete", "incomplete"]
+        if (tick > clinic_start and tick < clinic_end): #8am & 5:30pm
             #check which patients are here
             print(tick)
             #for each patient check if arrived, add to list of arrived patients
@@ -38,10 +39,25 @@ def starts_everything():
                 if getattr(p, "arrived") and (p not in patients_arrived):
                     patients_arrived.append(p)
 
+                    states = ["consulting", "bloods"]
+                        #update satisfaction
+                    if getattr(p, "current_action") not in: 
+                        satis = getattr(p, "patient_satisfaction")
+                        satis = satis - 0.25
+                        setattr(p, "patient_satisfaction", satis)
+                        data_capture_df["patient_satisfaction"] = satis
+
+                    #check their satisfaction
+                    p, left = Patient_agent.leave(p)
+                    if left == True:
+                        data_capture_df["patient_satisfaction"] = 0
+                        data_capture_df["exit_time"] = tick
+                        setattr(p, "current_action", "incomplete")
+                        setattr(p, "finished", True)
+
                 #if not arrived and not finished
                 elif (getattr(p, "arrived") == False) and (getattr(p,"finished") == False):
-                    other = ["null", "uknown", "complete"]
-
+                    
                     #if appointment times arent null, unknown, or complete, ie they exist and havent happened yet
                     if (getattr(p, "consultant_1_appointment_time") not in other) and (getattr(p, "bloods_appointment_time") not in other):
 
@@ -66,7 +82,7 @@ def starts_everything():
                     if getattr(p, "will_arrive") == False:
                         setattr(p, "arrived", False)
                         setattr(p, "current_action", "finished")
-                        other = ["null", "unknown"]
+                    
                         if getattr(p, "bloods_appointment_time") not in other:
                             setattr(p, "bloods_appointment_time", "complete")
 
@@ -75,6 +91,15 @@ def starts_everything():
 
                         if getattr(p, "consultant_2_appointment_time") not in other:
                             setattr(p, "consultant_2_appointment_time", "complete")
+
+                    #work out their actual arrival time
+                    temp_time = getattr(p, "arrival_time")
+                    temp_time = temp_time-appt_time
+                    setattr(p, "arrival_time", temp_time)
+
+                    #if patient wants to arrive before clinic starts, reset to arrive when clinic starts
+                    if getattr(p, "arrival_time") < clinic_start:
+                        setattr(p, "arrival_time", clinic_start)
 
                     #checking if arrived
                     if tick >= getattr(p, "arrival_time"):
@@ -103,11 +128,15 @@ def starts_everything():
                     waiting = getattr(p, "time_waiting")
                     waiting += 1
                     setattr(p, "time_waiting", waiting)
+
+                elif getattr(p, "current_action") in states:
+                    #waiting time paused
+                    waiting = 0
+                    setattr(p, "time_waiting", waiting)
                 
-                other_states = ["complete", "null"]
 
                 if (getattr(p, "current_action") is not "finished"):
-                    if (getattr(p, "bloods_appointment_time") in other_states and (getattr(p, "consultant_1_appointment_time") in other_states) and (getattr(p, "consultant_2_appointment_time") in other_states) ):
+                    if (getattr(p, "bloods_appointment_time") in other and (getattr(p, "consultant_1_appointment_time") in other) and (getattr(p, "consultant_2_appointment_time") in other) ):
                         #finished, appts are complete, update states to finished
                         print(getattr(p, "id"))
                         print(tick)
@@ -146,7 +175,6 @@ def starts_everything():
 
 
                 for p in consult_patients:
-                    other = ["null", "complete", "unkown"]
 
                     #if this is true (below) means DNA so remove from list
                     if getattr(p, "consultant_1_appointment_time") in other:
@@ -160,6 +188,10 @@ def starts_everything():
                             #CHANGE FOR LONGEST WAITING ETC!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!/closest to time
                             if (getattr(p, "current_action") == "waiting" and ((getattr(p, "consultant_1_appointment_time") not in other) or (getattr(p, "consultant_2_appointment_time") not in other))):
                                 setattr(p, "current_action", "consulting")
+                                satis = getattr(p, "patient_satisfaction")
+                                satis = satis + 20
+                                setattr(p, "patient_satisfaction", satis)
+                                data_capture_df["patient_satisfaction"] = satis
                                 setattr(c, "current_action", "treating")
                                 setattr(c, "task_duration", 30)#minutes
                                 setattr(c, "patient_treating", getattr(p, "id"))
@@ -220,7 +252,7 @@ def starts_everything():
                     blood_nurses.append(n)
 
                 #check for DNAs
-                other = ["complete", "null", "unkown"]
+                
                 for p in bloods_patients:
                     if getattr(p, "bloods_appointment_time") in other:
                         bloods_patients.remove(p)
@@ -230,11 +262,15 @@ def starts_everything():
 
             
                 
-                if (getattr(n, "current_action") == "waiting"):
+                if (getattr(n, "current_action") == "waiting") and (getattr(n, "type") == "bloods"):
                     for p in patient_dict:
                         if getattr(p, "current_action") == "waiting":
                             id = getattr(p, "id")
                             setattr(p, "current_action", "bloods")
+                            satis = getattr(p, "patient_satisfaction")
+                            satis = satis + 20
+                            setattr(p, "patient_satisfaction", satis)
+                            data_capture_df["patient_satisfaction"] = satis
                             setattr(n, "current_action", "treating")
                             setattr(n, "task_duration", 15)#minutes
                             setattr(n, "patient_treating", id)
@@ -286,7 +322,7 @@ def starts_everything():
 print("Process data")
 tally_dict, untallied_dict = process_all_data()
 print("going to start")
-starts_everything()
+starts_everything(untallied_dict)
 print("completed")
         
                 

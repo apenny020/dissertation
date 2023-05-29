@@ -105,34 +105,34 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                 time_start = i[c-1].get("date_time")[8:].time()
                 time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
-                wait_for_Height_and_weight.append(duration)
+                wait_for_Height_and_weight.append(round(duration))
 
             elif current_action == "in consultation 1 of 1"  and previous_action == "waiting consultation 1 of 1":
                 time_start = i[c-1].get("date_time")[8:].time()
                 time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
-                wait_for_consultation_1.append(duration)
+                wait_for_consultation_1.append(round(duration))
                 consultation_starts.append(time_start)
 
             elif current_action == "in consultation 1 of 2" and previous_action == "waiting consultation 1 of 2":
                 time_start = i[c-1].get("date_time")[8:].time()
                 time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
-                wait_for_consultation_1_of_2.append(duration)
+                wait_for_consultation_1_of_2.append(round(duration))
                 consultation_starts.append(time_start)
 
             elif current_action == "in consultation 2 of 2" and previous_action == "waiting consultation 2 of 2":
                 time_start = i[c-1].get("date_time")[8:].time()
                 time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
-                wait_for_consultation_2.append(duration)  
+                wait_for_consultation_2.append(round(duration))  
                 consultation_starts.append(time_start)
 
             elif current_action == "in blood room" and previous_action == "waiting blood room":
                 time_start = i[c-1].get("date_time")[8:].time()
                 time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
-                wait_for_Bloods.append(duration)
+                wait_for_Bloods.append(round(duration))
                 bloods_starts.append(time_start)
 
             elif current_action == "late arrival" and future_action != "did not attend":
@@ -140,7 +140,7 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                 time_start = i[c].get("date_time")[8:].time()
                 time_end = i[c+1].get("date_time")[8:].time()
                 duration = time_end - time_start
-                late_duration.append(duration)
+                late_duration.append(round(duration))
 
             else:
                 #x
@@ -158,25 +158,25 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                 time_start = i[c-1].get("date_time")[8:].time()
                 time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
-                consultation_duration_1.append(duration)
+                consultation_duration_1.append(round(duration))
 
             elif previous_action == "in consultation 1 of 2":
                 time_start = i[c-1].get("date_time")[8:].time()
                 time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
-                consultation_duration_1_of_2.append(duration)
+                consultation_duration_1_of_2.append(round(duration))
 
             elif previous_action == "in consultation 2 of 2":
                 time_start = i[c-1].get("date_time")[8:].time()
                 time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
-                consultation_duration_2.append(duration)
+                consultation_duration_2.append(round(duration))
 
             elif previous_action == "in blood room":
                 time_start = i[c-1].get("date_time")[8:].time()
                 time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
-                bloods_duration.append(duration)
+                bloods_duration.append(round(duration))
 
             else:
                 #x
@@ -404,6 +404,7 @@ def process_all_data():
         num_dict[header] = col
 
 
+
     #getting the tallys
     for i in df_dict:
         name, tally = (get_probabilities_time(df_dict[i]))
@@ -437,7 +438,7 @@ def process_all_data():
         temp_list = sorted(temp_list)
         untallied_dict[i]=temp_list
 
-    return(tally_dict, untallied_dict)
+    return(tally_dict, untallied_dict, num_dict)
 
 
 #running here !!!!!!!!!!!!!

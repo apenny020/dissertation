@@ -33,7 +33,7 @@ class Patient_agent:
 
 
     def arrival_times(Patient_agent):#max 2 hrs early
-        if_arrive = random.randint(1,100)
+        if_arrive = random.uniform(1.0,100.0)
         if if_arrive >15: #!!!!!!!!!!!!!!!change to actual percentage:
             Patient_agent.will_arrive = True
         else:
@@ -52,17 +52,20 @@ class Patient_agent:
         if Patient_agent.current_action != "Appointed" or "Complete":
             if Patient_agent.patient_satisfaction <= 0:
                 Patient_agent.current_action = "left_clinic"
+                left = True
+            else:
+                left = False
 
-        return(Patient_agent)
+        return(Patient_agent, left)
                 
 
-    #add later
-    def update_satisfaction(patient_list):
+    # #add later
+    # def update_satisfaction(patient_list):
         
-        #if current action remains unchanged reduce patient_satisfaction by 0.25
-        #if current action changes then patient_satisfaction increases by 10?
-        print("hi")
-        pass
+    #     #if current action remains unchanged reduce patient_satisfaction by 0.25
+    #     #if current action changes then patient_satisfaction increases by 10?
+    #     print("hi")
+    #     pass
 
 
 #initialise the patient agent
@@ -75,7 +78,7 @@ def initialise_patient(counter):
         
 
     #need to give all the stuffs
-    patient = Patient_agent(id, patient_satisfaction, "unknown", current_action, 0, False, False, "unknown", "unknown", "unkown", 0)
+    patient = Patient_agent(id, patient_satisfaction, "unknown", current_action, False, False, False, "unknown", "unknown", "unkown", 0)
     Patient_agent.arrival_times(patient)
 
     return (patient)
