@@ -297,15 +297,13 @@ def initialise(data_capture_df, untallied_dict):
     #update below to be automated and also to generate based on dr number!!!!!!!!!!!!!!!
     
     appointment_df = pd.DataFrame()
-    #appointment_df = appointment_df.assign()#assign column headers
     
     #seeting the appts times of bloods appt and adding to df
     appointment_times_bloods = appointment_times(clinic_start, bloods_appt_length, clinic_end-30) #28
     appointment_df["bloods"]= appointment_times_bloods
     
     #initialise patient df: Patient identifier, appointment time bloods, appointment time clinic 1, appointment time clinic 2, current action, waiting for
-    patient_df = pd.DataFrame()
-    patient_df = patient_df.assign(Patient=[], ID=[], Bloods_time=[], Consultant_1_time=[], Consultant_2_time=[], current_action=[], patient_satisfaction=[], arrival_time[])#add satisfaction later and consultant 2 time
+    patient_df = pd.DataFrame(columns=["Patient", "ID", "Bloods_time", "Consultant_1_time", "Consultant_2_time", "current_action", "patient_satisfaction", "arrival_time"])
 
     #initialising nurses by how many there are
     for x in range(nurse_number):

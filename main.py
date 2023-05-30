@@ -10,8 +10,7 @@ import random
 def starts_everything(untallied_dict):
     tick = 510 # each minute, 8:30am
     
-    data_capture_df = pd.DataFrame()
-    data_capture_df = data_capture_df.assign(Patient=[], ID=[], Bloods_scheduled=[], Bloods_seen=[], Consultant_scheduled=[], Consultant_seen=[], arrival_time=[], exit_time=[], patient_satisfaction=[]) #add wait time
+    data_capture_df = pd.DataFrame(columns=["Patient", "ID", "Bloods_scheduled", "Bloods_seen", "Consultant_scheduled", "Consultant_seen", "arrival_time", "exit_time", "patient_satisfaction"])
     
     #initialise the day
     patient_df, nurse_list, consultant_list, bloods_patients, data_capture, consultant_appts_dict, clinic_start, clinic_end = initialise(data_capture_df, untallied_dict)
@@ -41,7 +40,7 @@ def starts_everything(untallied_dict):
 
                     states = ["consulting", "bloods"]
                         #update satisfaction
-                    if getattr(p, "current_action") not in: 
+                    if getattr(p, "current_action") not in states: 
                         satis = getattr(p, "patient_satisfaction")
                         satis = satis - 0.25
                         setattr(p, "patient_satisfaction", satis)
