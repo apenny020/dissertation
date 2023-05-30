@@ -32,3 +32,23 @@ for agents.py #PERRY THE PLATYPUS?!
                 -->
                 - do the create()
 - Integrate with omni
+
+-add an environment and how they can intereact with it?
+
+
+
+#######################################
+Change appt choosing to make sure doesn't duplicate times
+Implement tests
+
+Check if an agent based model needs to allow for agents to be able to interact with environment
+Compare ABM to modeeling code
+Compare ABM to Adaptive code
+Compare ABM to the how to guides and hte minimum reqs of an ABM
+
+
+#Create graph and csv function
+#Create graph and CSV at end of every run
+#Create initial graph and CSV from analysed data
+#Add tests
+#Run and Debug
