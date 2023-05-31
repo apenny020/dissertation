@@ -134,7 +134,7 @@ def starts_everything(untallied_dict):
                     setattr(p, "time_waiting", waiting)
                 
 
-                if (getattr(p, "current_action") is not "finished"):
+                if (getattr(p, "current_action") != "finished"):
                     if (getattr(p, "bloods_appointment_time") in other and (getattr(p, "consultant_1_appointment_time") in other) and (getattr(p, "consultant_2_appointment_time") in other) ):
                         #finished, appts are complete, update states to finished
                         print(getattr(p, "id"))
@@ -320,6 +320,9 @@ def starts_everything(untallied_dict):
 #run the model here
 print("Process data")
 tally_dict, untallied_dict = process_all_data()
+print(tally_dict)
+print("------------------------")
+print(untallied_dict)
 print("going to start")
 starts_everything(untallied_dict)
 print("completed")

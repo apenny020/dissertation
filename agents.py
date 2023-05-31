@@ -121,7 +121,7 @@ def initialise_nurse(counter):
     id = counter
     type = random.choice(["Bloods", "HW"]) #rand choice from bloods, H&W (if bloods then can do both)
     current_action = "waiting" #could be calling patients, H&w, waiting, bloods - make sure matches nurse type
-    nurse = Nurse_agent(id, type current_action, "unknown", "uknown")
+    nurse = Nurse_agent(id, type, current_action, "unknown", "uknown")
 
     return (nurse)
 

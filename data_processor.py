@@ -23,12 +23,15 @@ How many patients in consulatation at same time
 """
 #This function finds the data for the paritcular given day
 def collecting_days_data (all_data_df, current_day, num_rows):
+    print(num_rows)
+    print(current_day)
     todays_data = []
     todays_patients = []
     #num_patients_in_day = len(todays_patients)
     for i in range(num_rows):
-        date = all_data_df.iloc[i]["DateTime"]
+        date = (all_data_df.iloc[i]["DateTime"])[:10]
         while date == current_day:
+            print(i)
             temp_list = []
             id = all_data_df.iloc[i]["Patient_id"]
             state_enter = all_data_df.iloc[i]["State_Enter"]
@@ -37,11 +40,17 @@ def collecting_days_data (all_data_df, current_day, num_rows):
             temp_list.append(date)
             temp_list.append(state_enter)
             temp_list.append(state)
+            print(temp_list)
 
             #add to lists
             todays_data.append(temp_list)
             if id not in todays_patients:
+                print(id)
+                print(todays_patients)
                 todays_patients.append(id)
+                break
+            else:
+                break
 
     return(todays_data, todays_patients)
 
@@ -49,47 +58,23 @@ def collecting_days_data (all_data_df, current_day, num_rows):
 #Calculates the durations, waiting times and other data needed to be found
 def calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first):
     
-    if first == True:
-        #Instantiating 
-        arrival_time = []
-
-        #To collect a list of waiting times in minutes
-        wait_for_Height_and_weight = []
-        wait_for_Bloods = []
-        wait_for_consultation_1 = []
-        wait_for_consultation_1_of_2 = []
-        wait_for_consultation_2 = []
-
-        #To collect appointment times approximation
-        consultation_starts = []
-        bloods_starts = []
-
-        #To collect a list of duration times in minutes
-        consultation_duration_1 = []
-        consultation_duration_1_of_2 = []
-        consultation_duration_2 = []
-        bloods_duration = []
-        late_duration = []
-
-        num_of_consultations = [] 
-        num_of_did_not_attends = []
-        num_of_lates = []
-        num_patients = []
-
     #To collect a list of number of patients to the particular event
     number_of_did_not_attends = 0
     number_of_lates = 0 #not including DNA's
     number_of_consultations = 0
     number_of_patients = len(current_days_patients)
+    print(current_days_patients)
 
     #re-sort the list by unique identifier (patient)
-    sorted_current_days_data = sorted(current_days_data, key=lambda d: d['unique_identifier'])
-    sorted_current_days_patients = current_days_patients.sort()
+    #sorted_current_days_data = sorted(current_days_data, key=lambda d: d['unique_identifier'])
+    #sorted_current_days_patients = current_days_patients.sort()
 
     #go through each item in the new sorted list and match it to particular situations and add the value to the above waiting time lists
-    for i in sorted_current_days_data:
+    for i in current_days_data:
+#NEED TO REWORK - I IS A LIST NOT A DF OR DICT SO THE STUFF DOESNT WORK< GOTTA CHANGE IT ALL
+
         c = 0 #counter to keep track of patient
-        while i == current_days_patients[c].get("unique_identifier"): #while the patient is the same
+        while i[0] == current_days_patients[c]: #while the patient is the same
             current_action = i.self[c].get("action").str().lower()
             previous_action = i.self[c-1].get("action").str().lower()
             future_action = i.self[c+1].get("action").str().lower() # need a fail safe here and above just incase at first or last action !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -254,7 +239,7 @@ def calculating_patient_numbers (todays_data, todays_patients, number_list, coun
             elif current_action == "in blood room":
                 patients_in_bloods = current_patient
 
-            elif current_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
+            elif current_action == "in consultation 1 of 1" or "in consultation 1 of 2" or "in consultation 2 of 2":
                 patients_in_consultation = current_patient
 
             #checking for patients leaving and taking a count
@@ -266,7 +251,7 @@ def calculating_patient_numbers (todays_data, todays_patients, number_list, coun
                 if bloods_counter < temp:
                     bloods_counter = temp
 
-            elif previous_action == "in consultation 1 of 1" or "in consultation 1 of 2" of "in consultation 2 of 2":
+            elif previous_action == "in consultation 1 of 1" or "in consultation 1 of 2" or "in consultation 2 of 2":
                 if current_patient in patients_in_consultation:
                     patients_in_consultation.remove(current_patient)
                 
@@ -308,25 +293,48 @@ def calculating_patient_numbers (todays_data, todays_patients, number_list, coun
 
 
 def get_data():
-    with open("data_input_file_2018", "r") as data_file:
+    with open("data_input_file_2018.txt", "r") as data_file:
         Lines = data_file.readlines()
         data_file.close()
 
     #get all the data
-    for line in range(Lines):
-        temp_list = line
-        all_data_df = pd.DataFrame()
-        all_data_df = all_data_df.assign(Patient_id=[], DateTime=[], State_Enter=[], State=[])
-        all_data_df.loc[len(all_data_df)] = temp_list
+    c = 0
+    all_data_df = pd.DataFrame()
+    all_data_df = all_data_df.assign(Patient_id=[], DateTime=[], State_Enter=[], State=[])
+        
+    
+    
+
+    for line in Lines:
+        #turn into list
+        line = list(line.split("\t"))
+        line[3] = line[3].replace("\n", "")
+        line[0] = line[0].replace("ï»¿", "")
+
+
+        print (len(Lines))
+        c += 1
+        print(c)
+        if c == 30:
+            break
+        all_data_df.loc[len(all_data_df)] = line
+        print(all_data_df)
+        all_data_df.to_csv("all_data")
 
     #work out number of dates
     list_days = []
     num_rows = len(all_data_df.index)
+    print(num_rows)
     for i in range(num_rows):
         temp = all_data_df.iloc[i]["DateTime"]
-        if temp not in list_days:
+        print(temp)
+        if temp[:10] not in list_days:
+            print(list_days)
+            print(temp)
             temp = temp[:10]
-            list_days.append(i)
+            list_days.append(temp)
+
+    print(list_days)
     
     num_days = len(list_days)
     return(all_data_df, num_days, list_days, num_rows)
@@ -346,11 +354,40 @@ def process_all_data():
     number_list = []
     counter_list = []
 
+    #Instantiating 
+    arrival_time = []
+
+    #To collect a list of waiting times in minutes
+    wait_for_Height_and_weight = []
+    wait_for_Bloods = []
+    wait_for_consultation_1 = []
+    wait_for_consultation_1_of_2 = []
+    wait_for_consultation_2 = []
+
+    #To collect appointment times approximation
+    consultation_starts = []
+    bloods_starts = []
+
+    #To collect a list of duration times in minutes
+    consultation_duration_1 = []
+    consultation_duration_1_of_2 = []
+    consultation_duration_2 = []
+    bloods_duration = []
+    late_duration = []
+
+    num_of_consultations = [] 
+    num_of_did_not_attends = []
+    num_of_lates = []
+    num_patients = []
+
+
     final = False
     first = False
     counter = 0
     for day in list_days:
         current_days_data, current_days_patients = collecting_days_data(all_data_df, day, num_rows)
+        print(current_days_data)
+        print(current_days_patients)
 
         counter =+ 1
         if counter == num_days:
