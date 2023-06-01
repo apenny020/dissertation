@@ -32,18 +32,19 @@ def collecting_days_data (all_data_df, current_day, num_rows):
         date = (all_data_df.iloc[i]["DateTime"])[:10]
         while date == current_day:
             print(i)
-            temp_list = []
+            temp_dict = {}
             id = all_data_df.iloc[i]["Patient_id"]
             state_enter = all_data_df.iloc[i]["State_Enter"]
             state =  all_data_df.iloc[i]["State"]
-            temp_list.append(id)
-            temp_list.append(date)
-            temp_list.append(state_enter)
-            temp_list.append(state)
-            print(temp_list)
+            time =(all_data_df.iloc[i]["DateTime"])[11:]
+            temp_dict["id"] = id
+            temp_dict["time"] = time
+            temp_dict["state_enter"] = state_enter
+            temp_dict["action"] = state
+            print(temp_dict)
 
             #add to lists
-            todays_data.append(temp_list)
+            todays_data.append(temp_dict)
             if id not in todays_patients:
                 print(id)
                 print(todays_patients)
@@ -71,66 +72,71 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
 
     #go through each item in the new sorted list and match it to particular situations and add the value to the above waiting time lists
     for i in current_days_data:
-#NEED TO REWORK - I IS A LIST NOT A DF OR DICT SO THE STUFF DOESNT WORK< GOTTA CHANGE IT ALL
+        c=0
+        temp2 = (current_days_data[c]["id"])
+        temp = (i["id"])
+        print("----------------------")
 
-        c = 0 #counter to keep track of patient
-        while i[0] == current_days_patients[c]: #while the patient is the same
-            current_action = i.self[c].get("action").str().lower()
-            previous_action = i.self[c-1].get("action").str().lower()
-            future_action = i.self[c+1].get("action").str().lower() # need a fail safe here and above just incase at first or last action !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #c = 0 #counter to keep track of patient
+        while ((str(i["id"])) is (str(current_days_data[c]["id"]))): #while the patient is the same
             
+            current_action = i["action"].str().lower()
+            if c > 0 and i["id"] == current_days_patients[c]["id"]:
+                previous_action = current_days_patients[c-1]["action"].str().lower()
+            if i["id"] == current_days_patients[c]["id"]:
+                future_action = current_days_patients[c+1].get("action").str().lower() # need a fail safe here and above just incase at first or last action !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+            if c > 0 and i["id"] == current_days_patients[c]["id"]:
+                time_start = current_days_data[c-1]["time"].time()
+            time_end = i["time"].time()
+
             if current_action == "patient identified by kiosk":
-                arrival_time = i[c].get("date_time")[10:].time()
+                arrival_time = i["time"].time()
             
             elif current_action == "appointed" or "late arrival" or "patient identified by kiosk":
                 #ignore
-                print("hi")
+                print("ignore")
             
             elif previous_action == "waiting height and weight": # you cant tell what is wait and and what is duration so duration will be fixed
-                time_start = i[c-1].get("date_time")[8:].time()
-                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_Height_and_weight.append(round(duration))
 
             elif current_action == "in consultation 1 of 1"  and previous_action == "waiting consultation 1 of 1":
-                time_start = i[c-1].get("date_time")[8:].time()
-                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_consultation_1.append(round(duration))
                 consultation_starts.append(time_start)
 
             elif current_action == "in consultation 1 of 2" and previous_action == "waiting consultation 1 of 2":
-                time_start = i[c-1].get("date_time")[8:].time()
-                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_consultation_1_of_2.append(round(duration))
                 consultation_starts.append(time_start)
 
             elif current_action == "in consultation 2 of 2" and previous_action == "waiting consultation 2 of 2":
-                time_start = i[c-1].get("date_time")[8:].time()
-                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_consultation_2.append(round(duration))  
                 consultation_starts.append(time_start)
 
             elif current_action == "in blood room" and previous_action == "waiting blood room":
-                time_start = i[c-1].get("date_time")[8:].time()
-                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 wait_for_Bloods.append(round(duration))
                 bloods_starts.append(time_start)
 
             elif current_action == "late arrival" and future_action != "did not attend":
+                time_start = i["date_time"].time()
+                time_end = current_days_data[c+1]["date_time"].time()
                 number_of_lates += 1
-                time_start = i[c].get("date_time")[8:].time()
-                time_end = i[c+1].get("date_time")[8:].time()
                 duration = time_end - time_start
                 late_duration.append(round(duration))
 
             else:
                 #x
-                print ("hi")
+                print ("ignore2")
             
+            
+            if c > 0 and i["id"] == current_days_patients[c]["id"]:
+                time_start = current_days_data[c-1]["time"].time()
+            time_end = i["time"].time()
+
             #Same as above but looking for durations now and numbers of patients to add to the lists
             if current_action == "appointed" or "late arrival" or "patient identified by kiosk":
                 #ignore
@@ -140,26 +146,18 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                 number_of_did_not_attends =+ 1
 
             elif previous_action == "in consultation 1 of 1":
-                time_start = i[c-1].get("date_time")[8:].time()
-                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 consultation_duration_1.append(round(duration))
 
             elif previous_action == "in consultation 1 of 2":
-                time_start = i[c-1].get("date_time")[8:].time()
-                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 consultation_duration_1_of_2.append(round(duration))
 
             elif previous_action == "in consultation 2 of 2":
-                time_start = i[c-1].get("date_time")[8:].time()
-                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 consultation_duration_2.append(round(duration))
 
             elif previous_action == "in blood room":
-                time_start = i[c-1].get("date_time")[8:].time()
-                time_end = i[c].get("date_time")[8:].time()
                 duration = time_end - time_start
                 bloods_duration.append(round(duration))
 
@@ -211,8 +209,8 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
 #Calculates the number of patients in certain situations
 def calculating_patient_numbers (todays_data, todays_patients, number_list, counter_list, first, final):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
     length = len(todays_data)
-    start_time = todays_data.self[0].get("date_time")
-    end_time = todays_data.self[length-1].get("date_time")
+    start_time = todays_data.self[0].get("time")
+    end_time = todays_data.self[length-1].get("time")
 
     counter = 0
 
@@ -230,7 +228,7 @@ def calculating_patient_numbers (todays_data, todays_patients, number_list, coun
         for i in todays_data:
             current_action = i.self[counter].get("action").str().lower()
             previous_action = i.self[counter-1].get("action").str().lower()
-            current_patient = i.self[counter].get("unique_identifier").str().lower()
+            current_patient = i.self[counter].get("id").str().lower()
 
             #checking for patients arriving and adding to list
             if current_action == "patient identified by kiosk":
