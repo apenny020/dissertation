@@ -38,29 +38,31 @@ def order_list(to_order_list, file_name):
 #also
 #second for number of patients 
 #the list should be a number over multiple dates
-def get_probabilities_time(data_list):
+def get_probabilities_time(data_dict):
 
-    tally_dict = {}
-    
-    ordered_list = sorted(data_list)
-    for i in ordered_list:
-        if i in tally_dict:
-            #increase by value 1 -creates a dictionary with each value and a tally for it 
+    tally_dict = {}#CHANGE SO THAT IT GETS THE NAME OF THE LIST AND RETURNS ON IT AND FIX CODE IN PROCESSOR TO MATCH
+    for i in data_dict:
+        print("########################")
+        print(data_dict)
+        ordered_list = sorted(i)
+        for i in ordered_list:
+            if i in tally_dict:
+                #increase by value 1 -creates a dictionary with each value and a tally for it 
+                temp_val = tally_dict[i]
+                temp_val += 1
+                tally_dict.update({i:temp_val})
+            else:
+                #add to dict
+                tally_dict[i] = 1
+            
+        #creating percentage
+        total = len(ordered_list)
+        for i in tally_dict:
+            #get value and put in probability
+            #update value to this
             temp_val = tally_dict[i]
-            temp_val += 1
+            temp_val = temp_val/total
             tally_dict.update({i:temp_val})
-        else:
-            #add to dict
-            tally_dict[i] = 1
-        
-    #creating percentage
-    total = len(ordered_list)
-    for i in tally_dict:
-        #get value and put in probability
-        #update value to this
-        temp_val = tally_dict[i]
-        temp_val = temp_val/total
-        tally_dict.update({i:temp_val})
     
     #a dictionary that returns the collected data value and its probability chance of existing
     return (tally_dict)

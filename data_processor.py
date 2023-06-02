@@ -583,11 +583,11 @@ def process_all_data():
 
 
     list_of_df = [waiting_df, duration_df, starts_df]
+    df_names = ["waiting_df", "duration_df", "starts_df"]
     print(waiting_df)
     print(duration_df)
     print(starts_df)
     print("-----------")
-    num_df = [number_df]
 
     tally_dict = {}
     list_names = []
@@ -599,34 +599,46 @@ def process_all_data():
     num_dict = {}
     column_headers = []
     temp_col = []
+    temp_dict = {}
 
-    c = 0 # counter
+    c = 0
     for i in list_of_df: # i is now a df
         column_headers = []
-        column_headers.append(list(i.columns.values))
+        temp_col = []
+
+        column_headers = (list(i.columns.values))# FIX THIS AND ALSO remove NaNs
         print(i)
         print(column_headers)
         print("----------")
         for col in column_headers:
-            temp = i[col].values.tolist() #this is taking it out as rows, need to change!!!!!!!!
-            print(temp)
+            temp = i.loc[:,col].tolist()
             temp_col.append(temp)
             print(temp_col)
         
 
-    for header, col in zip(column_headers, temp_col):
-        print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
-        print(header)
-        print(col)
-        df_dict[header] = col
-        print(df_dict)
+        for header, col in zip(column_headers, temp_col):
+            print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+            print(header)
+            print(col)
+            temp_dict[header] = col
+            print("diiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiictr")
+            print(temp_dict)
+
+        df_dict[df_names[c]] = temp_dict
+        c += 1
 
 
     #for number_df
-    for i in num_df:
-        column_headers.append(list(i.columns.values))
-        temp_col.append(i[column_headers[c]].tolist())
-        c += 1
+    temp_col = []
+    print(number_df)
+    for i in number_df:
+        column_headers.append(i)
+        print("iiiiiiiii")
+        print(i)
+        temp = number_df[i].tolist()
+        temp_col.append(temp)
+        
+        
 
     for header, col in zip(column_headers, temp_col):
         num_dict[header] = col
@@ -634,10 +646,13 @@ def process_all_data():
 
 
     #getting the tallys
+    c= 0
     for i in df_dict:
-        name, tally = (get_probabilities_time(df_dict[i]))
-        list_names.append(str(name))
+        print(df_dict)
+        tally = (get_probabilities_time(df_dict[i]))
+        list_names.append(df_dict[c])
         list_tallys.append(tally)
+        c += 1
 
     for i in return_dict:
         name, tally = (get_probabilities_time(return_dict[i])) #gives the values as a list
