@@ -117,7 +117,7 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
 
                 print(current_action)
                 if current_action == "patient identified by kiosk":
-                    arrival_time = datetime.strptime(i["time"], '%H:%M:%S').time()
+                    arrival_time.append(datetime.strptime(i["time"], '%H:%M:%S').time())
                 
                 elif current_action == "appointed" or current_action == "late arrival" or current_action == "patient identified by kiosk":
                     #ignore
@@ -249,7 +249,9 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
     num_patients.append(number_of_patients)
 
     if final == True:
-        #adding lists to dataframes above - could turn more efficient !!!!!!!!!!!!!
+        #adding lists to dataframes above - could turn more efficient - could be turned into a function for sure 
+        #adding waits
+        #DO THE SAME FOR ANYWHERE ELSE ADDING TO DF AND ALSO MAKE SURE NaN ARE EXCLUDED FOR TALLYING AND PICKING!!!!!!!!!!!!!
         print (wait_for_Bloods)
         print (wait_for_consultation_1)
         print (wait_for_consultation_1_of_2)
@@ -258,47 +260,103 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
     
         bloods = len(wait_for_Bloods)
         consult1 = len(wait_for_consultation_1)
-        #consult12 = len(wait_for_consultation_1_of_2)
-        #consult2 = len(wait_for_consultation_2)
+        consult12 = len(wait_for_consultation_1_of_2)
+        consult2 = len(wait_for_consultation_2)
         hw = len(wait_for_Height_and_weight)
         
-        counter = [bloods, consult1, hw]
-        counter = sorted(counter)
+        counter = [bloods, consult1, consult12, consult2, hw]
+        biggest = max(counter)
+
         print(counter)
         print(waiting_df)
-        for i in counter:
-            #SORT NUMBER OF ROWS/COLUMNS ISSUE
-            if i:
-                if i == bloods:
-                    waiting_df ["wait_bloods"] = wait_for_Bloods
-                elif i == consult1:
-                    waiting_df ["wait_consult_1"] = wait_for_consultation_1
-                #elif i == consult12:
-                #    waiting_df ["wait_consult_1/2"] = wait_for_consultation_1_of_2
-                #elif i == consult2:
-                #    waiting_df ["wait_consult_2"] = wait_for_consultation_2
-                elif i == hw:
-                    waiting_df ["wait_h&w"] = wait_for_Height_and_weight
+
+        num_list = range(biggest)
+
+        wait_bloods_dict = dict(enumerate(wait_for_Bloods))
+        wait_consult1_dict = dict(enumerate(wait_for_consultation_1))
+        wait_contsult12_dict = dict(enumerate(wait_for_consultation_1_of_2))
+        wait_consult2_dict = dict(enumerate(wait_for_consultation_2))
+        wait_hw_dict = dict(enumerate(wait_for_Height_and_weight))
+
+        waiting_df["num"] = num_list
+        waiting_df["wait_bloods"] = waiting_df["num"].map(wait_bloods_dict)
+        waiting_df["wait_consult_1"] = waiting_df["num"].map(wait_consult1_dict)
+        waiting_df["wait_consult_1/2"] = waiting_df["num"].map(wait_contsult12_dict)
+        waiting_df["wait_consult_2"] = waiting_df["num"].map(wait_consult2_dict)
+        waiting_df["wait_h&w"] = waiting_df["num"].map(wait_hw_dict)
+
         print(waiting_df)
         print("______________________")
 
+
+        #adding durations
+        bloods = len(bloods_duration)
+        consult1 = len(consultation_duration_1)
+        consult12 = len(consultation_duration_1_of_2)
+        consult2 = len(consultation_duration_2)
+        late = len(late_duration)
         
-        #waiting_df_headers = ["wait_h&w","wait_bloods","wait_consult_1","wait_consult_1/2"]
+        counter = [bloods, consult1, consult12, consult2, late]
+        biggest = max(counter)
 
-        duration_df ["duration_bloods"] = bloods_duration
-        duration_df ["duration_consult_1"] = consultation_duration_1
-        duration_df ["duration_consult_1/2"] = consultation_duration_1_of_2
-        duration_df ["duration_consult_2"] = consultation_duration_2
-        duration_df ["duration_lates"] = late_duration
+        num_list = range(biggest)
 
-        starts_df ["starts_bloods"] = bloods_starts
-        starts_df ["starts_consult"] = consultation_starts
-        starts_df ["starts_arrival"] = arrival_time
+        dur_bloods_dict = dict(enumerate(bloods_duration))
+        dur_consult1_dict = dict(enumerate(consultation_duration_1))
+        dur_contsult12_dict = dict(enumerate(consultation_duration_1_of_2))
+        dur_consult2_dict = dict(enumerate(consultation_duration_2))
+        dur_late_dict = dict(enumerate(late_duration))
 
-        number_df ["num_consult"] = num_of_consultations
-        number_df ["num_dna"] = num_of_did_not_attends
-        number_df ["num_lates"] = num_of_lates
-        number_df ["num_patients"] = num_patients
+        duration_df["num"] = num_list
+        duration_df["duration_bloods"] = duration_df["num"].map(dur_bloods_dict)
+        duration_df["duration_consult_1"] = duration_df["num"].map(dur_consult1_dict)
+        duration_df["duration_consult_1/2"] = duration_df["num"].map(dur_contsult12_dict)
+        duration_df["duration_consult_2"] = duration_df["num"].map(dur_consult2_dict)
+        duration_df["duration_lates"] = duration_df["num"].map(dur_late_dict)
+
+
+        #adding starts
+        bloods = len(bloods_starts)
+        consult = len(consultation_starts)
+        arrival = len(arrival_time)
+        
+        counter = [bloods, consult, arrival]
+        biggest = max(counter)
+
+        num_list = range(biggest)
+
+        bloods_starts_dict = dict(enumerate(bloods_starts))
+        consultation_starts_dict = dict(enumerate(consultation_starts))
+        arrival_time_dict = dict(enumerate(arrival_time))
+        
+        starts_df["num"] = num_list
+        starts_df["starts_bloods"] = starts_df["num"].map(bloods_starts_dict)
+        starts_df["starts_consult"] = starts_df["num"].map(consultation_starts_dict)
+        starts_df["starts_arrival"] = starts_df["num"].map(arrival_time_dict)
+
+
+        #adding numbers
+        consult = len(num_of_consultations)
+        dna = len(num_of_did_not_attends)
+        lates = len(num_of_lates)
+        patients = len(num_patients)
+        
+        counter = [consult, dna, lates, patients]
+        biggest = max(counter)
+
+        num_list = range(biggest)
+
+        num_consult_dict = dict(enumerate(num_of_consultations))
+        num_dna_dict = dict(enumerate(num_of_did_not_attends))
+        num_lates_dict = dict(enumerate(num_of_lates))
+        num_patients_dict = dict(enumerate(num_patients))
+
+        number_df["num"] = num_list
+        number_df["num_consult"] = number_df["num"].map(num_consult_dict)
+        number_df["num_dna"] = number_df["num"].map(num_dna_dict)
+        number_df["num_lates"] = number_df["num"].map(num_lates_dict)
+        number_df["num_patients"] = number_df["num"].map(num_patients_dict)
+        
 
         return (waiting_df, number_df, duration_df, starts_df)
     
@@ -422,9 +480,6 @@ def get_data():
     c = 0
     all_data_df = pd.DataFrame()
     all_data_df = all_data_df.assign(Patient_id=[], DateTime=[], State_Enter=[], State=[])
-        
-    
-    
 
     for line in Lines:
         #turn into list
@@ -546,18 +601,25 @@ def process_all_data():
     temp_col = []
 
     c = 0 # counter
-    for i in list_of_df:
+    for i in list_of_df: # i is now a df
+        column_headers = []
         column_headers.append(list(i.columns.values))
         print(i)
         print(column_headers)
         print("----------")
         for col in column_headers:
-            temp = i[col].values.tolist()
+            temp = i[col].values.tolist() #this is taking it out as rows, need to change!!!!!!!!
+            print(temp)
             temp_col.append(temp)
+            print(temp_col)
         
 
     for header, col in zip(column_headers, temp_col):
+        print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+        print(header)
+        print(col)
         df_dict[header] = col
+        print(df_dict)
 
 
     #for number_df
