@@ -25,15 +25,15 @@ How many patients in consulatation at same time
 """
 #This function finds the data for the paritcular given day
 def collecting_days_data (all_data_df, current_day, num_rows):
-    print(num_rows)
-    print(current_day)
+    # print(num_rows)
+    # print(current_day)
     todays_data = []
     todays_patients = []
     #num_patients_in_day = len(todays_patients)
     for i in range(num_rows):
         date = (all_data_df.iloc[i]["DateTime"])[:10]
         while date == current_day:
-            print(i)
+            #print(i)
             temp_dict = {}
             id = all_data_df.iloc[i]["Patient_id"]
             state_enter = all_data_df.iloc[i]["State_Enter"]
@@ -43,13 +43,13 @@ def collecting_days_data (all_data_df, current_day, num_rows):
             temp_dict["time"] = time
             temp_dict["state_enter"] = state_enter
             temp_dict["action"] = state
-            print(temp_dict)
+            #print(temp_dict)
 
             #add to lists
             todays_data.append(temp_dict)
             if id not in todays_patients:
-                print(id)
-                print(todays_patients)
+                #print(id)
+                #print(todays_patients)
                 todays_patients.append(id)
                 break
             else:
@@ -66,7 +66,7 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
     number_of_lates = 0 #not including DNA's
     number_of_consultations = 0
     number_of_patients = len(current_days_patients)
-    print(current_days_patients)
+    #print(current_days_patients)
 
     #re-sort the list by unique identifier (patient)
     #sorted_current_days_data = sorted(current_days_data, key=lambda d: d['unique_identifier'])
@@ -90,32 +90,32 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                 next_patient_exists = True
             
 
-            print(current_days_data[c]["id"])
-            print(i["id"])
-            print("----------------------") 
+            #print(current_days_data[c]["id"])
+            #print(i["id"])
+            #print("----------------------") 
 
             #c = 0 #counter to keep track of patient
             
             while ((str(i["id"])) is (str(current_days_data[c]["id"]))): #while the patient is the same
                 
                 current_action = str(i["action"]).lower()
-                print(current_action)
+                #print(current_action)
                 if c > 0 and i["id"] == current_days_data[c]["id"]:
                     previous_action = str(current_days_data[c-1]["action"]).lower()
-                    print (previous_action)
+                    #print (previous_action)
                 if next_patient_exists:
                     if i["id"] is current_days_data[c+1]["id"]:
                         future_action = str(current_days_data[c+1].get("action")).lower() # need a fail safe here and above just incase at first or last action !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        print(future_action)
+                        #print(future_action)
                 else:
                     future_action = "invalid"
 
                 if c > 0 and i["id"] == current_days_data[c-1]["id"]:
                     time_start = datetime.strptime(current_days_data[c-1]["time"], '%H:%M:%S').time()
                 time_end = datetime.strptime(i["time"], '%H:%M:%S').time()
-                print(time_end)
+                #print(time_end)
 
-                print(current_action)
+                #print(current_action)
                 if current_action == "patient identified by kiosk":
                     arrival_time.append(datetime.strptime(i["time"], '%H:%M:%S').time())
                 
@@ -126,11 +126,11 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                 elif previous_action == "waiting height and weight": # you cant tell what is wait and and what is duration so duration will be fixed
                     duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
                     duration = str(duration)[:4]
-                    print(duration)
+                    #print(duration)
                     duration = datetime.strptime(duration, '%H:%M').time()
                     wait_for_Height_and_weight.append(duration)
-                    print("~~~~~~~~~~~~~~~~")
-                    print (wait_for_Height_and_weight)
+                    #print("~~~~~~~~~~~~~~~~")
+                    #print (wait_for_Height_and_weight)
 
                 elif current_action == "in consultation 1 of 1"  and previous_action == "waiting consultation 1 of 1":
                     duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
@@ -138,8 +138,8 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                     duration = datetime.strptime(duration, '%H:%M').time()
                     wait_for_consultation_1.append(duration)
                     consultation_starts.append(time_start)
-                    print("~~~~~~~~~~~~~~~~")
-                    print (wait_for_consultation_1)
+                    #print("~~~~~~~~~~~~~~~~")
+                    #print (wait_for_consultation_1)
 
                 elif current_action == "in consultation 1 of 2" and previous_action == "waiting consultation 1 of 2":
                     duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
@@ -147,8 +147,8 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                     duration = datetime.strptime(duration, '%H:%M').time()
                     wait_for_consultation_1_of_2.append(duration)
                     consultation_starts.append(time_start)
-                    print("~~~~~~~~~~~~~~~~")
-                    print(wait_for_consultation_1_of_2)
+                    #print("~~~~~~~~~~~~~~~~")
+                    #print(wait_for_consultation_1_of_2)
 
                 elif current_action == "in consultation 2 of 2" and previous_action == "waiting consultation 2 of 2":
                     duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
@@ -156,8 +156,8 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                     duration = datetime.strptime(duration, '%H:%M').time()
                     wait_for_consultation_2.append(duration)  
                     consultation_starts.append(time_start)
-                    print("~~~~~~~~~~~~~~~~")
-                    print (wait_for_consultation_2)
+                    #print("~~~~~~~~~~~~~~~~")
+                    #print (wait_for_consultation_2)
 
                 elif current_action == "in blood room" and previous_action == "waiting blood room":
                     duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
@@ -165,8 +165,8 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                     duration = datetime.strptime(duration, '%H:%M').time()
                     wait_for_Bloods.append(duration)
                     bloods_starts.append(time_start)
-                    print("~~~~~~~~~~~~~~~~")
-                    print (wait_for_Bloods)
+                    #print("~~~~~~~~~~~~~~~~")
+                    #print (wait_for_Bloods)
 
                 elif current_action == "late arrival" and future_action != "did not attend":
                     time_start = datetime.strptime(i["date_time"], '%H:%M:%S').time()
@@ -252,11 +252,11 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
         #adding lists to dataframes above - could turn more efficient - could be turned into a function for sure 
         #adding waits
         #DO THE SAME FOR ANYWHERE ELSE ADDING TO DF AND ALSO MAKE SURE NaN ARE EXCLUDED FOR TALLYING AND PICKING!!!!!!!!!!!!!
-        print (wait_for_Bloods)
-        print (wait_for_consultation_1)
-        print (wait_for_consultation_1_of_2)
-        print (wait_for_consultation_2)
-        print (wait_for_Height_and_weight)
+        #print (wait_for_Bloods)
+        #print (wait_for_consultation_1)
+        #print (wait_for_consultation_1_of_2)
+        #print (wait_for_consultation_2)
+        #print (wait_for_Height_and_weight)
     
         bloods = len(wait_for_Bloods)
         consult1 = len(wait_for_consultation_1)
@@ -267,8 +267,8 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
         counter = [bloods, consult1, consult12, consult2, hw]
         biggest = max(counter)
 
-        print(counter)
-        print(waiting_df)
+        #print(counter)
+        #print(waiting_df)
 
         num_list = range(biggest)
 
@@ -285,8 +285,8 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
         waiting_df["wait_consult_2"] = waiting_df["num"].map(wait_consult2_dict)
         waiting_df["wait_h&w"] = waiting_df["num"].map(wait_hw_dict)
 
-        print(waiting_df)
-        print("______________________")
+        #print(waiting_df)
+        #print("______________________")
 
 
         #adding durations
@@ -366,12 +366,15 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
         
 
 #Calculates the number of patients in certain situations
-def calculating_patient_numbers (todays_data, todays_patients, counter_list, first, final):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
+def calculating_patient_numbers (todays_data, first, final, consult_counter_list, bloods_counter_list, clinic_counter_list):#!!!!!!!!!!!!unfinished function in the elifs etc !!!!!!!!!!!!!!!!!
     length = len(todays_data)
 
-    print (todays_data)
+    if final:
+        counter_dict = {}
+
+    #print (todays_data)
     todays_data = sorted(todays_data, key=lambda d: d["time"])
-    print (todays_data)
+    #print (todays_data)
 
     start_time = todays_data[0]["time"]
     end_time = todays_data[length-1]["time"]
@@ -429,8 +432,8 @@ def calculating_patient_numbers (todays_data, todays_patients, counter_list, fir
 
                 elif previous_action == "in consultation 1 of 1" or previous_action =="in consultation 1 of 2" or previous_action == "in consultation 2 of 2":
                     if current_patient in patients_in_consultation:
-                        print(current_patient)
-                        print(patients_in_consultation)
+                        #print(current_patient)
+                        #print(patients_in_consultation)
                         patients_in_consultation.remove(current_patient)
                     
                     temp = len(patients_in_clinic)
@@ -447,12 +450,17 @@ def calculating_patient_numbers (todays_data, todays_patients, counter_list, fir
                 
                 counter += 1
 
-    
-    counter_list.append(consult_counter)
-    counter_list.append(bloods_counter)
-    counter_list.append(clinic_counter)
+    consult_counter_list.append(consult_counter)
+    bloods_counter_list.append(bloods_counter)
+    clinic_counter_list.append(clinic_counter)
 
-    return(counter_list)
+    if final:
+        counter_dict["consult_counter"] = (consult_counter_list)
+        counter_dict["bloods_counter"] = (bloods_counter_list)
+        counter_dict["clinic_counter"] = (clinic_counter_list)
+        return(counter_dict)
+    
+    return(consult_counter_list, bloods_counter_list, clinic_counter_list)
 
 
 
@@ -488,29 +496,29 @@ def get_data():
         line[0] = line[0].replace("ï»¿", "")
 
 
-        print (len(Lines))
+        #print (len(Lines))
         c += 1
-        print(c)
+        #print(c)
         if c == 200:
             break
         all_data_df.loc[len(all_data_df)] = line
-        print(all_data_df)
+        #print(all_data_df)
         all_data_df.to_csv("all_data")
 
     #work out number of dates
     list_days = []
     num_rows = len(all_data_df.index)
-    print(num_rows)
+    #print(num_rows)
     for i in range(num_rows):
         temp = all_data_df.iloc[i]["DateTime"]
-        print(temp)
+        #print(temp)
         if temp[:10] not in list_days:
-            print(list_days)
-            print(temp)
+            #print(list_days)
+            #print(temp)
             temp = temp[:10]
             list_days.append(temp)
 
-    print(list_days)
+    #print(list_days)
     
     num_days = len(list_days)
     return(all_data_df, num_days, list_days, num_rows)
@@ -555,39 +563,42 @@ def process_all_data():
     num_of_lates = []
     num_patients = []
 
+    consult_counter_list = []
+    bloods_counter_list = []
+    clinic_counter_list = []
 
     final = False
     first = False
     counter = 0
     for day in list_days:
         current_days_data, current_days_patients = collecting_days_data(all_data_df, day, num_rows)
-        print(current_days_data)
-        print(current_days_patients)
+        #print(current_days_data)
+        #print(current_days_patients)
 
         counter += 1
         if counter == num_days:
             final = True
             waiting_df, number_df, duration_df, starts_df = calculating_times (current_days_data, current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first)
-            return_dict = calculating_patient_numbers(current_days_data, current_days_patients, counter_list, final, first) 
+            return_dict = calculating_patient_numbers(current_days_data, first, final, consult_counter_list, bloods_counter_list, clinic_counter_list) 
 
         elif counter == 1:
             first = True
             wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first)
-            counter_list = calculating_patient_numbers(current_days_data, current_days_patients, counter_list, final, first) 
+            consult_counter_list, bloods_counter_list, clinic_counter_list = calculating_patient_numbers(current_days_data, first, final, consult_counter_list, bloods_counter_list, clinic_counter_list) 
 
         else:
             first = False
             wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients = calculating_times (current_days_data , current_days_patients, waiting_df, number_df, duration_df, starts_df, wait_for_Height_and_weight, wait_for_Bloods, wait_for_consultation_1, wait_for_consultation_1_of_2, wait_for_consultation_2, bloods_duration, consultation_duration_1, consultation_duration_1_of_2, consultation_duration_2, late_duration, bloods_starts, consultation_starts, arrival_time, num_of_consultations, num_of_did_not_attends, num_of_lates, num_patients, final, first)
-            counter_list = calculating_patient_numbers(current_days_data, current_days_patients,  counter_list, final, first) 
+            consult_counter_list, bloods_counter_list, clinic_counter_list = calculating_patient_numbers(current_days_data, first, final, consult_counter_list, bloods_counter_list, clinic_counter_list) 
 
 
 
     list_of_df = [waiting_df, duration_df, starts_df]
     df_names = ["waiting_df", "duration_df", "starts_df"]
-    print(waiting_df)
-    print(duration_df)
-    print(starts_df)
-    print("-----------")
+    #print(waiting_df)
+    #print(duration_df)
+    #print(starts_df)
+    #print("-----------")
 
     tally_dict = {}
     list_names = []
@@ -600,88 +611,103 @@ def process_all_data():
     column_headers = []
     temp_col = []
     temp_dict = {}
-
+    print(return_dict)
     c = 0
     for i in list_of_df: # i is now a df
         column_headers = []
         temp_col = []
 
-        column_headers = (list(i.columns.values))# FIX THIS AND ALSO remove NaNs
-        print(i)
-        print(column_headers)
-        print("----------")
+        column_headers = (list(i.columns.values))#ALSO remove NaNs
+        #print(i)
+        #print(column_headers)
+        #print("----------")
         for col in column_headers:
             temp = i.loc[:,col].tolist()
             temp_col.append(temp)
-            print(temp_col)
+            #print(temp_col)
         
 
         for header, col in zip(column_headers, temp_col):
-            print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
-            print(header)
-            print(col)
+            #print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+            #print(header)
+            #print(col)
             temp_dict[header] = col
-            print("diiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiictr")
-            print(temp_dict)
+            #print("diiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiictr")
+            #print(temp_dict)
 
         df_dict[df_names[c]] = temp_dict
         c += 1
 
-
     #for number_df
     temp_col = []
-    print(number_df)
+    #print(number_df)
     for i in number_df:
         column_headers.append(i)
-        print("iiiiiiiii")
-        print(i)
+        #print("iiiiiiiii")
+        #print(i)
         temp = number_df[i].tolist()
         temp_col.append(temp)
         
-        
-
     for header, col in zip(column_headers, temp_col):
         num_dict[header] = col
 
 
-
+    final_tally_dict = {}
+    list_tallys = []
     #getting the tallys
     c= 0
     for i in df_dict:
+        print("dfdfdffdfdfdfdfdfdf")
         print(df_dict)
-        tally = (get_probabilities_time(df_dict[i]))
-        list_names.append(df_dict[c])
-        list_tallys.append(tally)
+        tally_dict, names = (get_probabilities_time(df_dict[i]))
+        #df_names.append(df_dict[c])
+        print(names)
+        print(tally_dict)
+
+        list_names.append(names)
+        list_tallys.append(tally_dict)
         c += 1
 
-    for i in return_dict:
-        name, tally = (get_probabilities_time(return_dict[i])) #gives the values as a list
-        list_names.append(str(name))
-        list_tallys.append(tally)
-
-    for name, tally in zip(list_names, list_tallys):
-        tally_dict[name] = tally
-
     
+    tally_dict2, names2 = (get_probabilities_time(return_dict)) #gives the values as a list
+    #df_names.append(df_dict[c])
+    tally_dict.update(tally_dict2)
+    names.extend(names2)
+    # for name, tally in zip(list_names, list_tallys):
+    #     final_tally_dict[name] = tally
+
     #raw, untallied dict of lists
     untallied_dict = {}
+    print(df_dict)
+    print(return_dict)
+    print(num_dict)
 
     for i in df_dict:
-        temp_list = df_dict[i]
-        temp_list = sorted(temp_list)
-        untallied_dict[i]=temp_list
+        print(i)
+        print(df_dict[i])
+        for j in df_dict[i]:
+            temp = df_dict[i]
+            print(j)
+            print(temp)
+            print(temp[j])
+            temp_list = [temp[j]]
+            temp_list = [x for x in temp_list if str(x) != 'nan']
+            temp_list = sorted(temp_list)
+            untallied_dict[j]=temp_list
     
     for i in return_dict:
-        temp_list = df_dict[i]
+        temp_list = return_dict[i]
+        temp_list = [x for x in temp_list if str(x) != 'nan']
         temp_list = sorted(temp_list)
         untallied_dict[i]=temp_list
     
     for i in num_dict:
-        temp_list = df_dict[i]
+        temp_list = num_dict[i]
+        temp_list = [x for x in temp_list if str(x) != 'nan']
         temp_list = sorted(temp_list)
         untallied_dict[i]=temp_list
 
-    return(tally_dict, untallied_dict, num_dict)
+    return(tally_dict, untallied_dict)
 
 
 #running here !!!!!!!!!!!!!

@@ -41,31 +41,58 @@ def order_list(to_order_list, file_name):
 def get_probabilities_time(data_dict):
 
     tally_dict = {}#CHANGE SO THAT IT GETS THE NAME OF THE LIST AND RETURNS ON IT AND FIX CODE IN PROCESSOR TO MATCH
+    column_headers = []
+    c=0
+
+    if data_dict == [] or data_dict == 0:
+        return (tally_dict, column_headers)
+
+    print("dddddddddddddddddddddddddddddddddd")
+    print(data_dict)
+    print(data_dict.keys())
+    column_headers = (list(data_dict.keys()))
+    final_dict = {}
+
     for i in data_dict:
-        print("########################")
+        tally_dict = {}
+        #print("########################")
+        #print(data_dict.keys())
         print(data_dict)
-        ordered_list = sorted(i)
-        for i in ordered_list:
-            if i in tally_dict:
+        print(i)
+        print(data_dict[i])
+        
+        temp_list = data_dict[i]
+        temp_list = [x for x in temp_list if str(x) != 'nan']
+        print(temp_list)
+        ordered_list = sorted(temp_list)
+        for j in ordered_list:
+            print(j)
+            if j in tally_dict:
                 #increase by value 1 -creates a dictionary with each value and a tally for it 
-                temp_val = tally_dict[i]
+                temp_val = tally_dict[j]
+                print(temp_val)
+                print(j)
                 temp_val += 1
-                tally_dict.update({i:temp_val})
+                tally_dict.update({j:temp_val})
             else:
                 #add to dict
-                tally_dict[i] = 1
+                tally_dict[j] = 1
             
         #creating percentage
         total = len(ordered_list)
-        for i in tally_dict:
+        for j in tally_dict:
             #get value and put in probability
             #update value to this
-            temp_val = tally_dict[i]
+            temp_val = tally_dict[j]
             temp_val = temp_val/total
-            tally_dict.update({i:temp_val})
+            tally_dict.update({j:temp_val})
+            c += 1
+        final_dict[i] = tally_dict
+        print(final_dict)
+            
     
     #a dictionary that returns the collected data value and its probability chance of existing
-    return (tally_dict)
+    return (final_dict, column_headers)
     
 
 
