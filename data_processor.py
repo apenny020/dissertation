@@ -707,6 +707,10 @@ def process_all_data():
         temp_list = sorted(temp_list)
         untallied_dict[i]=temp_list
 
+    print(tally_dict)
+    print("############################################")
+    print(untallied_dict)
+
     return(tally_dict, untallied_dict)
 
 
