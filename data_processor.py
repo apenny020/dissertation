@@ -711,6 +711,19 @@ def process_all_data():
     print("############################################")
     print(untallied_dict)
 
+    for i in tally_dict:
+        
+        title = i
+        print(i)
+        print(tally_dict[i].keys())
+        print(tally_dict[i].values())
+        
+
+        temp_dict = tally_dict[i]
+        list_x = list(tally_dict[i].keys()) #values
+        list_y = list(tally_dict[i].values()) #percentages
+        create_graph(list_x, list_y, title, "test_x", "test_y")
+
     return(tally_dict, untallied_dict)
 
 

@@ -1,5 +1,9 @@
 #visualise and analyse data
 import csv
+import numpy as np 
+import matplotlib.pyplot as plt
+from scipy.interpolate import make_interp_spline
+from datetime import datetime, date
 
 """
 Data we've got to work with:
@@ -32,6 +36,33 @@ def order_list(to_order_list, file_name):
     f.close()
     
     return(ordered_list)
+
+#create a smooth line graph
+#x and y to be an array
+def create_graph(x, y, title, x_axis, y_axis):
+    for i in x:
+        if type(i) == <class 'datetime.time'>
+    
+    x = np.array(x)
+    y = np.array(y)
+    print(x)
+    print(y)
+
+    title_dict = {"title":title, "x_axis":x_axis, "y_axis":y_axis}
+
+    xy_spline = make_interp_spline(x,y)
+
+    new_x = np.linspace(x.min(), x.max(), 500)
+    new_y = xy_spline(new_x)
+
+    plt.plot(new_x, new_y)
+    #plt.plot(x,y)
+    plt.title(title_dict["title"])
+    plt.xlabel(title_dict["x_axis"])
+    plt.ylabel(title_dict["y_axis"])
+    plt.show()
+    pass
+
 
 #create distributions to be used (for one day)
 #first for time based data - waiting times/durations/lates
