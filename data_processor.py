@@ -33,7 +33,7 @@ def collecting_days_data (all_data_df, current_day, num_rows):
     for i in range(num_rows):
         date = (all_data_df.iloc[i]["DateTime"])[:10]
         while date == current_day:
-            #print(i)
+            print(i)
             temp_dict = {}
             id = all_data_df.iloc[i]["Patient_id"]
             state_enter = all_data_df.iloc[i]["State_Enter"]
@@ -111,73 +111,75 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                     future_action = "invalid"
 
                 if c > 0 and i["id"] == current_days_data[c-1]["id"]:
-                    time_start = datetime.strptime(current_days_data[c-1]["time"], '%H:%M:%S').time()
-                time_end = datetime.strptime(i["time"], '%H:%M:%S').time()
+                    time_start = datetime.strptime(current_days_data[c-1]["time"], '%H:%M:%S')
+                time_end = datetime.strptime(i["time"], '%H:%M:%S')
                 #print(time_end)
 
                 #print(current_action)
                 if current_action == "patient identified by kiosk":
-                    arrival_time.append(datetime.strptime(i["time"], '%H:%M:%S').time())
+                    arrival_time.append(datetime.strptime(i["time"], '%H:%M:%S'))
                 
                 elif current_action == "appointed" or current_action == "late arrival" or current_action == "patient identified by kiosk":
                     #ignore
                     print("ignore")
                 
                 elif previous_action == "waiting height and weight": # you cant tell what is wait and and what is duration so duration will be fixed
-                    duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                    duration = time_end - time_start
                     duration = str(duration)[:4]
                     #print(duration)
-                    duration = datetime.strptime(duration, '%H:%M').time()
+                    duration = datetime.strptime(duration, '%H:%M')
+                    print("-------------------")
+                    print(type(duration))
                     wait_for_Height_and_weight.append(duration)
                     #print("~~~~~~~~~~~~~~~~")
                     #print (wait_for_Height_and_weight)
 
                 elif current_action == "in consultation 1 of 1"  and previous_action == "waiting consultation 1 of 1":
-                    duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                    duration = time_end - time_start
                     duration = str(duration)[:4]
-                    duration = datetime.strptime(duration, '%H:%M').time()
+                    duration = datetime.strptime(duration, '%H:%M')
                     wait_for_consultation_1.append(duration)
                     consultation_starts.append(time_start)
                     #print("~~~~~~~~~~~~~~~~")
                     #print (wait_for_consultation_1)
 
                 elif current_action == "in consultation 1 of 2" and previous_action == "waiting consultation 1 of 2":
-                    duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                    duration = time_end - time_start
                     duration = str(duration)[:4]
-                    duration = datetime.strptime(duration, '%H:%M').time()
+                    duration = datetime.strptime(duration, '%H:%M')
                     wait_for_consultation_1_of_2.append(duration)
                     consultation_starts.append(time_start)
                     #print("~~~~~~~~~~~~~~~~")
                     #print(wait_for_consultation_1_of_2)
 
                 elif current_action == "in consultation 2 of 2" and previous_action == "waiting consultation 2 of 2":
-                    duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                    duration = time_end - time_start
                     duration = str(duration)[:4]
-                    duration = datetime.strptime(duration, '%H:%M').time()
+                    duration = datetime.strptime(duration, '%H:%M')
                     wait_for_consultation_2.append(duration)  
                     consultation_starts.append(time_start)
                     #print("~~~~~~~~~~~~~~~~")
                     #print (wait_for_consultation_2)
 
                 elif current_action == "in blood room" and previous_action == "waiting blood room":
-                    duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                    duration = time_end - time_start
                     duration = str(duration)[:4]
-                    duration = datetime.strptime(duration, '%H:%M').time()
+                    duration = datetime.strptime(duration, '%H:%M')
                     wait_for_Bloods.append(duration)
                     bloods_starts.append(time_start)
                     #print("~~~~~~~~~~~~~~~~")
                     #print (wait_for_Bloods)
 
                 elif current_action == "late arrival" and future_action != "did not attend":
-                    time_start = datetime.strptime(i["date_time"], '%H:%M:%S').time()
+                    time_start = datetime.strptime(i["date_time"], '%H:%M:%S')
                     if next_patient_exists:
                         if i["id"] == current_days_data[c+1]["id"]:
-                            time_end = datetime.strptime(current_days_data[c+1]["date_time"], '%H:%M:%S').time()
+                            time_end = datetime.strptime(current_days_data[c+1]["date_time"], '%H:%M:%S')
                     
                         number_of_lates += 1
-                        duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                        duration = time_end - time_start
                         duration = str(duration)[:4]
-                        duration = datetime.strptime(duration, '%H:%M').time()
+                        duration = datetime.strptime(duration, '%H:%M')
                         late_duration.append(duration)
 
                 else:
@@ -186,8 +188,8 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                 
                 
                 if c > 0 and i["id"] == current_days_data[c-1]["id"]:
-                    time_start = datetime.strptime(current_days_data[c-1]["time"], '%H:%M:%S').time()
-                time_end = datetime.strptime(i["time"], '%H:%M:%S').time()
+                    time_start = datetime.strptime(current_days_data[c-1]["time"], '%H:%M:%S')
+                time_end = datetime.strptime(i["time"], '%H:%M:%S')
 
                 #Same as above but looking for durations now and numbers of patients to add to the lists
                 if current_action == "appointed" or current_action == "late arrival" or current_action == "patient identified by kiosk":
@@ -198,27 +200,27 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                     number_of_did_not_attends += 1
 
                 elif previous_action == "in consultation 1 of 1":
-                    duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                    duration = time_end - time_start
                     duration = str(duration)[:4]
-                    duration = datetime.strptime(duration, '%H:%M').time()
+                    duration = datetime.strptime(duration, '%H:%M')
                     consultation_duration_1.append(duration)
 
                 elif previous_action == "in consultation 1 of 2":
-                    duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                    duration = time_end - time_start 
                     duration = str(duration)[:4]
-                    duration = datetime.strptime(duration, '%H:%M').time()
+                    duration = datetime.strptime(duration, '%H:%M')
                     consultation_duration_1_of_2.append(duration)
 
                 elif previous_action == "in consultation 2 of 2":
-                    duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                    duration = time_end - time_start
                     duration = str(duration)[:4]
-                    duration = datetime.strptime(duration, '%H:%M').time()
+                    duration = datetime.strptime(duration, '%H:%M')
                     consultation_duration_2.append(duration)
 
                 elif previous_action == "in blood room":
-                    duration = datetime.combine(date.today(), time_end) - datetime.combine(date.today(), time_start)
+                    duration = time_end - time_start
                     duration = str(duration)[:4]
-                    duration = datetime.strptime(duration, '%H:%M').time()
+                    duration = datetime.strptime(duration, '%H:%M')
                     bloods_duration.append(duration)
 
                 else:
@@ -611,7 +613,6 @@ def process_all_data():
     column_headers = []
     temp_col = []
     temp_dict = {}
-    print(return_dict)
     c = 0
     for i in list_of_df: # i is now a df
         column_headers = []
@@ -657,12 +658,8 @@ def process_all_data():
     #getting the tallys
     c= 0
     for i in df_dict:
-        print("dfdfdffdfdfdfdfdfdf")
-        print(df_dict)
         tally_dict, names = (get_probabilities_time(df_dict[i]))
         #df_names.append(df_dict[c])
-        print(names)
-        print(tally_dict)
 
         list_names.append(names)
         list_tallys.append(tally_dict)
@@ -676,55 +673,26 @@ def process_all_data():
     # for name, tally in zip(list_names, list_tallys):
     #     final_tally_dict[name] = tally
 
-    #raw, untallied dict of lists
-    untallied_dict = {}
-    print(df_dict)
-    print(return_dict)
-    print(num_dict)
-
-    for i in df_dict:
-        print(i)
-        print(df_dict[i])
-        for j in df_dict[i]:
-            temp = df_dict[i]
-            print(j)
-            print(temp)
-            print(temp[j])
-            temp_list = [temp[j]]
-            temp_list = [x for x in temp_list if str(x) != 'nan']
-            temp_list = sorted(temp_list)
-            untallied_dict[j]=temp_list
-    
-    for i in return_dict:
-        temp_list = return_dict[i]
-        temp_list = [x for x in temp_list if str(x) != 'nan']
-        temp_list = sorted(temp_list)
-        untallied_dict[i]=temp_list
-    
-    for i in num_dict:
-        temp_list = num_dict[i]
-        temp_list = [x for x in temp_list if str(x) != 'nan']
-        temp_list = sorted(temp_list)
-        untallied_dict[i]=temp_list
 
     print(tally_dict)
     print("############################################")
-    print(untallied_dict)
 
     for i in tally_dict:
         
         title = i
-        print(i)
-        print(tally_dict[i].keys())
-        print(tally_dict[i].values())
+        for x in tally_dict[i].keys():
+            if type(x) != datetime and type(x) != int:
+                #x = x.to_pydatetime()
+                x = datetime.strptime(x, '%Y-%M-%D %H:%M:%S')
         
 
         temp_dict = tally_dict[i]
         list_x = list(tally_dict[i].keys()) #values
         list_y = list(tally_dict[i].values()) #percentages
-        create_graph(list_x, list_y, title, "test_x", "test_y")
+        if list_x:
+            create_graph(list_x, list_y, title, "test_x", "test_y")
 
-    return(tally_dict, untallied_dict)
+    return(tally_dict)
 
 
 #running here !!!!!!!!!!!!!

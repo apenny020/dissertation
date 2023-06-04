@@ -319,10 +319,9 @@ def starts_everything(untallied_dict):
 
 #run the model here
 print("Process data")
-tally_dict, untallied_dict = process_all_data()
+tally_dict = process_all_data()
 print(tally_dict)
 print("------------------------")
-print(untallied_dict)
 print("going to start")
 starts_everything(untallied_dict)
 print("completed")

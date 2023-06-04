@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import make_interp_spline
 from datetime import datetime, date
+import pandas as pd
 
 """
 Data we've got to work with:
@@ -40,13 +41,19 @@ def order_list(to_order_list, file_name):
 #create a smooth line graph
 #x and y to be an array
 def create_graph(x, y, title, x_axis, y_axis):
+    changed_x = []
     for i in x:
-        if type(i) == <class 'datetime.time'>
-    
-    x = np.array(x)
+        if type(i) == datetime:
+            temp_hour = i.hour
+            temp_minute = i.minute
+            temp_minute = temp_minute + (temp_hour*60)
+            i = temp_minute
+            changed_x.append(i)
+        else:
+            changed_x.append(i)
+
+    x = np.array(changed_x)
     y = np.array(y)
-    print(x)
-    print(y)
 
     title_dict = {"title":title, "x_axis":x_axis, "y_axis":y_axis}
 
@@ -78,31 +85,33 @@ def get_probabilities_time(data_dict):
     if data_dict == [] or data_dict == 0:
         return (tally_dict, column_headers)
 
-    print("dddddddddddddddddddddddddddddddddd")
-    print(data_dict)
-    print(data_dict.keys())
     column_headers = (list(data_dict.keys()))
     final_dict = {}
 
     for i in data_dict:
-        tally_dict = {}
-        #print("########################")
-        #print(data_dict.keys())
-        print(data_dict)
-        print(i)
-        print(data_dict[i])
+        tally_dict = {}        
         
         temp_list = data_dict[i]
         temp_list = [x for x in temp_list if str(x) != 'nan']
-        print(temp_list)
-        ordered_list = sorted(temp_list)
+
+        ordered_list = sorted(temp_list)   
+
+        length = len(ordered_list)
+        c = 0
+        for k in range(length):
+            j = ordered_list[c]
+            if str(j) == "NaT":
+                ordered_list.remove(j)
+            else:
+                c +=1
+
         for j in ordered_list:
-            print(j)
+            if type(j) != int:
+                j = j.to_pydatetime()          
+        
             if j in tally_dict:
                 #increase by value 1 -creates a dictionary with each value and a tally for it 
                 temp_val = tally_dict[j]
-                print(temp_val)
-                print(j)
                 temp_val += 1
                 tally_dict.update({j:temp_val})
             else:
@@ -119,7 +128,6 @@ def get_probabilities_time(data_dict):
             tally_dict.update({j:temp_val})
             c += 1
         final_dict[i] = tally_dict
-        print(final_dict)
             
     
     #a dictionary that returns the collected data value and its probability chance of existing
