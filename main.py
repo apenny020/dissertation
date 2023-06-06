@@ -61,9 +61,17 @@ def starts_everything():
                     #if appointment times arent null, unknown, or complete, ie they exist and havent happened yet
                     if (getattr(p, "consultant_1_appointment_time") not in other) and (getattr(p, "bloods_appointment_time") not in other):
 
+                        #ADD THE BIT ABOUT IT BEING EQUAL TO NULL
                         #adds appt time to appt time variable
                         if (p, "consultant_2_appointment_time") not in other:
-                            appt_time = str(min(int(getattr(p, "bloods_appointment_time"))),int(getattr(p, "consultant_1_appointment_time"),int(getattr(p, "consultant_2_appointment_time"))))
+                            print(getattr(p, "bloods_appointment_time"))
+                            print((int(getattr(p, "bloods_appointment_time"))))
+                            print(getattr(p, "consultant_1_appointment_time"))
+                            print((getattr(p, "consultant_2_appointment_time")))
+
+
+
+                            appt_time = str(min(int(getattr(p, "bloods_appointment_time"))),int(getattr(p, "consultant_1_appointment_time")),int(getattr(p, "consultant_2_appointment_time")))
                         else:
                             appt_time = str(min(int(getattr(p, "bloods_appointment_time"))),int(getattr(p, "consultant_1_appointment_time")))
 
