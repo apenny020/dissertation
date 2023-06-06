@@ -75,10 +75,15 @@ def initialise_patient(counter):
     patient_satisfaction = random.randint(30, 100) #(scale is 0 - 100)
     id = counter
     current_action = "Appointed"
+    arrive = random.randint(0,100)#update with data
+    if arrive > 10:
+        will_arrive = True
+    else:
+        will_arrive = False
         
 
     #need to give all the stuffs
-    patient = Patient_agent(id, patient_satisfaction, "unknown", current_action, False, False, False, "unknown", "unknown", "unkown", 0)
+    patient = Patient_agent(id, patient_satisfaction, "unknown", current_action, False, False, will_arrive, arrive, "unknown", "unkown", "unkown", "uknown", 0)
     Patient_agent.arrival_times(patient)
 
     return (patient)

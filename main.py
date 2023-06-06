@@ -7,13 +7,14 @@ import pandas as pd
 import random
 
 
-def starts_everything(untallied_dict):
+# def starts_everything(untallied_dict):
+def starts_everything():
     tick = 510 # each minute, 8:30am
     
     data_capture_df = pd.DataFrame(columns=["Patient", "ID", "Bloods_scheduled", "Bloods_seen", "Consultant_scheduled", "Consultant_seen", "arrival_time", "exit_time", "patient_satisfaction"])
     
     #initialise the day
-    patient_df, nurse_list, consultant_list, bloods_patients, data_capture, consultant_appts_dict, clinic_start, clinic_end = initialise(data_capture_df, untallied_dict)
+    patient_df, nurse_list, consultant_list, bloods_patients, data_capture, consultant_appts_dict, clinic_start, clinic_end = initialise(data_capture_df)#add tally_dict back
     print(data_capture)
 
     patients_arrived = []
@@ -319,11 +320,12 @@ def starts_everything(untallied_dict):
 
 #run the model here
 print("Process data")
-tally_dict = process_all_data()
-print(tally_dict)
+#tally_dict = process_all_data()
+#print(tally_dict)
 print("------------------------")
 print("going to start")
-starts_everything(untallied_dict)
+# starts_everything(tally_dict)
+starts_everything()
 print("completed")
         
                 

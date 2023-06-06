@@ -85,7 +85,6 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
                 current_days_data[c+1]
             except IndexError:
                 next_patient_exists = False
-                #raise Exception("no more patients after this one in list")
             else:
                 next_patient_exists = True
             
@@ -272,6 +271,7 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
         #print(counter)
         #print(waiting_df)
 
+        #has to be done this way because the columns arent of equal length
         num_list = range(biggest)
 
         wait_bloods_dict = dict(enumerate(wait_for_Bloods))
@@ -685,12 +685,10 @@ def process_all_data():
                 #x = x.to_pydatetime()
                 x = datetime.strptime(x, '%Y-%M-%D %H:%M:%S')
         
-
-        temp_dict = tally_dict[i]
         list_x = list(tally_dict[i].keys()) #values
         list_y = list(tally_dict[i].values()) #percentages
         if list_x:
-            create_graph(list_x, list_y, title, "test_x", "test_y")
+            create_graph(list_x, list_y, title, title, "percentage", False)
 
     return(tally_dict)
 

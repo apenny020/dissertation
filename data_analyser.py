@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import make_interp_spline
 from datetime import datetime, date
 import pandas as pd
+import random
 
 """
 Data we've got to work with:
@@ -40,7 +41,9 @@ def order_list(to_order_list, file_name):
 
 #create a smooth line graph
 #x and y to be an array
-def create_graph(x, y, title, x_axis, y_axis):
+def create_graph(x, y, title, x_axis, y_axis, get_value):
+    if title == "starts_bloods" or title == "starts_consult" or title == "starts_arrival":
+        return()
     changed_x = []
     for i in x:
         if type(i) == datetime:
@@ -56,7 +59,9 @@ def create_graph(x, y, title, x_axis, y_axis):
     y = np.array(y)
 
     title_dict = {"title":title, "x_axis":x_axis, "y_axis":y_axis}
-
+    print("------------------------------")
+    print(x)
+    print(y)
     xy_spline = make_interp_spline(x,y)
 
     new_x = np.linspace(x.min(), x.max(), 500)
@@ -68,7 +73,19 @@ def create_graph(x, y, title, x_axis, y_axis):
     plt.xlabel(title_dict["x_axis"])
     plt.ylabel(title_dict["y_axis"])
     plt.show()
-    pass
+
+    if not get_value:
+        plt.savefig(title + '.png')
+        plt.close()
+        return()
+    else: # need to get a value for model
+        max_num = max(x)
+        temp_val = random.randint(0, max_num)
+        #value = np.interp()
+        plt.close()
+        #return(value)
+        return()
+    
 
 
 #create distributions to be used (for one day)
