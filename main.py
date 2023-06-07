@@ -30,7 +30,7 @@ def starts_everything():
     while tick <= 1050: #5:30pm
         tick += 1
         print(tick)
-        other = ["null", "uknown", "complete", "incomplete"]
+        other = ["null", "unknown", "complete", "incomplete"]
         if (tick > clinic_start and tick < clinic_end): #8am & 5:30pm
             #check which patients are here
             print(tick)
@@ -61,15 +61,12 @@ def starts_everything():
                     #if appointment times arent null, unknown, or complete, ie they exist and havent happened yet
                     if (getattr(p, "consultant_1_appointment_time") not in other) and (getattr(p, "bloods_appointment_time") not in other):
 
-                        #ADD THE BIT ABOUT IT BEING EQUAL TO NULL
                         #adds appt time to appt time variable
                         if (p, "consultant_2_appointment_time") not in other:
                             print(getattr(p, "bloods_appointment_time"))
                             print((int(getattr(p, "bloods_appointment_time"))))
                             print(getattr(p, "consultant_1_appointment_time"))
                             print((getattr(p, "consultant_2_appointment_time")))
-
-
 
                             appt_time = str(min(int(getattr(p, "bloods_appointment_time"))),int(getattr(p, "consultant_1_appointment_time")),int(getattr(p, "consultant_2_appointment_time")))
                         else:
@@ -102,7 +99,7 @@ def starts_everything():
 
                     #work out their actual arrival time
                     temp_time = getattr(p, "arrival_time")
-                    temp_time = temp_time-appt_time
+                    temp_time = temp_time-int(appt_time)
                     setattr(p, "arrival_time", temp_time)
 
                     #if patient wants to arrive before clinic starts, reset to arrive when clinic starts
@@ -131,6 +128,7 @@ def starts_everything():
                         setattr(p, "arrived", True)
                         setattr(p, "current_action", "watiting")
             
+                states = ["consulting", "bloods"]
                 if getattr(p, "current_action") == "waiting":
                     #increase waiting time capture
                     waiting = getattr(p, "time_waiting")
@@ -168,27 +166,35 @@ def starts_everything():
             #check  if dr free
             #need to change to choose one closest to appointment time
             #needs to change when data used
+            counter = 0
             for c in consultant_list:
                 #get list of patients
-                consult_patients = consultant_appts_dict[c]
+                id = getattr(c, "id")
+                print(consultant_appts_dict[id])
+                
 
-                if getattr(c, "sick") == True:#consultant not in because sick
-                    for p in consult_patients:
-                        appt = consultant_appts_dict #!!!!!!!!!!!!!!!!!!!111111111111111111
+                consult_patients = consultant_appts_dict[id]
+                print(consult_patients)
 
-                        if getattr(p, "consultation_2_appointment_time") in other:
-                            setattr(p, "consultation_1_appointment_time", "sick")
-                        else:
-                            drs = getattr(p)
+                # if getattr(c, "sick") == True:#consultant not in because sick
+                #     for p in consult_patients:
+                #         appt = consultant_appts_dict #!!!!!!!!!!!!!!!!!!!111111111111111111
+
+                #         if getattr(p, "consultation_2_appointment_time") in other:
+                #             setattr(p, "consultation_1_appointment_time", "sick")
+                #         else:
+                #             drs = getattr(p)
 
 
                 for p in consult_patients:
 
                     #if this is true (below) means DNA so remove from list
                     if getattr(p, "consultant_1_appointment_time") in other:
-                        consult_patients.remove(p)
+                        if p in consult_patients:
+                            consult_patients.remove(p)
                     if getattr(p, "consultant_2_appointment_time") in other:
-                        consult_patients.remove(p)
+                        if p in consult_patients:
+                            consult_patients.remove(p)
 
                     if getattr(p, "arrived") == True:
                         if (getattr(c, "current_action") == "waiting"):

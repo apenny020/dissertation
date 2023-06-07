@@ -163,22 +163,45 @@ def consult_appts(appts_df, iterations, num_consultants, dr1, dr2):
 
                 elif iterations == 2 and i+1 == 2:
                     #check that appt is after the first
-                    same = True
+                    
 
-                    while same:
-                        print(appt_time)
-                        print(appt_list[0])
-                        if appt_time <= appt_list[0]+30: #if earlier
-                            # print(appt_time)
-                            # print(appt_list[0])
-                            # print(temp_list)
-                            
-                            # temp_list.remove(appt_time)
-                            possible_times.remove(appt_time)
-                            appt_time = random.choice(possible_times)
+                    # temp_list.append(appt_time)
+                    # print("append2")
+
+                    if num_consultants == 1:
+                        if appt_time in temp_list:
+                            temp_list.remove(appt_time)
+                        appt_time = "null"
+                        temp_list.append("null")
+                    
+                    if appt_list[0] > 990:
+                        if appt_time in temp_list:
+                            temp_list.remove(appt_time)
+                        appt_time = "null"
+                        temp_list.append("null")
+
+                    if (appt_time <= appt_list[0]+30):
+                        same = True
+                        while same:
                             print(appt_time)
-                        else:
-                            same = False
+                            print(appt_list[0])
+                            print(temp_list)
+
+                            if (i+1 == 2) and (num_consultants > 1) and (appt_time <= appt_list[0]+30): #if earlier
+                                # print(appt_time)
+                                # print(appt_list[0])
+                                # print(temp_list)
+                                print(appt_time)
+                                if appt_time in temp_list and appt_time == appt_list[1]:
+                                    temp_list.remove(appt_time)
+                                possible_times.remove(appt_time)
+                                appt_time = random.choice(possible_times)
+                                print(appt_time)
+                            else:
+                                temp_list.append(appt_time)
+                                print("append2same")
+                                got_appts = True
+                                same = False
                     
                     #remove from df
                     temp = dr2
@@ -195,8 +218,7 @@ def consult_appts(appts_df, iterations, num_consultants, dr1, dr2):
                     else:
                         print("problem")
 
-                    temp_list.append(appt_time)
-                    print("append1")
+                    
                     got_appts = True
                     
                 elif iterations == 2:
@@ -244,11 +266,11 @@ def consult_appts(appts_df, iterations, num_consultants, dr1, dr2):
                                 else:
                                     temp_list.append("null")
                                     print("append2")
+                                    same = False
                                     got_appts = True
-                                    
-
                             else:
                                 same = False
+
                     else:
                         temp_list.append("null")
                         print("append2")
@@ -257,7 +279,9 @@ def consult_appts(appts_df, iterations, num_consultants, dr1, dr2):
                     
                 #restart while loop to get appt
     print(temp_list)
-    return(temp_list)
+    print(dr1)
+    print(dr2)
+    return(temp_list, dr1, dr2)
 
 
 
@@ -311,8 +335,9 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
         
         if consult_number == 1: 
             dr_choice = random.randint(0, num_consultants-1) # choosing dr
-            temp_list = consult_appts(appt_df, 1, num_consultants, dr_choice, "null") #chooses appointment time for consultant
+            temp_list, dr1, dr2 = consult_appts(appt_df, 1, num_consultants, dr_choice, "null") #chooses appointment time for consultant
             #update appts_df
+            dr_choice = dr1
             temp = dr_choice
             if temp == 0:
                 appt_df.loc[appt_df.dr0_appt == temp_list[0], "dr0_appt"] = "NaN"
@@ -329,12 +354,15 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
 
             print(num_consultants)
             print(temp_list)
-            dr = temp_list[0] #grabbing the consultants id from temp list
-            consult_appt_time_1 = temp_list[1] #grabibng the appt time from temp list
+            print(dr_choice)
+            #dr = temp_list[0] #grabbing the consultants id from temp list
+            print(dr_choice)
+            consult_appt_time_1 = temp_list[0] #grabibng the appt time from temp list
             consult_appt_time_2 = "null"
 
             #update patient agent attributes
-            setattr(patient, "assigned_consultant", dr)
+            print(dr_choice)
+            setattr(patient, "assigned_consultant", dr_choice)
             setattr(patient, "first_consult_appointment_time", str(consult_appt_time_1))
             setattr(patient, "second_consult_appointment_time", "null")
 
@@ -359,8 +387,10 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
                 else:
                     same = False
 
-            temp_list = consult_appts(appt_df, 2, num_consultants, dr_choice1, dr_choice2)
+            temp_list, dr1, dr2 = consult_appts(appt_df, 2, num_consultants, dr_choice1, dr_choice2)
             #update appts_df
+            dr_choice1 = dr1
+            dr_choice2 = dr2
             for i in temp_list:
                 if i == temp_list[0]:
                     temp = dr_choice1
@@ -385,7 +415,9 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
             consult_appt_time_1 = temp_list[0]
             dr_2 = dr_choice2
             consult_appt_time_2 = temp_list[1]
-            dr = (str(dr_1) + str(dr_2))
+            print(dr_1)
+            print(dr_2)
+            dr = [str(dr_1), str(dr_2)]
 
             #compare to find out which is the sooner consult
             if consult_appt_time_1 != "null" and consult_appt_time_2 != "null":
@@ -395,9 +427,10 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
                     consult_appt_time_2 = temp
             elif consult_appt_time_1 == "null" and consult_appt_time_2 != "null":
                 consult_appt_time_1 = consult_appt_time_2
-                consult_appt_time_2 == "null"
+                consult_appt_time_2 = "null"
 
             #update patient attirubtes
+            print(dr)
             setattr(patient, "assigned_consultant", dr)
             setattr(patient, "first_consult_appointment_time", str(consult_appt_time_1))
             setattr(patient, "second_consult_appointment_time", str(consult_appt_time_2))
@@ -457,7 +490,7 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
         print(appt_df)
 
         #add patients to a list of all bloods patients 
-        bloods_patients.append(getattr(patient,"id"))
+        bloods_patients.append(patient)
 
 
     elif not bloods:
@@ -523,7 +556,7 @@ def initialise(data_capture_df):#add tally dict back
     for i in dr_list:
         print(dr_list)
         print(i)
-        dr_dict['consultant_%s' % i] = []
+        dr_dict[i-1] = []
 
 
     #update below to be automated and also to generate based on dr number!!!!!!!!!!!!!!!
@@ -586,6 +619,9 @@ def initialise(data_capture_df):#add tally dict back
         temp_list.append("dr" + str(x))
         temp_dict[temp_list[x]] = clinic_times
         #appointment_df["dr" + str(x)]= clinic_times
+
+        #initialise dict
+        # dr_dict["dr" + str(x)] = []
 
     #add to appointment_df
     c = 0
@@ -679,15 +715,41 @@ def initialise(data_capture_df):#add tally dict back
 
         #add temp_list to dataframe
         patient_df.loc[len(patient_df)] = temp_list
+        print("PATIENT NUMBER")
+        print(x)
+        consultants = getattr(patient, "assigned_consultant")
+        print(getattr(patient, "assigned_consultant"))
+        print(consultants)
+        print(type(consultants))
+        if type(consultants) == list:
+            print(consultants[0])
+            print(consultants[1])
+            consultant1 = consultants[0]
+            consultant2 = consultants[1]
+            for j in dr_dict:
+                if str(consultant1) == str(j):
+                    temp_list = dr_dict[j]
+                    temp_list.append(patient)
+                elif str(consultant2) == str(j):
+                    temp_list = dr_dict[j]
+                    temp_list.append(patient)
+        elif type(consultants) == int:
+            consultant1 = consultants
+            for j in dr_dict:
+                print(j)
+                if str(consultant1) == str(j):
+                    temp_list = dr_dict[j]
+                    temp_list.append(patient)
 
-        
+
+
     #need to update consultant attributes 
     # for ctant in consultant_list:
     #         print(dr_dict)
     #         consultant_patients = dr_dict['consultant_%s' % x]
     #         setattr(ctant, "patients_seeing", consultant_patients)
         
-
+    print(dr_dict)
     print(patient_df)
     return(patient_df, nurse_list, consultant_list, bloods_patients, data_capture_df, dr_dict, clinic_start, clinic_end)     
 
