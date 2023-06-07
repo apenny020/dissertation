@@ -5,10 +5,12 @@ import time
 from agents import *
 import pandas as pd
 import random
+from basic_model_processor.py import *
+from basic_model_run.py import *
 
 
 # def starts_everything(untallied_dict):
-def starts_everything():
+def starts_everything(tally_dict):
     tick = 510 # each minute, 8:30am
     
     data_capture_df = pd.DataFrame(columns=["Patient", "ID", "Bloods_scheduled", "Bloods_seen", "Consultant_scheduled", "Consultant_seen", "arrival_time", "exit_time", "patient_satisfaction"])
@@ -329,32 +331,56 @@ def starts_everything():
     print ("data capture")
     print(data_capture)
 
-    return()
+    return(data_capture_df)
 
+def get_lists_from_df(df):
+    temp_col = []
+    column_headers = []
+    temp_dict = {}
+    
+    for i in df:
+        column_headers.append(i)
 
-#run the model here
-print("Process data")
-#tally_dict = process_all_data()
-#print(tally_dict)
-print("------------------------")
-print("going to start")
-# starts_everything(tally_dict)
-starts_everything()
-print("completed")
+        temp = df[i].tolist()
+        temp_col.append(temp)
         
+    for header, col in zip(column_headers, temp_col):
+        temp_dict[header] = col
+
+    return(temp_dict)
+
+def data():
+    print("Process data")
+    tally_dict = process_all_data()
+    print("------------------------")
+    return(tally_dict)
+
+def model(tally_dict):
+    print("going to start")
+    # starts_everything(tally_dict)
+    data_capture_df = starts_everything(tally_dict)
+    print("completed")
+    print("getting dict")
+    temp_dict = get_lists_from_df(data_capture_df)
+    temp_dict.to_csv("output_data_dict")
+    print("finished")
+    pass
+
+#TO DO DATA PROCESSING AND THE MODEL UNCOMMENT BELOW:
+# tally_dict = data()
+# model(tally_dict)
+
+#TO RUN JUST THE MODEL, UNCOMMENT BELOW:
+# tally_dict = {}
+# model(tally_dict)    
                 
+#TO RUN JUST THE BASIC, NON DATA INFLUENCED MODEL, UNCOMMENT BELOW:
+# tally_dict, untallied_dict, num_dict = process_all_data_basic()
+# starts_everything_basic(untallied_dict)
 
 
 
-#NUMBER OF PATIENTS WHO LEFT BECAUSE SATISFACTION TOO LOW
-#NUMBER OF PATIENTS IN CLINIC THAT DAY
-#AVERAGE WAIT TIME FOR HEIGHT AND WEIGHT
-#AVERAGE WAIT TIME FOR CONSULTATION 1
-#AVERAGE WAIT TIME FOR CONSULTATION 2
-#AVERAGE WAIT TIME FOR BLOODS
-#AVERAGE TIME START TO FINISH
-#AVERAGE TOTAL WAIT TIMES
-#DURATIONS TOO?
+
 
 
 
