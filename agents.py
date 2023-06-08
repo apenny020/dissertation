@@ -25,8 +25,8 @@ class Patient_agent:
         #something to store all the actions it will do?
         self.assigned_consultant = assigned_consultant
         self.bloods_appointment_time = bloods_appointment_time
-        self.consult_1_appointment_time = consultant_1_appointment_time
-        self.consult_2_appointment_time = consultant_2_appointment_time
+        self.consultant_1_appointment_time = consultant_1_appointment_time
+        self.consultant_2_appointment_time = consultant_2_appointment_time
         self.time_waiting = time_waiting
         #self.hw = hw #heigght and weight
         pass
@@ -75,10 +75,15 @@ def initialise_patient(counter):
     patient_satisfaction = random.randint(30, 100) #(scale is 0 - 100)
     id = counter
     current_action = "Appointed"
+    arrive = random.randint(0,100)#update with data
+    if arrive > 10:
+        will_arrive = True
+    else:
+        will_arrive = False
         
 
     #need to give all the stuffs
-    patient = Patient_agent(id, patient_satisfaction, "unknown", current_action, False, False, False, "unknown", "unknown", "unkown", 0)
+    patient = Patient_agent(id, patient_satisfaction, "unknown", current_action, False, False, will_arrive, arrive, "unknown", "unknown", "unknown", "unknown", 0)
     Patient_agent.arrival_times(patient)
 
     return (patient)
@@ -121,7 +126,7 @@ def initialise_nurse(counter):
     id = counter
     type = random.choice(["Bloods", "HW"]) #rand choice from bloods, H&W (if bloods then can do both)
     current_action = "waiting" #could be calling patients, H&w, waiting, bloods - make sure matches nurse type
-    nurse = Nurse_agent(id, type current_action, "unknown", "uknown")
+    nurse = Nurse_agent(id, type, current_action, "unknown", "unknown")
 
     return (nurse)
 
@@ -160,7 +165,7 @@ def initialise_consultant(counter):
     id = counter
     current_action = "waiting"
     sick = bool(random.choice([True, False]))
-    consultant = Consultant_agent(counter, current_action, "unknown", [], "uknown", sick)
+    consultant = Consultant_agent(counter, current_action, "unknown", [], "unknown", sick)
 
     return (consultant)
 

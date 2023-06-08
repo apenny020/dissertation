@@ -5,18 +5,16 @@ import time
 from agents import *
 import pandas as pd
 import random
-# from basic_model_processor import *
-# from basic_model_run import *
 
 
-# def starts_everything(untallied_dict):
-def starts_everything(tally_dict):
+def starts_everything_basic(untallied_dict):
     tick = 510 # each minute, 8:30am
     
-    data_capture_df = pd.DataFrame(columns=["Patient", "ID", "Bloods_scheduled", "Bloods_seen", "Consultant_scheduled", "Consultant_seen", "arrival_time", "exit_time", "patient_satisfaction"])
+    data_capture_df = pd.DataFrame()
+    data_capture_df = data_capture_df.assign(Patient=[], ID=[], Bloods_scheduled=[], Bloods_seen=[], Consultant_scheduled=[], Consultant_seen=[], arrival_time=[], exit_time=[], patient_satisfaction=[]) #add wait time
     
     #initialise the day
-    patient_df, nurse_list, consultant_list, bloods_patients, data_capture, consultant_appts_dict, clinic_start, clinic_end = initialise(data_capture_df)#add tally_dict back
+    patient_df, nurse_list, consultant_list, bloods_patients, data_capture, consultant_appts_dict, clinic_start, clinic_end = initialise(data_capture_df, untallied_dict)
     print(data_capture)
 
     patients_arrived = []
@@ -32,7 +30,7 @@ def starts_everything(tally_dict):
     while tick <= 1050: #5:30pm
         tick += 1
         print(tick)
-        other = ["null", "unknown", "complete", "incomplete"]
+        other = ["null", "uknown", "complete", "incomplete"]
         if (tick > clinic_start and tick < clinic_end): #8am & 5:30pm
             #check which patients are here
             print(tick)
@@ -43,7 +41,7 @@ def starts_everything(tally_dict):
 
                     states = ["consulting", "bloods"]
                         #update satisfaction
-                    if getattr(p, "current_action") not in states: 
+                    if getattr(p, "current_action") not in: 
                         satis = getattr(p, "patient_satisfaction")
                         satis = satis - 0.25
                         setattr(p, "patient_satisfaction", satis)
@@ -65,12 +63,7 @@ def starts_everything(tally_dict):
 
                         #adds appt time to appt time variable
                         if (p, "consultant_2_appointment_time") not in other:
-                            print(getattr(p, "bloods_appointment_time"))
-                            print((int(getattr(p, "bloods_appointment_time"))))
-                            print(getattr(p, "consultant_1_appointment_time"))
-                            print((getattr(p, "consultant_2_appointment_time")))
-
-                            appt_time = str(min(int(getattr(p, "bloods_appointment_time"))),int(getattr(p, "consultant_1_appointment_time")),int(getattr(p, "consultant_2_appointment_time")))
+                            appt_time = str(min(int(getattr(p, "bloods_appointment_time"))),int(getattr(p, "consultant_1_appointment_time"),int(getattr(p, "consultant_2_appointment_time"))))
                         else:
                             appt_time = str(min(int(getattr(p, "bloods_appointment_time"))),int(getattr(p, "consultant_1_appointment_time")))
 
@@ -101,7 +94,7 @@ def starts_everything(tally_dict):
 
                     #work out their actual arrival time
                     temp_time = getattr(p, "arrival_time")
-                    temp_time = temp_time-int(appt_time)
+                    temp_time = temp_time-appt_time
                     setattr(p, "arrival_time", temp_time)
 
                     #if patient wants to arrive before clinic starts, reset to arrive when clinic starts
@@ -130,7 +123,6 @@ def starts_everything(tally_dict):
                         setattr(p, "arrived", True)
                         setattr(p, "current_action", "watiting")
             
-                states = ["consulting", "bloods"]
                 if getattr(p, "current_action") == "waiting":
                     #increase waiting time capture
                     waiting = getattr(p, "time_waiting")
@@ -143,7 +135,7 @@ def starts_everything(tally_dict):
                     setattr(p, "time_waiting", waiting)
                 
 
-                if (getattr(p, "current_action") != "finished"):
+                if (getattr(p, "current_action") is not "finished"):
                     if (getattr(p, "bloods_appointment_time") in other and (getattr(p, "consultant_1_appointment_time") in other) and (getattr(p, "consultant_2_appointment_time") in other) ):
                         #finished, appts are complete, update states to finished
                         print(getattr(p, "id"))
@@ -168,35 +160,27 @@ def starts_everything(tally_dict):
             #check  if dr free
             #need to change to choose one closest to appointment time
             #needs to change when data used
-            counter = 0
             for c in consultant_list:
                 #get list of patients
-                id = getattr(c, "id")
-                print(consultant_appts_dict[id])
-                
+                consult_patients = consultant_appts_dict[c]
 
-                consult_patients = consultant_appts_dict[id]
-                print(consult_patients)
+                if getattr(c, "sick") == True:#consultant not in because sick
+                    for p in consult_patients:
+                        appt = consultant_appts_dict #!!!!!!!!!!!!!!!!!!!111111111111111111
 
-                # if getattr(c, "sick") == True:#consultant not in because sick
-                #     for p in consult_patients:
-                #         appt = consultant_appts_dict #!!!!!!!!!!!!!!!!!!!111111111111111111
-
-                #         if getattr(p, "consultation_2_appointment_time") in other:
-                #             setattr(p, "consultation_1_appointment_time", "sick")
-                #         else:
-                #             drs = getattr(p)
+                        if getattr(p, "consultation_2_appointment_time") in other:
+                            setattr(p, "consultation_1_appointment_time", "sick")
+                        else:
+                            drs = getattr(p)
 
 
                 for p in consult_patients:
 
                     #if this is true (below) means DNA so remove from list
                     if getattr(p, "consultant_1_appointment_time") in other:
-                        if p in consult_patients:
-                            consult_patients.remove(p)
+                        consult_patients.remove(p)
                     if getattr(p, "consultant_2_appointment_time") in other:
-                        if p in consult_patients:
-                            consult_patients.remove(p)
+                        consult_patients.remove(p)
 
                     if getattr(p, "arrived") == True:
                         if (getattr(c, "current_action") == "waiting"):
@@ -331,56 +315,28 @@ def starts_everything(tally_dict):
     print ("data capture")
     print(data_capture)
 
-    return(data_capture_df)
+    return()
 
-def get_lists_from_df(df):
-    temp_col = []
-    column_headers = []
-    temp_dict = {}
-    
-    for i in df:
-        column_headers.append(i)
 
-        temp = df[i].tolist()
-        temp_col.append(temp)
+#run the model here
+print("Process data")
+tally_dict, untallied_dict = process_all_data()
+print("going to start")
+starts_everything(untallied_dict)
+print("completed")
         
-    for header, col in zip(column_headers, temp_col):
-        temp_dict[header] = col
-
-    return(temp_dict)
-
-def data():
-    print("Process data")
-    tally_dict = process_all_data()
-    print("------------------------")
-    return(tally_dict)
-
-def model(tally_dict):
-    print("going to start")
-    # starts_everything(tally_dict)
-    data_capture_df = starts_everything(tally_dict)
-    print("completed")
-    print("getting dict")
-    temp_dict = get_lists_from_df(data_capture_df)
-    temp_dict.to_csv("output_data_dict")
-    print("finished")
-    pass
-#_________________________________________________________________________________________________#
-#TO DO DATA PROCESSING AND THE MODEL UNCOMMENT BELOW:
-# tally_dict = data()
-# model(tally_dict)
-
-#TO RUN JUST THE MODEL, UNCOMMENT BELOW:
-tally_dict = {}
-model(tally_dict)    
                 
-#TO RUN JUST THE BASIC, NON DATA INFLUENCED MODEL, UNCOMMENT BELOW:
-# tally_dict, untallied_dict, num_dict = process_all_data_basic()
-# starts_everything_basic(untallied_dict)
 
 
 
-
-
+#NUMBER OF PATIENTS WHO LEFT BECAUSE SATISFACTION TOO LOW
+#NUMBER OF PATIENTS IN CLINIC THAT DAY
+#AVERAGE WAIT TIME FOR HEIGHT AND WEIGHT
+#AVERAGE WAIT TIME FOR CONSULTATION 1
+#AVERAGE WAIT TIME FOR CONSULTATION 2
+#AVERAGE WAIT TIME FOR BLOODS
+#AVERAGE TIME START TO FINISH
+#AVERAGE TOTAL WAIT TIMES
+#DURATIONS TOO?
 
 

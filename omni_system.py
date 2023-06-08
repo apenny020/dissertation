@@ -2,6 +2,7 @@ import time
 from agents import *
 import pandas as pd
 import random
+from data_analyser import *
 
 #Holds the state of the patients and other agents and updates their states
 #has a time step that checks and executes at every timestep
@@ -73,75 +74,216 @@ def appointment_times(start_hour, interval, end_hour):
 
 
 #~~~~Random process of picking appointments for consultations for patient~~~~~~~~~~~~~~~~#
-def consult_appts(appts_df, iterations, num_consultants):
+def consult_appts(appts_df, iterations, num_consultants, dr1, dr2):
+    print(appts_df)
     """
     for number of drs on shift - chooses random number from this
     find the corresponding list of appointment times
     if theres still times - randomly pick one
     if there are none left, redo step 1
     """
-    #NEED TO ADD SOMETHING TO MAKE SURE SECOND APPT NOT AT SAME TIME !!!!!!!!!!
+
+    if dr1 == "null" and dr2 == "null":
+        temp_list.append("null")
+        print("append1")
+        temp_list.append("null")
+        print("append2")
+        print(temp_list)
+        return(temp_list)
+
     temp_list = []
-    for i in iterations:
-        num_dr = [] 
-        dr = 0
-        dr2 = 0
-        finished = False
+    dr_list = [] # list of consultants
+    appt_list = []
+    
 
-        for i in range(num_consultants):
-            num_dr.append(i+1) #adds the number of todays consultants to list
+    for i in range(num_consultants):
+        dr_list.append(i)
 
-        if not num_dr:
-            #if empty, i.e. no consultants today
-            temp_list.append("null")
-            temp_list.append("null")
-            if i == 2:
-                return(temp_list)
+    for i in range(iterations): #for however many drs they have
+        got_appts = False
+        while not got_appts and dr_list:
+            if num_consultants == 0: #no consultants today
+                temp_list.append("null")
+                print("append1")
+                temp_list.append("null")
+                print("append2")
+                got_appts = True
+                
+            
+            if i+1 == 1: # first iteration
+                column_header = ("dr" + str(dr1) + "_appt")
+                print(appts_df)
+                possible_times = list(appts_df.loc[:,column_header])
+                print(possible_times)
+                possible_times = [x for x in possible_times if str(x).lower() != 'nan']
+                
 
-        while not finished: #in loop because there might not be any appt times and they'd have to pick again from a different doctor
-            if i == 2:
-                #checking that not duplicate dr
-                if len(num_dr) == 1: #if only 1 dr today can only have 1 appt (which wouldve been assigned when i ==1)
-                    #assign null and break
-                    temp_list.append("null")
-                    finished = True
-                    return(temp_list)
+            elif i+1 == 2: # second iteration
+                column_header = ("dr" + str(dr2) + "_appt")
+                print(appts_df)
+                possible_times = list(appts_df.loc[:,column_header])
+                print(possible_times)
+                possible_times = [x for x in possible_times if str(x).lower() != 'nan']
 
-                while dr == dr2: #should never be equal as cant have 2 appointments with same dr
-                    dr2 = random.randint(1, num_dr) # picking a new dr
-                    column_header = ("dr" + str(dr2))
-                    possible_times = appts_df.loc[column_header] # possible appt times to choose from
+            else:
+                print("error, i")
 
-            if i == 1:
-                #choosing a dr randomly, same with appointment
-                dr = random.randint(1, num_dr)
-                column_header = ("dr" + str(dr))
-                possible_times = appts_df.loc[column_header]
-
-            #if possible times (appt times) not empty
-            if possible_times:
+            print(possible_times)
+            if possible_times: # if not empty
                 appt_time = random.choice(possible_times)
-                possible_times.remove(appt_time)
-                #update df to remove the appt
-                if i == 1:
-                    temp_list.append(dr)
-                    num_dr.remove(dr)
-                elif i == 2:
-                    temp_list.append(dr2)
-                    num_dr.remove(dr2)
+                appt_list.append(appt_time)
                 temp_list.append(appt_time)
-                finished = True
+                print("append")
 
-            else: #no appts left with that dr rmeove that dr from the list
-                num_dr.remove(dr)
-                num_dr.remove(dr2)
+                if iterations == 1 or i+1 == 1:
+                    #remove from df
+                    temp = dr1
+                    if temp == 0:
+                        appts_df.loc[appts_df.dr0_appt == appt_time, column_header] = "NaN"
+                    elif temp == 1:
+                        appts_df.loc[appts_df.dr1_appt == appt_time, column_header] = "NaN"
+                    elif temp == 2:
+                        appts_df.loc[appts_df.dr2_appt == appt_time, column_header] = "NaN"
+                    elif temp == 3:
+                        appts_df.loc[appts_df.dr3_appt == appt_time, column_header] = "NaN"
+                    elif temp == 4:
+                        appts_df.loc[appts_df.dr4_appt == appt_time, column_header] = "NaN"
+                    else:
+                        print("problem")
+                    
+                    # temp_list.append(appt_time)
+                    # print("append1")
+                    
+                    if iterations == 1:
+                        
+                        temp_list.append("null")#second appt time is null becuase only 1 dr assigned
+                        print("append2")
+                    got_appts = True
+                    
 
-        temp_list.append(dr)
-        if dr2 != 0: #if there are 2 drs, add both to the list
-            temp_list.append(dr2)
+                elif iterations == 2 and i+1 == 2:
+                    #check that appt is after the first
+                    
 
-        #temp_list.append(appt_time)
-    return(temp_list)
+                    # temp_list.append(appt_time)
+                    # print("append2")
+
+                    if num_consultants == 1:
+                        if appt_time in temp_list:
+                            temp_list.remove(appt_time)
+                        appt_time = "null"
+                        temp_list.append("null")
+                    
+                    if appt_list[0] > 990:
+                        if appt_time in temp_list:
+                            temp_list.remove(appt_time)
+                        appt_time = "null"
+                        temp_list.append("null")
+
+                    if (appt_time <= appt_list[0]+30):
+                        same = True
+                        while same:
+                            print(appt_time)
+                            print(appt_list[0])
+                            print(temp_list)
+
+                            if (i+1 == 2) and (num_consultants > 1) and (appt_time <= appt_list[0]+30): #if earlier
+                                # print(appt_time)
+                                # print(appt_list[0])
+                                # print(temp_list)
+                                print(appt_time)
+                                if appt_time in temp_list and appt_time == appt_list[1]:
+                                    temp_list.remove(appt_time)
+                                possible_times.remove(appt_time)
+                                appt_time = random.choice(possible_times)
+                                print(appt_time)
+                            else:
+                                temp_list.append(appt_time)
+                                print("append2same")
+                                got_appts = True
+                                same = False
+                    
+                    #remove from df
+                    temp = dr2
+                    if temp == 0:
+                        appts_df.loc[appts_df.dr0_appt == appt_time, column_header] = "NaN"
+                    elif temp == 1:
+                        appts_df.loc[appts_df.dr1_appt == appt_time, column_header] = "NaN"
+                    elif temp == 2:
+                        appts_df.loc[appts_df.dr2_appt == appt_time, column_header] = "NaN"
+                    elif temp == 3:
+                        appts_df.loc[appts_df.dr3_appt == appt_time, column_header] = "NaN"
+                    elif temp == 4:
+                        appts_df.loc[appts_df.dr4_appt == appt_time, column_header] = "NaN"
+                    else:
+                        print("problem")
+
+                    
+                    got_appts = True
+                    
+                elif iterations == 2:
+                    print("stuck here")
+                    
+            else: # if empty (no appts left with that dr)
+                print(possible_times)
+                if i+1 == 1:
+                    print(dr_list)
+                    print(dr1)
+                    dr_list.remove(dr1)
+                    print(dr_list)
+
+                    if dr_list: #if drs with appts left
+                        dr1 = random.choice(dr_list)
+
+                    else: # no drs left
+                        print(dr_list)
+                        dr1 = "null"
+                        temp_list.append("null")
+                        print("append1")
+                        temp_list.append("null")
+                        print("append2")
+                        got_appts = True
+                        
+                    
+                elif i+1 == 2: #on second iteration
+                    #need to choose new dr
+                    print(dr_list)
+                    print(dr1)
+                    print(dr2)
+                    if dr2 in dr_list:
+                        dr_list.remove(dr2)
+                    print(dr_list)
+                    if dr_list: # if not empty
+                        same = True
+                        dr2 = random.choice(dr_list)
+                        while same:
+                            if dr2 == dr1:
+                                if dr2 in dr_list:
+                                    dr_list.remove(dr2)
+                                print(dr_list)
+                                if dr_list:
+                                    dr2 = random.choice(dr_list)
+                                else:
+                                    temp_list.append("null")
+                                    print("append2")
+                                    same = False
+                                    got_appts = True
+                            else:
+                                same = False
+
+                    else:
+                        temp_list.append("null")
+                        print("append2")
+                        got_appts = True
+                        
+                    
+                #restart while loop to get appt
+    print(temp_list)
+    print(dr1)
+    print(dr2)
+    return(temp_list, dr1, dr2)
+
+
 
 
 """
@@ -165,6 +307,7 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
     Makes sure that consultant is before bloods - to make sure it flollows the workflow above
     """
 
+    
     #finding out if they're going to have a bloods and/or consultant appointment
     consultants = bool(random.choice([True, False]))
     bloods = bool(random.choice([True, False]))
@@ -172,75 +315,182 @@ def appointment_choice(patient, id, appt_df, num_consultants, dr_dict, bloods_pa
 
     #if they dont have a bloods or consultant appointment, they get assigned a bloods appointment - this is the only workflow with a singular appointment
     #if they have a consultants appointment
+    
+    #you cant have a consultant appointment without also having a bloods appointment
+    bloods = True
+    #choose whether one or two consultations
+    if num_consultants > 1:
+        consult_number = random.randint(0, 2)
+    elif num_consultants == 1:
+        consult_number = 1
+    elif num_consultants == 0:
+        consult_number = 0
+    print(consultants)
+    print(num_consultants)
+    print(consult_number)
     if (consultants):
-        #you cant have a consultant appointment without also having a bloods appointment
-        bloods = True
-        #choose whether one or two consultations
-        consult_number = random.randint(1, 2)
+        
         
         #If 1 appointment
+        
         if consult_number == 1: 
-            temp_list = consult_appts(appt_df, 1, num_consultants) #chooses appointment time for consultant
-            dr = temp_list[0] #grabbing the consultants id from temp list
-            consult_appt_time = temp_list[1] #grabibng the appt time from temp list
+            dr_choice = random.randint(0, num_consultants-1) # choosing dr
+            temp_list, dr1, dr2 = consult_appts(appt_df, 1, num_consultants, dr_choice, "null") #chooses appointment time for consultant
+            #update appts_df
+            dr_choice = dr1
+            temp = dr_choice
+            if temp == 0:
+                appt_df.loc[appt_df.dr0_appt == temp_list[0], "dr0_appt"] = "NaN"
+            elif temp == 1:
+                appt_df.loc[appt_df.dr1_appt == temp_list[0], "dr1_appt"] = "NaN"
+            elif temp == 2:
+                appt_df.loc[appt_df.dr2_appt == temp_list[0], "dr2_appt"] = "NaN"
+            elif temp == 3:
+                appt_df.loc[appt_df.dr3_appt == temp_list[0], "dr3_appt"] = "NaN"
+            elif temp == 4:
+                appt_df.loc[appt_df.dr4_appt == temp_list[0], "dr4_appt"] = "NaN"
+            else:
+                print("problem")
+
+            print(num_consultants)
+            print(temp_list)
+            print(dr_choice)
+            #dr = temp_list[0] #grabbing the consultants id from temp list
+            print(dr_choice)
+            consult_appt_time_1 = temp_list[0] #grabibng the appt time from temp list
+            consult_appt_time_2 = "null"
 
             #update patient agent attributes
-            setattr(patient, "assigned_consultant", dr)
-            setattr(patient, "first_consult_appointment_time", str(consult_appt_time))
+            print(dr_choice)
+            setattr(patient, "assigned_consultant", dr_choice)
+            setattr(patient, "first_consult_appointment_time", str(consult_appt_time_1))
             setattr(patient, "second_consult_appointment_time", "null")
 
+            #dr_temp = []
             #add patients to drs patient list
-            for dr in num_consultants:
-                if dr == dr_1:
-                    temp = dr_dict['consultant_%s' % dr]
-                    temp.append(getattr(patient,"id"))
+            # for i in range(num_consultants):
+            #     if dr == i:
+            #         dr_temp.append(getattr(patient,"id"))
+            #         dr_dict['consultant_%s' % dr] = dr_temp
 
 
         #If 2 consultations
-        if consult_number == 2:
-            temp_list = consult_appts(appt_df, 2, num_consultants)
-            dr_1 = temp_list[0]
-            consult_appt_time_1 = temp_list[1]
-            dr_2 = temp_list[2]
-            consult_appt_time_2 = temp_list[3]
-            dr = (str(dr_1) + str(dr_2))
+        elif consult_number == 2:
+            dr_choice1 = random.randint(0, num_consultants-1)
+            dr_choice2 = random.randint(0, num_consultants-1)
+            
+            #checking if chose same dr, they should be different
+            same = True
+            while same:
+                if dr_choice2 == dr_choice1:
+                    dr_choice2 = random.randint(0, num_consultants-1)
+                else:
+                    same = False
+
+            temp_list, dr1, dr2 = consult_appts(appt_df, 2, num_consultants, dr_choice1, dr_choice2)
+            #update appts_df
+            dr_choice1 = dr1
+            dr_choice2 = dr2
+            for i in temp_list:
+                if i == temp_list[0]:
+                    temp = dr_choice1
+                elif i == temp_list[1]:
+                    temp = dr_choice2
+                if temp == 0:
+                    appt_df.loc[appt_df.dr0_appt == temp_list[0], "dr0_appt"] = "NaN"
+                elif temp == 1:
+                    appt_df.loc[appt_df.dr1_appt == temp_list[0], "dr1_appt"] = "NaN"
+                elif temp == 2:
+                    appt_df.loc[appt_df.dr2_appt == temp_list[0], "dr2_appt"] = "NaN"
+                elif temp == 3:
+                    appt_df.loc[appt_df.dr3_appt == temp_list[0], "dr3_appt"] = "NaN"
+                elif temp == 4:
+                    appt_df.loc[appt_df.dr4_appt == temp_list[0], "dr4_appt"] = "NaN"
+                else:
+                    print("problem")
+
+            print(temp_list)
+            
+            dr_1 = dr_choice1
+            consult_appt_time_1 = temp_list[0]
+            dr_2 = dr_choice2
+            consult_appt_time_2 = temp_list[1]
+            print(dr_1)
+            print(dr_2)
+            dr = [str(dr_1), str(dr_2)]
 
             #compare to find out which is the sooner consult
-            if int(consult_appt_time_2) < int(consult_appt_time_1):
-                consult_appt_time_1 = int(consult_appt_time_2)
-                consult_appt_time_2 = int(consult_appt_time_1)
+            if consult_appt_time_1 != "null" and consult_appt_time_2 != "null":
+                if int(consult_appt_time_2) < int(consult_appt_time_1):
+                    temp = int(consult_appt_time_1)
+                    consult_appt_time_1 = int(consult_appt_time_2)
+                    consult_appt_time_2 = temp
+            elif consult_appt_time_1 == "null" and consult_appt_time_2 != "null":
+                consult_appt_time_1 = consult_appt_time_2
+                consult_appt_time_2 = "null"
 
             #update patient attirubtes
+            print(dr)
             setattr(patient, "assigned_consultant", dr)
             setattr(patient, "first_consult_appointment_time", str(consult_appt_time_1))
             setattr(patient, "second_consult_appointment_time", str(consult_appt_time_2))
 
-            #add patients to drs patient list
-            for dr in num_consultants:#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                if dr == dr_2:
-                    temp = dr_dict['consultant_%s' % dr]
-                    temp.append(getattr(patient,"id"))
+            # dr_temp = []
+            # for i in range(num_consultants):
+            #     if dr_1 == i:
+            #         dr_temp.append(getattr(patient,"id"))
+            #         dr_dict['consultant_%s' % dr] = dr_temp
+            #     elif dr_2 == i:
+            #         dr_temp.append(getattr(patient,"id"))
+            #         dr_dict['consultant_%s' % dr] = dr_temp
         
+        elif consult_number == 0:
+            setattr(patient, "assigned_consultant", "null")
+            setattr(patient, "first_consult_appointment_time", "null")
+            setattr(patient, "second_consult_appointment_time", "null")
+            consult_appt_time_1 = "null"
+            consult_appt_time_2 = "null"
+    else: # no consultant appt
+        setattr(patient, "assigned_consultant", "null")
+        setattr(patient, "first_consult_appointment_time", "null")
+        setattr(patient, "second_consult_appointment_time", "null")
+        consult_appt_time_1 = "null"
+        consult_appt_time_2 = "null"
 
 
+    print(num_consultants)
+    print(consult_appt_time_1)
+    print(consult_appt_time_2)
     #if they dont have a consultants appointment, auto get bloods appt
     if bloods or (not consultants):
         bloods = True
-        possible_times = appt_df.loc["bloods"] #retrieving all the possible blood appointment times
-        not_duplicate = False
-        for i in possible_times:
-            while not not_duplicate:
-                if consult_number == 1:
-                    if i < (int(consult_appt_time_1)+30):#finding an appointment that is after the consultant appointment as per workflow
-                        possible_times.remove(i)
-                elif consult_number == 2:
-                    if i < (int(consult_appt_time_2)+30):#finding an appointment that is after the consultant appointment as per workflow
-                        possible_times.remove(i)
+        possible_times = appt_df.loc[:,"bloods_appt"] #retrieving all the possible blood appointment times
+        print(possible_times)
+        possible_times = [x for x in possible_times if str(x).lower() != 'nan']
         
-        bloods_appt_time = random.choice(possible_times)#choose appt times for bloods
-    
+        for i in possible_times:
+            if consult_number == 1 and consult_appt_time_1 != "null":
+                if i < (int(consult_appt_time_1)+30):#finding an appointment that is after the consultant appointment as per workflow
+                    possible_times.remove(i)
+            elif consult_number == 2 and consult_appt_time_2 != "null":
+                if i < (int(consult_appt_time_2)+30):#finding an appointment that is after the consultant appointment as per workflow
+                    possible_times.remove(i) 
+        
+        if possible_times:
+            bloods_appt_time = random.choice(possible_times)#choose appt times for bloods
+            setattr(patient, "bloods_appointment_time", str(bloods_appt_time))
+            print(bloods_appt_time)
+        else:
+            bloods_appt_time = "null"
+            setattr(patient, "bloods_appointment_time", str(bloods_appt_time))
+
+        #update df
+        print(appt_df)
+        appt_df.loc[appt_df.bloods_appt == bloods_appt_time, "bloods_appt"] = "NaN"
+        print(appt_df)
+
         #add patients to a list of all bloods patients 
-        bloods_patients.append(getattr(patient,"id"))
+        bloods_patients.append(patient)
 
 
     elif not bloods:
@@ -270,16 +520,28 @@ def longest_waiting_patient(total_patients):
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#~Initialise~#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def initialise(data_capture_df, untallied_dict):
-    patient_number = random.randint(untallied_dict["num_patients"])
-    dr_number = random.randint(untallied_dict["num_consult"])
+def initialise(data_capture_df):#add tally dict back
+    
+    #list_x = list(tally_dict[i].keys()) #values
+    #list_y = list(tally_dict[i].values()) #percentages
+    #if list_x:
+    #    create_graph(list_x, list_y, " ", "test_x", "test_y", True)
+
+    #DONT NEED TO WORK OUT THE DISTRIBUTIONS FOR THESES
+
+
+    # patient_number = random.randint(untallied_dict["num_patients"])#graph
+    # dr_number = random.randint(untallied_dict["num_consult"])#graph
+    patient_number = 30
+    dr_number = random.randint(1,5)
     nurse_number = random.randint(1,3)#up to 3 blood stations
     bloods_appt_length = 15 #assumption of 15mins 
     clinic_start = 480 #minutes of day (540 ticks) assumption from what told - 8am
     clinic_end = 1050 #minutes of day (1020 ticks) assumption from what told - 5:30pm
     nurse_list = []
     consultant_list = []
-    waiting_room_capacity = max(untallied_dict["num_patients"])
+    waiting_room_capacity = 15
+    # waiting_room_capacity = max(untallied_dict["num_patients"])#graph
     
     bloods_patients = []
     all_patients = []
@@ -292,7 +554,10 @@ def initialise(data_capture_df, untallied_dict):
         dr_list.append(i+1)
         
     for i in dr_list:
-        dr_dict['consultant_%s' % i] = []
+        print(dr_list)
+        print(i)
+        dr_dict[i-1] = []
+
 
     #update below to be automated and also to generate based on dr number!!!!!!!!!!!!!!!
     
@@ -300,40 +565,46 @@ def initialise(data_capture_df, untallied_dict):
     
     #seeting the appts times of bloods appt and adding to df
     appointment_times_bloods = appointment_times(clinic_start, bloods_appt_length, clinic_end-30) #28
-    appointment_df["bloods"]= appointment_times_bloods
+    #appointment_df["bloods"]= appointment_times_bloods
     
     #initialise patient df: Patient identifier, appointment time bloods, appointment time clinic 1, appointment time clinic 2, current action, waiting for
     patient_df = pd.DataFrame(columns=["Patient", "ID", "Bloods_time", "Consultant_1_time", "Consultant_2_time", "current_action", "patient_satisfaction", "arrival_time"])
 
+    HW_nurses = []
+    Bloods_nurses = []
+    
     #initialising nurses by how many there are
     for x in range(nurse_number):
         nurse = initialise_nurse(x)
         nurse_list.append(nurse)
     
-    HW_nurses = []
-    Bloods_nurses = []
+    
 
     for nurse in nurse_list:
         if getattr(nurse, "type") == "HW":
-            HW_nurses.append(getattr(nurse, "id"))
+            HW_nurses.append(nurse)
         elif getattr(nurse, "type") == "Bloods":
-            Bloods_nurses.append(getattr(nurse, "id"))
+            Bloods_nurses.append(nurse)
         else:
             print("error")
         
         #if no bloods nurses, take 1 HW nurse and change them to a bloods nurse because unfeasible to have 0
-        if not Bloods_nurses:
-            temp_nurse = HW_nurses[0]
+        if (not Bloods_nurses) and (HW_nurses):
+            temp_nurse = HW_nurses[0] 
             setattr(temp_nurse, "type", "Bloods")
-            HW_nurses.remove(getattr(temp_nurse, "id"))
+            HW_nurses.remove(temp_nurse)
             Bloods_nurses.append(getattr(temp_nurse, "id"))
 
     #initialising drs by how many there are
+    temp_list = []
+    temp_dict = {}
+    temp_dict["bloods"] = appointment_times_bloods
     for x in range(dr_number):
         consultant = initialise_consultant(x)
         consultant_list.append(consultant)
         
-        if getattr(x, "sick") == True:
+        if getattr(consultant, "sick") == True:
+            print("SICK")
             clinic_times = []
         else:
             #take from the processed data - make sure in minutes form
@@ -342,12 +613,56 @@ def initialise(data_capture_df, untallied_dict):
             consultant_end = 1020 #assumption
 
             clinic_times = appointment_times(consultant_start, consult_length, consultant_end) 
-        
+            print(clinic_times)
+
         #Appends to apopintment df
-        appointment_df["dr" + str(x)]= clinic_times
+        temp_list.append("dr" + str(x))
+        temp_dict[temp_list[x]] = clinic_times
+        #appointment_df["dr" + str(x)]= clinic_times
+
+        #initialise dict
+        # dr_dict["dr" + str(x)] = []
+
+    #add to appointment_df
+    c = 0
+    for i in temp_dict:
+        temp_length = len(temp_dict[i])
+        if c == 0:
+            length = temp_length
+        else:
+            if temp_length > length:
+                length = temp_length
+        c += 1
+
+    num_list = range(length)
+    c = 0
+    appointment_df["num"] = num_list
+    for i in temp_dict:
+        if c == 0: #bloods
+            bloods_dict = dict(enumerate(temp_dict[i]))
+            appointment_df["bloods_appt"] = appointment_df["num"].map(bloods_dict)
+        elif c == 1:
+            dr0_dict = dict(enumerate(temp_dict[i]))
+            appointment_df["dr0_appt"] = appointment_df["num"].map(dr0_dict)
+        elif c == 2:
+            dr1_dict = dict(enumerate(temp_dict[i]))
+            appointment_df["dr1_appt"] = appointment_df["num"].map(dr1_dict)
+        elif c == 3:
+            dr2_dict = dict(enumerate(temp_dict[i]))
+            appointment_df["dr2_appt"] = appointment_df["num"].map(dr2_dict)
+        elif c == 4:
+            dr3_dict = dict(enumerate(temp_dict[i]))
+            appointment_df["dr3_appt"] = appointment_df["num"].map(dr3_dict)
+        elif c == 5:
+            dr4_dict = dict(enumerate(temp_dict[i]))
+            appointment_df["dr4_appt"] = appointment_df["num"].map(dr4_dict)
+        c += 1
+
 
     #initialises patients
     for x in range(patient_number):
+        print("PATIENT NUMBER")
+        print(x)
         patient = initialise_patient(x)
         temp_list = [patient]
         temp_list.append(getattr(patient, "id"))
@@ -361,7 +676,7 @@ def initialise(data_capture_df, untallied_dict):
 
         data_capture_df.at[x,"Bloods_scheduled"] = bloods_appt_time
         data_capture_df.at[x,"Consultant_scheduled_1"] = consult_appt_time_1
-        data_capture_df.at[x,"Consultant_scheduled_2"] = consult_appt_time_1
+        data_capture_df.at[x,"Consultant_scheduled_2"] = consult_appt_time_2
 
         temp_list.append(bloods_appt_time)
         temp_list.append(consult_appt_time_1)
@@ -376,7 +691,22 @@ def initialise(data_capture_df, untallied_dict):
 
         #arrival
         arrival_diff = getattr(patient, "arrival_time")
-        first_appt_time = min(int(bloods_appt_time),int(consult_appt_time_1), int(consult_appt_time_2)) # finding earliest appt
+        if consult_appt_time_1 == "null" and consult_appt_time_2 == "null":
+            first_appt_time = bloods_appt_time # finding earliest appt
+        elif consult_appt_time_1 == "null":
+            first_appt_time = min(int(bloods_appt_time), int(consult_appt_time_2)) # finding earliest appt
+        elif consult_appt_time_2 == "null":
+            first_appt_time = min(int(bloods_appt_time), int(consult_appt_time_1)) # finding earliest appt
+        elif consult_appt_time_1 != "null" and consult_appt_time_2 != "null":
+            first_appt_time = min(int(bloods_appt_time),int(consult_appt_time_1), int(consult_appt_time_2)) # finding earliest appt
+
+        else:
+            print("ISSUE")
+            print(bloods_appt_time)
+            print(consult_appt_time_1)
+            print(consult_appt_time_2)
+
+        
         arrival_time = first_appt_time - int(arrival_diff)
         if arrival_time < clinic_start:#If arriving before clinic opens
             setattr(patient, "arrival_time", 540)
@@ -385,15 +715,41 @@ def initialise(data_capture_df, untallied_dict):
 
         #add temp_list to dataframe
         patient_df.loc[len(patient_df)] = temp_list
+        print("PATIENT NUMBER")
+        print(x)
+        consultants = getattr(patient, "assigned_consultant")
+        print(getattr(patient, "assigned_consultant"))
+        print(consultants)
+        print(type(consultants))
+        if type(consultants) == list:
+            print(consultants[0])
+            print(consultants[1])
+            consultant1 = consultants[0]
+            consultant2 = consultants[1]
+            for j in dr_dict:
+                if str(consultant1) == str(j):
+                    temp_list = dr_dict[j]
+                    temp_list.append(patient)
+                elif str(consultant2) == str(j):
+                    temp_list = dr_dict[j]
+                    temp_list.append(patient)
+        elif type(consultants) == int:
+            consultant1 = consultants
+            for j in dr_dict:
+                print(j)
+                if str(consultant1) == str(j):
+                    temp_list = dr_dict[j]
+                    temp_list.append(patient)
 
-        
+
+
     #need to update consultant attributes 
-    for ctant in consultant_list:
-        for x in range(dr_number):
-            consultant_patients = dr_dict['consultant_%s' % x]
-            setattr(ctant, "patients_seeing", consultant_patients)
+    # for ctant in consultant_list:
+    #         print(dr_dict)
+    #         consultant_patients = dr_dict['consultant_%s' % x]
+    #         setattr(ctant, "patients_seeing", consultant_patients)
         
-
+    print(dr_dict)
     print(patient_df)
     return(patient_df, nurse_list, consultant_list, bloods_patients, data_capture_df, dr_dict, clinic_start, clinic_end)     
 

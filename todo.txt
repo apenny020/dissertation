@@ -52,3 +52,11 @@ Compare ABM to the how to guides and hte minimum reqs of an ABM
 #Create initial graph and CSV from analysed data
 #Add tests
 #Run and Debug
+
+
+
+
+
+Create graph wooth smooth line for each state
+Change the code to pick from graph
+fix modelling bugs

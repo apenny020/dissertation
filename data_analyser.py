@@ -1,5 +1,11 @@
 #visualise and analyse data
 import csv
+import numpy as np 
+import matplotlib.pyplot as plt
+from scipy.interpolate import make_interp_spline
+from datetime import datetime, date
+import pandas as pd
+import random
 
 """
 Data we've got to work with:
@@ -33,37 +39,116 @@ def order_list(to_order_list, file_name):
     
     return(ordered_list)
 
+#create a smooth line graph
+#x and y to be an array
+def create_graph(x, y, title, x_axis, y_axis, get_value):
+    if title == "starts_bloods" or title == "starts_consult" or title == "starts_arrival":
+        return()
+    changed_x = []
+    for i in x:
+        if type(i) == datetime:
+            temp_hour = i.hour
+            temp_minute = i.minute
+            temp_minute = temp_minute + (temp_hour*60)
+            i = temp_minute
+            changed_x.append(i)
+        else:
+            changed_x.append(i)
+
+    x = np.array(changed_x)
+    y = np.array(y)
+
+    title_dict = {"title":title, "x_axis":x_axis, "y_axis":y_axis}
+    print("------------------------------")
+    print(x)
+    print(y)
+    xy_spline = make_interp_spline(x,y)
+
+    new_x = np.linspace(x.min(), x.max(), 500)
+    new_y = xy_spline(new_x)
+
+    plt.plot(new_x, new_y)
+    #plt.plot(x,y)
+    plt.title(title_dict["title"])
+    plt.xlabel(title_dict["x_axis"])
+    plt.ylabel(title_dict["y_axis"])
+    plt.show()
+
+    if not get_value:
+        plt.savefig(title + '.png')
+        plt.close()
+        return()
+    else: # need to get a value for model
+        max_num = max(x)
+        temp_val = random.randint(0, max_num)
+        #value = np.interp()
+        plt.close()
+        #return(value)
+        return()
+    
+
+
 #create distributions to be used (for one day)
 #first for time based data - waiting times/durations/lates
 #also
 #second for number of patients 
 #the list should be a number over multiple dates
-def get_probabilities_time(data_list):
+def get_probabilities_time(data_dict):
 
-    tally_dict = {}
-    
-    ordered_list = sorted(data_list)
-    for i in ordered_list:
-        if i in tally_dict:
-            #increase by value 1 -creates a dictionary with each value and a tally for it 
-            temp_val = tally_dict[i]
-            temp_val += 1
-            tally_dict.update({i:temp_val})
-        else:
-            #add to dict
-            tally_dict[i] = 1
+    tally_dict = {}#CHANGE SO THAT IT GETS THE NAME OF THE LIST AND RETURNS ON IT AND FIX CODE IN PROCESSOR TO MATCH
+    column_headers = []
+    c=0
+
+    if data_dict == [] or data_dict == 0:
+        return (tally_dict, column_headers)
+
+    column_headers = (list(data_dict.keys()))
+    final_dict = {}
+
+    for i in data_dict:
+        tally_dict = {}        
         
-    #creating percentage
-    total = len(ordered_list)
-    for i in tally_dict:
-        #get value and put in probability
-        #update value to this
-        temp_val = tally_dict[i]
-        temp_val = temp_val/total
-        tally_dict.update({i:temp_val})
+        temp_list = data_dict[i]
+        temp_list = [x for x in temp_list if str(x) != 'nan']
+
+        ordered_list = sorted(temp_list)   
+
+        length = len(ordered_list)
+        c = 0
+        for k in range(length):
+            j = ordered_list[c]
+            if str(j) == "NaT":
+                ordered_list.remove(j)
+            else:
+                c +=1
+
+        for j in ordered_list:
+            if type(j) != int:
+                j = j.to_pydatetime()          
+        
+            if j in tally_dict:
+                #increase by value 1 -creates a dictionary with each value and a tally for it 
+                temp_val = tally_dict[j]
+                temp_val += 1
+                tally_dict.update({j:temp_val})
+            else:
+                #add to dict
+                tally_dict[j] = 1
+            
+        #creating percentage
+        total = len(ordered_list)
+        for j in tally_dict:
+            #get value and put in probability
+            #update value to this
+            temp_val = tally_dict[j]
+            temp_val = temp_val/total
+            tally_dict.update({j:temp_val})
+            c += 1
+        final_dict[i] = tally_dict
+            
     
     #a dictionary that returns the collected data value and its probability chance of existing
-    return (tally_dict)
+    return (final_dict, column_headers)
     
 
 
