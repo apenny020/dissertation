@@ -348,6 +348,11 @@ def calculating_times (current_days_data , current_days_patients, waiting_df, nu
 
         num_list = range(biggest)
 
+        print(num_of_consultations)
+        print(num_of_lates)
+        print(num_patients)
+        print(num_of_did_not_attends)
+
         num_consult_dict = dict(enumerate(num_of_consultations))
         num_dna_dict = dict(enumerate(num_of_did_not_attends))
         num_lates_dict = dict(enumerate(num_of_lates))
@@ -500,9 +505,9 @@ def get_data():
 
         #print (len(Lines))
         c += 1
-        #print(c)
-        if c == 200:
-            break
+        print(c)
+        # if c == 200:
+        #     break
         all_data_df.loc[len(all_data_df)] = line
         #print(all_data_df)
         all_data_df.to_csv("all_data")

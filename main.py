@@ -5,8 +5,8 @@ import time
 from agents import *
 import pandas as pd
 import random
-from basic_model_processor.py import *
-from basic_model_run.py import *
+# from basic_model_processor import *
+# from basic_model_run import *
 
 
 # def starts_everything(untallied_dict):
@@ -365,14 +365,14 @@ def model(tally_dict):
     temp_dict.to_csv("output_data_dict")
     print("finished")
     pass
-
+#_________________________________________________________________________________________________#
 #TO DO DATA PROCESSING AND THE MODEL UNCOMMENT BELOW:
 # tally_dict = data()
 # model(tally_dict)
 
 #TO RUN JUST THE MODEL, UNCOMMENT BELOW:
-# tally_dict = {}
-# model(tally_dict)    
+tally_dict = {}
+model(tally_dict)    
                 
 #TO RUN JUST THE BASIC, NON DATA INFLUENCED MODEL, UNCOMMENT BELOW:
 # tally_dict, untallied_dict, num_dict = process_all_data_basic()
